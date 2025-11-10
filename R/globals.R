@@ -128,6 +128,14 @@ utils::globalVariables(
     # qc_test_human_in_loop
     "hil_flag_comment",
     "human_in_loop_flag_value",
-    "human_in_loop_reference_flag_col"
+    "human_in_loop_reference_flag_col",
+
+    # qc_vr2_for_hil
+    "depl_range",
+    "human_in_loop_comment",
+    "qc_test_column",
+    "timestamp_utc_min",
+    "timestamp_utc_max",
+    "timestamp_prompt"
   )
 )

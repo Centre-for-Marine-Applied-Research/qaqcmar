@@ -12,7 +12,7 @@
 #'
 #' @return Returns a data.frame with data from all deployments in folder.
 #'
-#' @importFrom dplyr %>% arrange distinct mutate n row_number select
+#' @importFrom dplyr %>% all_of arrange distinct mutate n row_number select
 #' @importFrom purrr list_rbind map
 #'
 #' @export

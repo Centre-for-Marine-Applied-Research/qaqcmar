@@ -38,11 +38,11 @@ qc_gr <- dat %>%
 #   qc_tests = "grossrange",
 #   vars = "temperature_degree_c"
 # )
-# qc_plot_flags(
-#   qc_gr,
-#   qc_tests = "grossrange",
-#   vars = "dissolved_oxygen_percent_saturation"
-# )
+qc_plot_flags(
+  qc_gr,
+  qc_tests = "grossrange",
+  vars = "dissolved_oxygen_percent_saturation"
+)
 
 # filter by day flagged observations ------------------------------------------------
 

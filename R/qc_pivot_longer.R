@@ -42,29 +42,11 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
 
   qc_tests <- tolower(qc_tests)
 
-  # tests_foo <- c(
-  #   "climatology",
-  #   #"depth_crosscheck",
-  #   "grossrange",
-  #   "rolling_sd",
-  #   "spike",
-  #   "qc",
-  #   "human_in_loop"
-  # )
-  #
-  # if (!(all(qc_tests %in% tests_foo))) {
-  #   err <- qc_tests[which(!(qc_tests %in% tests_foo))]
-#
-#     stop(
-#       paste("<< ", err, " >> is not an accepted value for qc_tests.\nHINT: check spelling\n"),
-#       collapse = "\n"
-#     )
-#   }
-
   vars <- c(
     "dissolved_oxygen_percent_saturation",
     "dissolved_oxygen_uncorrected_mg_per_l",
     "salinity_psu",
+    "ph_ph",
     "sensor_depth_measured_m",
     "temperature_degree_c"
   )
@@ -103,10 +85,9 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
     dat <- pivot_flags_longer(dat, qc_test = "human_in_loop")
   }
 
-
   # don't arrange by deployment_range (because it will be alphabetical not chronological)
   dat %>%
-    arrange(county, station, sensor_type, variable, timestamp_utc)
+    arrange(station, sensor_type, variable, timestamp_utc)
 }
 
 

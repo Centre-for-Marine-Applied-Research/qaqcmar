@@ -6,4 +6,5 @@
 
 /data-raw/archive
 /data-raw/*html
+/dev
 inst/doc
