@@ -35,55 +35,55 @@
 #'
 #' @export
 
-qc_filter_summary_flags <- function(
-    dat,
-
-    keep_dissolved_oxygen_percent_saturation = c(1, 2, NA),
-    keep_dissolved_oxygen_uncorrected_mg_per_l = c(1, 2, NA),
-    keep_salinity_psu = c(1, 2, NA),
-    keep_sensor_depth_measured_m = c(1, 2, 3, NA),
-    keep_temperature_degree_c = c(1, 2, 3, NA),
-
-    keep_sus_do_stations = NULL,
-    keep_sus_do = c(1, 2, 3, NA)
-
-    ) {
-
-  if(is.null(keep_sus_do_stations)) {
-    keep_sus_do_stations <- c(
-      "0814x E",
-      "0814x W",
-      "Aberdeen",
-      "Deep Basin",
-      "Hourglass Lake",
-      "Piper Lake",
-      "Sissiboo",
-      "Tickle Island 1" # 60 m DO only
-    )
-  }
-
-  dat %>%
-    filter(
-      (variable == "dissolved_oxygen_percent_saturation" &
-         station %in% keep_sus_do_stations &
-         qc_flag_value %in% keep_sus_do) |
-
-      (variable == "dissolved_oxygen_percent_saturation" &
-        qc_flag_value %in% keep_dissolved_oxygen_percent_saturation) |
-
-      (variable == "dissolved_oxygen_uncorrected_mg_per_l" &
-        qc_flag_value %in% keep_dissolved_oxygen_uncorrected_mg_per_l) |
-
-      (variable == "sensor_depth_measured_m" &
-        qc_flag_value %in% keep_sensor_depth_measured_m) |
-
-      (variable == "salinity_psu" & qc_flag_value %in%  keep_salinity_psu) |
-
-      (variable == "temperature_degree_c" &
-         qc_flag_value %in% keep_temperature_degree_c)
-    )
-
-
-}
+# qc_filter_summary_flags <- function(
+#     dat,
+#
+#     keep_dissolved_oxygen_percent_saturation = c(1, 2, NA),
+#     keep_dissolved_oxygen_uncorrected_mg_per_l = c(1, 2, NA),
+#     keep_salinity_psu = c(1, 2, NA),
+#     keep_sensor_depth_measured_m = c(1, 2, 3, NA),
+#     keep_temperature_degree_c = c(1, 2, 3, NA),
+#
+#     keep_sus_do_stations = NULL,
+#     keep_sus_do = c(1, 2, 3, NA)
+#
+#     ) {
+#
+#   if(is.null(keep_sus_do_stations)) {
+#     keep_sus_do_stations <- c(
+#       "0814x E",
+#       "0814x W",
+#       "Aberdeen",
+#       "Deep Basin",
+#       "Hourglass Lake",
+#       "Piper Lake",
+#       "Sissiboo",
+#       "Tickle Island 1" # 60 m DO only
+#     )
+#   }
+#
+#   dat %>%
+#     filter(
+#       (variable == "dissolved_oxygen_percent_saturation" &
+#          station %in% keep_sus_do_stations &
+#          qc_flag_value %in% keep_sus_do) |
+#
+#       (variable == "dissolved_oxygen_percent_saturation" &
+#         qc_flag_value %in% keep_dissolved_oxygen_percent_saturation) |
+#
+#       (variable == "dissolved_oxygen_uncorrected_mg_per_l" &
+#         qc_flag_value %in% keep_dissolved_oxygen_uncorrected_mg_per_l) |
+#
+#       (variable == "sensor_depth_measured_m" &
+#         qc_flag_value %in% keep_sensor_depth_measured_m) |
+#
+#       (variable == "salinity_psu" & qc_flag_value %in%  keep_salinity_psu) |
+#
+#       (variable == "temperature_degree_c" &
+#          qc_flag_value %in% keep_temperature_degree_c)
+#     )
+#
+#
+# }
 
 
