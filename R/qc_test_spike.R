@@ -122,11 +122,14 @@ qc_test_spike <- function(
     dat <- bind_rows(dat1, dat2)
 
   } else {
+
+
     dat <- left_join(
       dat,
       select(spike_table, -sensor_type),
       by = c("variable", join_column)
     )
+   #  browser()
   }
 
   dat <- dat %>%
