@@ -71,6 +71,7 @@ qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
 
   qc_test_cols <- sort(c(
     qc_test_cols$col_name,
+    "grossrange_flag_ph_ph",
     "human_in_loop_flag_dissolved_oxygen_percent_saturation",
     "human_in_loop_flag_dissolved_oxygen_uncorrected_mg_per_l",
     "human_in_loop_flag_ph_ph",
