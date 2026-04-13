@@ -5,8 +5,8 @@ Authors@R:
     person("Danielle", "Dempsey", , "ddempsey@perennia.ca", role = c("aut", "cre"))
 Description: Applies flags for QARTOD-inspired quality control tests to CMAR Water Quality Data.
 License: GPL (>= 3)
-URL: https://github.com/dempsey-CMAR/qaqcmar
-BugReports: https://github.com/dempsey-CMAR/qaqcmar/issues
+URL: https://github.com/Centre-for-Marine-Applied-Research/qaqcmar
+BugReports: https://github.com/Centre-for-Marine-Applied-Research/qaqcmar/issues
 Imports: 
     beepr,
     data.table,
