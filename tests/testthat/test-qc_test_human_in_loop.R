@@ -1,4 +1,4 @@
-test_that("qc_test_rolling_sd() assigns correct flags", {
+test_that("qc_test_human_in_loop() assigns correct flags", {
   expect_equal(
     as.numeric(
       unique(qc_hil_1$human_in_loop_flag_dissolved_oxygen_percent_saturation)),
