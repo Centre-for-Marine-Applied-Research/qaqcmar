@@ -28,19 +28,20 @@ qc_assign_flag_labels <- function(dat) {
     mutate(
       across(
         contains("flag"),
+        # add Pass and pass to accommodate db
         ~ case_when(
-          .x == 1 ~ "Pass",
-          .x == 2 ~ "Not Evaluated",
-          .x == 3 ~ "Suspect/Of Interest",
-          .x == 4 ~ "Fail"
-         # .x == 9 ~ "Missing Data"
+          .x == 1 | .x == "Pass" | .x == "pass" ~ "Pass",
+          .x == 2 | .x == "Not Evaluated" | .x == "not evaluated" ~ "Not Evaluated",
+          .x == 3 | .x == "suspect/of interest" |
+            .x == "Suspect/Of Interest" ~ "Suspect/Of Interest",
+          .x == 4 | .x == "Fail" | .x == "fail" ~ "Fail"
         )
       ),
       across(
         contains("flag"),
         ~ ordered(
           .x,
-          levels = c("Pass", "Not Evaluated", "Suspect/Of Interest", "Fail")#, "Missing Data")
+          levels = c("Pass", "Not Evaluated", "Suspect/Of Interest", "Fail")
         )
       )
     )

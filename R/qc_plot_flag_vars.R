@@ -43,9 +43,12 @@ qc_plot_flags <- function(
                  "rolling_sd",
                  "spike"),
     vars = "all",
-    labels = TRUE, ncol = NULL, flag_title = TRUE, plotly_friendly = FALSE,
+    labels = TRUE,
+    ncol = NULL,
+    flag_title = TRUE,
+    plotly_friendly = FALSE,
     jitter_height = 0
-    ) {
+) {
 
   p <- list(NULL)
   p_out <- list(NULL)
