@@ -9,9 +9,9 @@
 
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![](https://img.shields.io/badge/devel%20version-1.0.11-blue.svg)](https://github.com/dempsey-cmar/qaqcmar)
-[![CodeFactor](https://www.codefactor.io/repository/github/dempsey-cmar/qaqcmar/badge)](https://www.codefactor.io/repository/github/dempsey-cmar/qaqcmar)
-[![R-CMD-check](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/centre-for-marine-applied-research/qaqcmar/actions/workflows/R-CMD-check.yaml)
+[![](https://img.shields.io/badge/devel%20version-1.0.11-blue.svg)](https://github.com/centre-for-marine-applied-research/qaqcmar)
+[![CodeFactor](https://www.codefactor.io/repository/github/centre-for-marine-applied-research/qaqcmar/badge)](https://www.codefactor.io/repository/github/centre-for-marine-applied-research/qaqcmar)
+[![R-CMD-check](https://github.com/centre-for-marine-applied-research/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/centre-for-marine-applied-research/qaqcmar/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `qaqcmar` applies quality control flags to Water Quality data collected
@@ -64,7 +64,7 @@ US Integrated Ocean Observing System (IOOS).
 
 For more information on the Quality Control tests and thresholds, visit
 the [CMAR Data Governance
-Website](https://dempsey-cmar.github.io/cmp-data-governance/pages/cmp_about.html).
+Website](https://centre-for-marine-applied-research.github.io/cmp-data-governance/pages/cmp_about.html).
 
 `qaqcmar` automates assigning flags to each observation based on QARTOD
 recommendations and CMAR modifications.
