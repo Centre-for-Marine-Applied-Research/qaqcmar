@@ -81,9 +81,9 @@ set the effective sample number (\code{n_sample_effective}) to 0.
 When int_sample = period_hours, n_sample = 1, so sd_roll = NA.
 }
 \seealso{
-Other tests: 
-\code{\link{qc_test_climatology}()},
-\code{\link{qc_test_grossrange}()},
-\code{\link{qc_test_spike}()}
+Other tests:
+\code{\link[=qc_test_climatology]{qc_test_climatology()}},
+\code{\link[=qc_test_grossrange]{qc_test_grossrange()}},
+\code{\link[=qc_test_spike]{qc_test_spike()}}
 }
 \concept{tests}

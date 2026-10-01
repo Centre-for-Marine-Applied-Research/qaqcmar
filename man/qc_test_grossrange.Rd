@@ -52,9 +52,9 @@ do_concentration is not \code{NA} so that the data can be joined with the
 \code{grossrange_table} by \code{sensor_type} and \code{variable}.
 }
 \seealso{
-Other tests: 
-\code{\link{qc_test_climatology}()},
-\code{\link{qc_test_rolling_sd}()},
-\code{\link{qc_test_spike}()}
+Other tests:
+\code{\link[=qc_test_climatology]{qc_test_climatology()}},
+\code{\link[=qc_test_rolling_sd]{qc_test_rolling_sd()}},
+\code{\link[=qc_test_spike]{qc_test_spike()}}
 }
 \concept{tests}

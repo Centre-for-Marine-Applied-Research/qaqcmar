@@ -21,7 +21,7 @@ Must include at least one column name with the string "_flag_variable".}
 
 \item{qc_tests}{Character vector of quality control tests to apply to
 \code{dat}. Defaults to all available tests: \code{qc_tests =
-  c("climatology", "depth_crosscheck", "grossrange", "rolling_sd", "spike")}.}
+c("climatology", "depth_crosscheck", "grossrange", "rolling_sd", "spike")}.}
 
 \item{vars}{Character vector of variables to plot. Default is \code{vars =
 "all"}, which will make a plot for each recognized variable in \code{dat}.}

@@ -52,9 +52,9 @@ variable in the form "spike_flag_variable".
 Apply the spike test
 }
 \seealso{
-Other tests: 
-\code{\link{qc_test_climatology}()},
-\code{\link{qc_test_grossrange}()},
-\code{\link{qc_test_rolling_sd}()}
+Other tests:
+\code{\link[=qc_test_climatology]{qc_test_climatology()}},
+\code{\link[=qc_test_grossrange]{qc_test_grossrange()}},
+\code{\link[=qc_test_rolling_sd]{qc_test_rolling_sd()}}
 }
 \concept{tests}

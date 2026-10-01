@@ -28,7 +28,7 @@ knitr::include_graphics("man/figures/hex_qaqcmar.png")
 
 
 <!-- badges: start -->
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) `r badge_devel(repo, "blue")` `r badge_codefactor(repo)` [![R-CMD-check](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) `r badge_devel(repo, "blue")` `r badge_codefactor(repo)` [![R-CMD-check](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/centre-for-marine-applied-research/qaqcmar/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `qaqcmar` applies quality control flags to Water Quality data collected through the Centre for Marine Applied Research's (CMAR) Coastal Monitoring Program.
@@ -39,7 +39,7 @@ You can install the development version of `qaqcmar` from [GitHub](https://githu
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("dempsey-CMAR/qaqcmar")
+devtools::install_github("centre-for-marine-applied-research/qaqcmar")
 ```
 
 ## Background
