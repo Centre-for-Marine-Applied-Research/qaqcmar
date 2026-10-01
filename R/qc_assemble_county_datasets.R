@@ -97,7 +97,7 @@ qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
   # list all files in region folder
   depls <- list.files(
     paste(path, folder, sep = "/"),
-    pattern = ".rds",
+    pattern = "\\.rds$",
     full.names = TRUE
   )
 
