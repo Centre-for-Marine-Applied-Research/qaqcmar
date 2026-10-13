@@ -76,6 +76,16 @@ dat <- expand.grid(
       sensor_type == "vr2ar" ~ 25,
       TRUE ~ NA_real_
     ),
+    # sensor serial numbers
+    sensor_serial_number = case_when(
+      sensor_type == "hobo" ~ 123,
+      sensor_type == "aquameasure" ~ 456,
+      sensor_type == "hobo do" ~ 789,
+      sensor_type == "tidbit" ~ 101,
+      sensor_type == "vr2ar" ~ 112,
+      TRUE ~ NA_real_
+    ),
+
     timestamp_utc = as_datetime(paste("2023", month, day, sep = "-")),
     # add values with known flags
     value = case_when(
@@ -100,8 +110,7 @@ dat <- expand.grid(
   mutate(
     county = "Lunenburg",
     station = "White Tower",
-    deployment_range = "2023-Jan-01 to 2023-Dec-28",
-    sensor_serial_number = "123"
+    deployment_range = "2023-Jan-01 to 2023-Dec-28"
   )
 
 
@@ -129,5 +138,7 @@ dat <- dat %>%
   )
 
 # Export rds file
-saveRDS(dat, file = here("inst/testdata/test_data_grossrange.RDS"))
+saveRDS(dat, file = system.file("testdata/test_data_grossrange.RDS", package = "qaqcmar"))
+
+
 
