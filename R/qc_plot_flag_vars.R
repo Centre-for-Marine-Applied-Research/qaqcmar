@@ -1,38 +1,38 @@
-#'Plot sensor data coloured by flag value
+#' Plot sensor data coloured by flag value
 #'
-#'@param dat Data frame of flagged sensor string data in long or wide format.
-#'  Must include at least one column name with the string "_flag_variable".
+#' @param dat Data frame of flagged sensor string data in long or wide format.
+#'   Must include at least one column name with the string "_flag_variable".
 #'
-#'@param vars Character vector of variables to plot. Default is \code{vars =
-#'  "all"}, which will make a plot for each recognized variable in \code{dat}.
+#' @param vars Character vector of variables to plot. Default is \code{vars =
+#'   "all"}, which will make a plot for each recognized variable in \code{dat}.
 #'
-#'@param labels Logical argument indicating whether to convert numeric flag
-#'  values to text labels for the legend.
+#' @param labels Logical argument indicating whether to convert numeric flag
+#'   values to text labels for the legend.
 #'
-#'@param ncol Number of columns for faceted plots.
+#' @param ncol Number of columns for faceted plots.
 #'
-#'@param flag_title Logical argument indicating whether to include a ggtitle of
-#'  the qc test and variable plotted.
+#' @param flag_title Logical argument indicating whether to include a ggtitle of
+#'   the qc test and variable plotted.
 #'
-#'@param plotly_friendly Logical argument. If \code{TRUE}, the legend will be
-#'  plotted when \code{plotly::ggplotly} is called on \code{p}. Default is
-#'  \code{FALSE}, which makes the legend look better in a static figure.
+#' @param plotly_friendly Logical argument. If \code{TRUE}, the legend will be
+#'   plotted when \code{plotly::ggplotly} is called on \code{p}. Default is
+#'   \code{FALSE}, which makes the legend look better in a static figure.
 #'
-#'@param jitter_height Numeric value. Amount of vertical jitter in the
-#'  deth_crosscheck figure. Only recommended to check for overlapping deployment
-#'  points because it introduces random noise into the scatter plot that can be
-#'  misleading.
+#' @param jitter_height Numeric value. Amount of vertical jitter in the
+#'   deth_crosscheck figure. Only recommended to check for overlapping
+#'   deployment points because it introduces random noise into the scatter plot
+#'   that can be misleading.
 #'
-#'@inheritParams qc_test_all
+#' @inheritParams qc_test_all
 #'
-#'@return Returns a list of ggplot objects; one figure for each test in
-#'  \code{qc_tests} and variable in \code{vars}. Points are coloured by the flag
-#'  value and panels are faceted by depth and sensor. faceted by depth and
-#'  sensor.
+#' @return Returns a list of ggplot objects; one figure for each test in
+#'   \code{qc_tests} and variable in \code{vars}. Points are coloured by the
+#'   flag value and panels are faceted by depth and sensor. faceted by depth and
+#'   sensor.
 #'
-#'@importFrom lubridate as_datetime
+#' @importFrom lubridate as_datetime
 #'
-#'@export
+#' @export
 #'
 
 qc_plot_flags <- function(
@@ -139,9 +139,7 @@ qc_plot_flags <- function(
 #'   Points are coloured by the flag value and panels are faceted by depth and
 #'   sensor.
 #'
-#' @importFrom ggplot2 aes element_rect element_text facet_wrap geom_point
-#'   ggplot ggtitle guides guide_legend  scale_colour_manual scale_x_datetime
-#'   scale_y_continuous theme_light theme
+#' @importFrom ggplot2 aes element_rect element_text facet_wrap geom_point ggplot ggtitle guides guide_legend  scale_colour_manual scale_x_datetime scale_y_continuous theme_light theme
 #'
 #' @importFrom gtools mixedsort
 
@@ -197,9 +195,7 @@ ggplot_flags <- function(
 #' @return Returns a ggplot object. Points are coloured by the flag value.
 #'
 #' @importFrom dplyr filter group_by summarise ungroup
-#' @importFrom ggplot2 aes element_text element_rect geom_abline geom_hline
-#'   geom_point geom_vline ggplot ggtitle guides guide_legend position_jitter
-#'   scale_colour_manual scale_x_datetime scale_y_continuous theme_light theme
+#' @importFrom ggplot2 aes element_text element_rect geom_abline geom_hline geom_point geom_vline ggplot ggtitle guides guide_legend position_jitter scale_colour_manual scale_x_datetime scale_y_continuous theme_light theme
 #' @importFrom gtools mixedsort
 #' @importFrom stringr str_remove_all
 #'

@@ -39,14 +39,14 @@ plotted when \code{plotly::ggplotly} is called on \code{p}. Default is
 \code{FALSE}, which makes the legend look better in a static figure.}
 
 \item{jitter_height}{Numeric value. Amount of vertical jitter in the
-deth_crosscheck figure. Only recommended to check for overlapping deployment
-points because it introduces random noise into the scatter plot that can be
-misleading.}
+deth_crosscheck figure. Only recommended to check for overlapping
+deployment points because it introduces random noise into the scatter plot
+that can be misleading.}
 }
 \value{
 Returns a list of ggplot objects; one figure for each test in
-\code{qc_tests} and variable in \code{vars}. Points are coloured by the flag
-value and panels are faceted by depth and sensor. faceted by depth and
+\code{qc_tests} and variable in \code{vars}. Points are coloured by the
+flag value and panels are faceted by depth and sensor. faceted by depth and
 sensor.
 }
 \description{

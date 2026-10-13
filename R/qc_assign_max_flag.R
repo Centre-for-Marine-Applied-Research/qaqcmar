@@ -18,8 +18,7 @@
 #' @return Returns \code{dat} in a wide format, with a single flag column for
 #'   each variable column.
 #'
-#' @importFrom dplyr %>% all_of any_of contains everything left_join mutate
-#'   rename select
+#' @importFrom dplyr %>% all_of any_of contains everything left_join mutate rename select
 #' @importFrom purrr pmap
 #' @importFrom stringr str_remove_all
 #' @importFrom tidyr pivot_wider

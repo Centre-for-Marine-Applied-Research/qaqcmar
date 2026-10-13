@@ -36,8 +36,7 @@
 #'
 #' @family tests
 #'
-#' @importFrom dplyr %>% arrange case_when contains group_by if_else lag lead
-#'   left_join mutate select
+#' @importFrom dplyr %>% arrange case_when contains group_by if_else lag lead left_join mutate select
 #' @importFrom lubridate day
 #' @importFrom sensorstrings ss_pivot_longer
 #' @importFrom stringr str_detect str_remove_all

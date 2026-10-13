@@ -43,8 +43,7 @@
 #' @return Returns \code{dat} in a wide format, with depth crosscheck flag
 #'   column named "depth_crosscheck_flag_value".
 #'
-#' @importFrom dplyr filter group_by join_by left_join mutate rename right_join
-#'   select summarise ungroup
+#' @importFrom dplyr filter group_by join_by left_join mutate rename right_join select summarise ungroup
 #' @importFrom tidyr pivot_longer pivot_wider
 #'
 #' @export

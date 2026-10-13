@@ -65,8 +65,7 @@
 #'
 #' @family tests
 #'
-#' @importFrom dplyr %>% all_of case_when group_by if_else left_join mutate
-#'   select ungroup
+#' @importFrom dplyr %>% all_of case_when group_by if_else left_join mutate select ungroup
 #' @importFrom sensorstrings ss_pivot_longer
 #' @importFrom stats sd
 #' @importFrom stringr str_remove_all

@@ -29,8 +29,7 @@
 #'
 #' @family tests
 #'
-#' @importFrom dplyr %>% as_tibble bind_rows case_when left_join mutate rename
-#'   tibble
+#' @importFrom dplyr %>% as_tibble bind_rows case_when left_join mutate rename tibble
 #' @importFrom lubridate month parse_date_time
 #' @importFrom stringr str_detect str_remove_all str_replace
 #' @importFrom tidyr pivot_wider
