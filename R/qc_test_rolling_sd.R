@@ -110,7 +110,9 @@ qc_test_rolling_sd <- function(
   }
 
   # add thresholds to dat and assign flags ---------------------------------------------------
-  dat <- ss_pivot_longer(dat)
+  dat <- dat |>
+    mutate(row_id = row_number()) |>
+    ss_pivot_longer()
 
   if(is.null(join_column)) {
     dat <- left_join(dat, rolling_sd_table, by = "variable")
@@ -186,5 +188,6 @@ qc_test_rolling_sd <- function(
 
   colnames(dat) <- str_remove_all(colnames(dat), pattern = "value_")
 
-  dat
+  dat |>
+    select(-row_id)
 }

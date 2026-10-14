@@ -60,6 +60,7 @@ utils::globalVariables(
     "rolling_sd_flag",
     "sd_roll",
     "n_sample_effective",
+    "row_id",
 
     # qc_assign_max_flag
     "qc_col",
@@ -103,14 +104,6 @@ utils::globalVariables(
 
     # qc_pivot_longer
     "depth_crosscheck_flag_value",
-
-    # qc_filter_flags
-    # "keep_dissolved_oxygen_percent_saturation",
-    # "keep_dissolved_oxygen_uncorrected_mg_per_l",
-    # "keep_sensor_depth_measured_m",
-    # "keep_salinity_psu",
-    # "keep_temperature_degree_c"
-
 
     "qc_flag_dissolved_oxygen_percent_saturation",
     "qc_flag_dissolved_oxygen_uncorrected_mg_per_l",
