@@ -6,7 +6,7 @@
 #'   format (a separate column for each variable and variable-qc_test
 #'   combination).
 #'
-#' @importFrom dplyr %>% contains
+#' @importFrom dplyr contains
 #' @importFrom tidyr pivot_wider
 #' @importFrom stringr str_remove_all
 #'
@@ -16,7 +16,7 @@ qc_pivot_wider <- function(dat_long) {
 
   #check if depth_crosscheck will ever get caught in this
 
-  dat <- dat_long %>%
+  dat <- dat_long |>
     pivot_wider(
       names_from = variable,
       values_from = c(value, contains("flag_value"))

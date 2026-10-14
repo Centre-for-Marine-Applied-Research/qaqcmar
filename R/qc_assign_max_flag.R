@@ -18,7 +18,7 @@
 #' @return Returns \code{dat} in a wide format, with a single flag column for
 #'   each variable column.
 #'
-#' @importFrom dplyr %>% all_of any_of contains everything left_join mutate rename select
+#' @importFrom dplyr all_of any_of contains everything left_join mutate rename select
 #' @importFrom purrr pmap
 #' @importFrom stringr str_remove_all
 #' @importFrom tidyr pivot_wider
@@ -49,10 +49,10 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
     "hil_comment"
   )
 
-  qc_test_cols <- thresholds %>%
-    select(qc_test, variable) %>%
-    distinct() %>%
-    mutate(col_name = paste(qc_test, "flag", variable, sep = "_")) %>%
+  qc_test_cols <- thresholds |>
+    select(qc_test, variable) |>
+    distinct() |>
+    mutate(col_name = paste(qc_test, "flag", variable, sep = "_")) |>
     arrange(qc_test)
   qc_test_cols <- qc_test_cols$col_name
 
@@ -75,7 +75,7 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
 
   # save the original data frame to join the qc_flag columns ti
   if ("variable" %in% colnames(dat)) {
-    dat_og <- dat %>% qc_pivot_wider()
+    dat_og <- dat |> qc_pivot_wider()
 
   } else  dat_og <- dat
 
@@ -93,14 +93,14 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
   }
 
   # find the maximum flag for each variable
-  dat <- dat %>%
+  dat <- dat |>
     mutate(
       qc_col = pmap(select(dat, contains("flag")), max, na.rm = TRUE),
       qc_col = unlist(qc_col),
       qc_col = ordered(qc_col, levels = 1:4)
-    ) %>%
-    select(-contains("flag_value")) %>%
-    rename(qc_flag = qc_col) %>%
+    ) |>
+    select(-contains("flag_value")) |>
+    rename(qc_flag = qc_col) |>
     pivot_wider(
       names_from = variable,
       values_from = c(value, qc_flag)
@@ -118,8 +118,8 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
     join_cols <- c(
       depl_cols[which(depl_cols %in% colnames(dat_og))], var_cols)
 
-    dat <- dat_og %>%
-      left_join(dat, by = join_cols) %>%
+    dat <- dat_og |>
+      left_join(dat, by = join_cols) |>
       select(
         any_of(depl_cols),    # deployment columns
         all_of(var_cols),     # variable values
@@ -129,7 +129,7 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
       )
   } else {
 
-    dat <- dat %>%
+    dat <- dat |>
       select(
         any_of(depl_cols),    # deployment columns
         all_of(var_cols),     # variable values

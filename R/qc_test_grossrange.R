@@ -38,7 +38,7 @@
 #'
 #' @family tests
 #'
-#' @importFrom dplyr %>% case_when contains distinct inner_join left_join mutate select
+#' @importFrom dplyr case_when contains distinct inner_join left_join mutate select
 #' @importFrom sensorstrings ss_pivot_longer
 #' @importFrom stringr str_detect str_remove str_remove_all
 #' @importFrom tidyr pivot_wider separate
@@ -59,12 +59,12 @@ qc_test_grossrange <- function(
   # import default thresholds from internal data file -----------------------
   if (is.null(grossrange_table)) {
 
-    grossrange_table <- thresholds %>%
+    grossrange_table <- thresholds |>
       filter(qc_test == "grossrange", county == !!county | is.na(county))
 
     # Inverness has separate thresholds for salinity compared to the other counties
     if (county == "Inverness") {
-      grossrange_table <- grossrange_table %>%
+      grossrange_table <- grossrange_table |>
         filter(
           !(is.na(county) &
           variable == "salinity_psu" &
@@ -72,39 +72,39 @@ qc_test_grossrange <- function(
         )
     }
 
-    grossrange_table <- grossrange_table %>%
-      select(-c(qc_test, county, month)) %>%
+    grossrange_table <- grossrange_table |>
+      select(-c(qc_test, county, month)) |>
       pivot_wider(values_from = "threshold_value", names_from = threshold)
 
     # reformat
-    user_thresh <- grossrange_table %>%
-      select(variable, contains("user")) %>%
+    user_thresh <- grossrange_table |>
+      select(variable, contains("user")) |>
       filter(!is.na(user_min) & !is.na(user_max))
 
-    sensor_thresh <- grossrange_table %>%
-      select(sensor_type, variable, contains("sensor")) %>%
+    sensor_thresh <- grossrange_table |>
+      select(sensor_type, variable, contains("sensor")) |>
       filter(!is.na(sensor_type))
 
-    grossrange_table <- sensor_thresh %>%
+    grossrange_table <- sensor_thresh |>
       inner_join(user_thresh, by = "variable")
   }
 
   # variables in dat (could also pivot then use unique())
-  dat_vars <- dat %>%
+  dat_vars <- dat |>
     select(
       contains("depth_measured"),
       contains("dissolved_oxygen"),
       contains("ph"),
       contains("salinity"),
       contains("temperature")
-    ) %>%
+    ) |>
     colnames()
 
 
   # if a hobo do sensor was used, change sensor_type from hobo to hobo do
   # because the temperature grossrange is different
   if ("dissolved_oxygen_uncorrected_mg_per_l" %in% dat_vars) {
-    dat <- dat %>%
+    dat <- dat |>
       mutate(
         sensor_type = case_when(
           sensor_type == "hobo" &
@@ -123,7 +123,7 @@ qc_test_grossrange <- function(
     dat <- left_join(dat, grossrange_table, by = c("sensor_type", "variable", join_column))
   }
 
-  dat <- dat %>%
+  dat <- dat |>
     # sensor_max and sensor_min get evaluated first, so don't need to worry
     # about if user_min < sensor_min (it will get assigned a flag of 4)
     mutate(
@@ -136,9 +136,9 @@ qc_test_grossrange <- function(
       ),
       grossrange_flag = ordered(grossrange_flag, levels = 1:4),
       sensor_type = if_else(sensor_type == "hobo do", "hobo", sensor_type)
-    ) %>%
+    ) |>
     # remove extra columns
-    select(-c(sensor_max, sensor_min, user_max, user_min)) %>%
+    select(-c(sensor_max, sensor_min, user_max, user_min)) |>
     pivot_wider(
       names_from = variable,
       values_from = c(value, grossrange_flag),

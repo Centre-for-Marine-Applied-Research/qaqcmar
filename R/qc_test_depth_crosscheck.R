@@ -63,9 +63,9 @@ qc_test_depth_crosscheck <- function(
   # import default thresholds from internal data file -----------------------
   if (is.null(depth_table)) {
 
-    depth_table <- thresholds %>%
-      filter(qc_test == "depth_crosscheck", county == !!county | is.na(county)) %>%
-      select(-c(qc_test, county, month, sensor_type)) %>%
+    depth_table <- thresholds |>
+      filter(qc_test == "depth_crosscheck", county == !!county | is.na(county)) |>
+      select(-c(qc_test, county, month, sensor_type)) |>
       pivot_wider(values_from = "threshold_value", names_from = threshold)
   }
 
@@ -74,21 +74,21 @@ qc_test_depth_crosscheck <- function(
   # create a table with the estimated (log) depth and minimum measured depth
   # for each deployment
   # apply flag
-  dat_depth <- dat %>%
-    filter(!is.na(sensor_depth_measured_m)) %>%
+  dat_depth <- dat |>
+    filter(!is.na(sensor_depth_measured_m)) |>
     group_by(
       county, station, deployment_range,
-      sensor_serial_number, sensor_depth_at_low_tide_m) %>%
-    summarise(min_measured = min(sensor_depth_measured_m)) %>%
-    ungroup() %>%
+      sensor_serial_number, sensor_depth_at_low_tide_m) |>
+    summarise(min_measured = min(sensor_depth_measured_m)) |>
+    ungroup() |>
     # make sure there is a row for every station, deployment, sensor
     right_join(
-      dat %>%
+      dat |>
         distinct(county, station, deployment_range,
                  sensor_serial_number, sensor_depth_at_low_tide_m),
       by = join_by(county, station, deployment_range,
                    sensor_serial_number, sensor_depth_at_low_tide_m)
-    ) %>%
+    ) |>
     # calculate difference and apply preliminary flag
     mutate(
       abs_diff = abs(sensor_depth_at_low_tide_m - min_measured),
@@ -105,14 +105,14 @@ qc_test_depth_crosscheck <- function(
     )
 
   # find the worst flag for each deployment (not counting "Not Evaluated")
-  dat_depth2 <- dat_depth %>%
-    group_by(county, station, deployment_range) %>%
-    summarise(depth_crosscheck_flag = max(depth_crosscheck_flag)) %>%
+  dat_depth2 <- dat_depth |>
+    group_by(county, station, deployment_range) |>
+    summarise(depth_crosscheck_flag = max(depth_crosscheck_flag)) |>
     ungroup()
 
   # join flags to data and convert 0 to 2
-  dat <- dat %>%
-    left_join(dat_depth2, by = join_by(county, station, deployment_range)) %>%
+  dat <- dat |>
+    left_join(dat_depth2, by = join_by(county, station, deployment_range)) |>
     mutate(
       depth_crosscheck_flag =
         if_else(depth_crosscheck_flag == 0, 2, depth_crosscheck_flag),
@@ -123,7 +123,7 @@ qc_test_depth_crosscheck <- function(
   # clean up columns --------------------------------------------------------
 
   if(isTRUE(crosscheck_table)) {
-    dat_depth %>%
+    dat_depth |>
       mutate(
         depth_crosscheck_flag =
           if_else(depth_crosscheck_flag == 0, 2, depth_crosscheck_flag),

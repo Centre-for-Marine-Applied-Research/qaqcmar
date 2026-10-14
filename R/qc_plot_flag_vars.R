@@ -57,8 +57,8 @@ qc_plot_flags <- function(
     dat <- qc_pivot_longer(dat, qc_tests = qc_tests)
   }
 
-  dat <- dat %>%
-    rename(tstamp = contains("timestamp")) %>%
+  dat <- dat |>
+    rename(tstamp = contains("timestamp")) |>
     mutate(
       tstamp = as_datetime(tstamp),
 
@@ -88,7 +88,7 @@ qc_plot_flags <- function(
 
   if (vars == "all") vars <- unique(dat$variable)
 
-  if (isTRUE(labels)) dat <- dat %>% qc_assign_flag_labels()
+  if (isTRUE(labels)) dat <- dat |> qc_assign_flag_labels()
 
   if (is.null(ncol)) ncol <- 1
 
@@ -157,7 +157,7 @@ ggplot_flags <- function(
 
   flag_column <- paste0(qc_test, "_flag_value")
 
-  p <- dat %>%
+  p <- dat |>
     ggplot(aes(tstamp, value, colour = !!sym(flag_column))) +
     geom_point(show.legend = TRUE) +
     scale_y_continuous(var) +
@@ -213,7 +213,7 @@ ggplot_depth_crosscheck <- function(
   labels <- labels
 
   if (("variable" %in% colnames(dat))) {
-    dat <- dat %>% rename(timestamp_utc = tstamp) %>% ss_pivot_wider()
+    dat <- dat |> rename(timestamp_utc = tstamp) |> ss_pivot_wider()
   }
 
   if(!("sensor_depth_measured_m" %in% colnames(dat))) {
@@ -223,22 +223,22 @@ ggplot_depth_crosscheck <- function(
     stop("sensor_depth_at_low_tide_m must be present in dat to plot depth_crosscheck figure")
   }
 
-  dat <- dat %>%
+  dat <- dat |>
     filter(
       !is.na(sensor_depth_measured_m) & !is.na(sensor_depth_at_low_tide_m)
-    ) %>%
+    ) |>
     group_by(
       county, station, deployment_range,
       sensor_serial_number, depth_label, sensor_depth_at_low_tide_m,
       depth_crosscheck_flag
-    ) %>%
+    ) |>
     summarise(
       min_sensor_depth_measured_m =
         min(sensor_depth_measured_m, na.rm = TRUE)
-    ) %>%
+    ) |>
     ungroup()
 
-  if (isTRUE(labels)) dat <- dat %>% qc_assign_flag_labels()
+  if (isTRUE(labels)) dat <- dat |> qc_assign_flag_labels()
 
   if(nrow(dat) == 0) {
     stop("No observations to plot for depth_crosscheck figure.")

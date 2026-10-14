@@ -19,12 +19,12 @@
 # path <- system.file("testdata", package = "qaqcmar")
 # dat <- readRDS(paste0(path, "/test_data.RDS"))
 #
-# dat_qc <- dat %>%
-#  qc_test_grossrange() %>%
+# dat_qc <- dat |>
+#  qc_test_grossrange() |>
 #  qc_assign_flag_labels()
 
 qc_assign_flag_labels <- function(dat) {
-  dat %>%
+  dat |>
     mutate(
       across(
         contains("flag"),

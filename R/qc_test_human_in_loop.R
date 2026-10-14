@@ -136,23 +136,23 @@ qc_apply_human_in_loop <- function(
 
   # account for different input scenarios -----------------------------------
   if(is.na(hil_var) && is.na(hil_sn)) {
-    var_sn <- dat %>%
-      dplyr::select(-contains("flag")) %>%
+    var_sn <- dat |>
+      dplyr::select(-contains("flag")) |>
       ss_pivot_longer()
     hil_var <- unique(var_sn$variable)
     hil_sn <- unique(var_sn$sensor_serial_number)
   } else if(is.na(hil_var) && !is.na(hil_sn)) {
-    hil_var <- dat %>%
-      dplyr::select(-contains("flag")) %>%
-      ss_pivot_longer() %>%
-      dplyr::filter(sensor_serial_number == hil_sn) %>%
+    hil_var <- dat |>
+      dplyr::select(-contains("flag")) |>
+      ss_pivot_longer() |>
+      dplyr::filter(sensor_serial_number == hil_sn) |>
       dplyr::distinct(variable)
     hil_var <- hil_var$variable
   } else if (!is.na(hil_var) && is.na(hil_sn)) {
-    hil_sn <- dat %>%
-      dplyr::select(-contains("flag")) %>%
-      ss_pivot_longer() %>%
-      dplyr::filter(variable == hil_var) %>%
+    hil_sn <- dat |>
+      dplyr::select(-contains("flag")) |>
+      ss_pivot_longer() |>
+      dplyr::filter(variable == hil_var) |>
       dplyr::distinct(sensor_serial_number)
     hil_sn <- hil_sn$sensor_serial_number
   }
@@ -172,7 +172,7 @@ qc_apply_human_in_loop <- function(
   if(is.na(hil_ref_flag_value)) hil_ref_flag_value <- c(1, 2, 3, 4)
 
   # apply human in the loop flags -------------------------------------------
-  dat <- dat %>%
+  dat <- dat |>
     qc_pivot_longer(qc_tests = qc_tests)
 
   # for instances where qc_test_human_in_loop() needs to be applied more than once
@@ -185,10 +185,10 @@ qc_apply_human_in_loop <- function(
     dat <- mutate(dat, hil_comment = NA_character_)
   }
 
-  dat_hil <- dat %>%
+  dat_hil <- dat |>
     rename(
       human_in_loop_reference_flag_col = all_of(hil_qc_test_ref_column)
-    ) %>%
+    ) |>
     mutate(
       human_in_loop_flag_value = as.numeric(human_in_loop_flag_value),
       human_in_loop_flag_value = if_else(
@@ -200,26 +200,26 @@ qc_apply_human_in_loop <- function(
         human_in_loop_flag_value
       ),
       human_in_loop_flag_value = ordered(human_in_loop_flag_value, levels = 1:4)
-    ) %>%
+    ) |>
     rename(
       "{hil_qc_test_ref_column}" := human_in_loop_reference_flag_col
-    ) %>%
+    ) |>
     qc_pivot_wider()
 
   # add comments (these will be applied to ALL variables measured by a sensor)
   join_cols <- colnames(dat_hil)[which(colnames(dat_hil) != "hil_comment")]
 
-  dat_comment <- dat_hil %>%
+  dat_comment <- dat_hil |>
     filter(
       if_any(contains("human_in_loop"), function (x) x == hil_flag_value)
-    ) %>%
+    ) |>
     mutate(
       hil_comment = if_else(is.na(hil_comment), hil_flag_comment, hil_comment)
     )
 
-  dat_hil %>%
-    select(-hil_comment) %>%
-    left_join(dat_comment, by = join_cols) %>%
+  dat_hil |>
+    select(-hil_comment) |>
+    left_join(dat_comment, by = join_cols) |>
     relocate(hil_comment, .after = last_col())
 
 }

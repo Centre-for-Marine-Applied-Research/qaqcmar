@@ -37,28 +37,28 @@
 
 qc_calculate_user_thresholds <- function(dat, var, n_sd = 3, keep_stats = FALSE) {
 
-  dat <- dat %>%
-    rename(variable = {{ var }}) %>%
+  dat <- dat |>
+    rename(variable = {{ var }}) |>
     summarise(
       mean_var = mean(variable),
       sd_var = sd(variable)
-    ) %>%
+    ) |>
     mutate(
       qc_test = "grossrange",
       variable = as.character(ensym(var)),
       variable = str_remove(variable, "value_"),
       user_min = mean_var - n_sd * sd_var,
       user_max = mean_var + n_sd * sd_var
-    ) %>%
+    ) |>
     select(qc_test, variable, everything())
 
-  if (isFALSE(keep_stats)) dat <- dat %>% select(-c(mean_var, sd_var))
+  if (isFALSE(keep_stats)) dat <- dat |> select(-c(mean_var, sd_var))
 
-  dat %>%
+  dat |>
     pivot_longer(
       cols = c(contains("user"), contains("_var")),
       values_to = "threshold_value", names_to = "threshold"
-    ) %>%
+    ) |>
     mutate(threshold_value = round(threshold_value, digits = 3))
 }
 
@@ -100,15 +100,15 @@ qc_calculate_climatology_thresholds <- function(
     dat, var, ..., n_sd = 3, keep_stats = FALSE) {
 
   if(!("month" %in% colnames(dat))) {
-    dat <-  dat %>%
+    dat <-  dat |>
       mutate(month = lubridate::month(timestamp_utc))
   }
 
-  dat %>%
-    group_by(..., month) %>%
+  dat |>
+    group_by(..., month) |>
     qc_calculate_user_thresholds(
       var = {{ var }}, n_sd = n_sd, keep_stats = keep_stats
-    ) %>%
+    ) |>
     mutate(
       qc_test = "climatology",
       threshold = case_when(
@@ -166,31 +166,31 @@ qc_calculate_rolling_sd_thresholds <- function(
   if(is.null(stat)) {
     stop("Argument stat must be 'quartile' or 'mean_sd', not  NULL")
   } else if(stat == "quartile") {
-    dat <- dat %>%
+    dat <- dat |>
       summarise(
         q = quantile(sd_roll, probs = prob, na.rm = TRUE)
-      ) %>%
+      ) |>
       rename(rolling_sd_max = q)
   } else if(stat == "mean_sd") {
-    dat <- dat %>%
+    dat <- dat |>
       summarise(
        mean_sd_roll = mean(sd_roll, na.rm = TRUE),
        sd_sd_roll = sd(sd_roll, na.rm = TRUE)
-      ) %>%
-      mutate(rolling_sd_max = mean_sd_roll + n_sd * sd_sd_roll) %>%
+      ) |>
+      mutate(rolling_sd_max = mean_sd_roll + n_sd * sd_sd_roll) |>
       select(-c(mean_sd_roll, sd_sd_roll))
   } else {
     stop(paste("Argument stat must be 'quartile' or 'mean_sd', not", stat))
   }
 
-  dat <- dat %>%
+  dat <- dat |>
     mutate(
       qc_test = "rolling_sd",
       variable = as.character(ensym(var)),
       variable = str_remove(variable, "value_"),
       rolling_sd_max = round(rolling_sd_max, digits = 2)
-    ) %>%
-    select(qc_test, variable, everything()) %>%
+    ) |>
+    select(qc_test, variable, everything()) |>
     pivot_longer(
       cols = rolling_sd_max,
       values_to = "threshold_value", names_to = "threshold"
@@ -230,24 +230,24 @@ qc_calculate_depth_crosscheck_thresholds <- function(
     dat <- ss_pivot_wider(dat)
   }
 
-  dat <- dat %>%
+  dat <- dat |>
     group_by(
       county, station, deployment_range,
       sensor_serial_number, sensor_depth_at_low_tide_m
-    ) %>%
+    ) |>
     summarise(min_measured = min(sensor_depth_measured_m)
-    ) %>%
-    ungroup() %>%
-    mutate(abs_diff = abs(sensor_depth_at_low_tide_m - min_measured)) %>%
+    ) |>
+    ungroup() |>
+    mutate(abs_diff = abs(sensor_depth_at_low_tide_m - min_measured)) |>
     summarise(
       depth_diff_max = quantile(abs_diff, probs = prob, na.rm = TRUE)
-    ) %>%
+    ) |>
     mutate(
       qc_test = "depth_crosscheck",
       variable = as.character("sensor_depth_at_low_tide_m"),
       depth_diff_max = round(depth_diff_max, digits = 2)
-    ) %>%
-    select(qc_test, variable, everything()) %>%
+    ) |>
+    select(qc_test, variable, everything()) |>
     pivot_longer(
       cols = depth_diff_max,
       values_to = "threshold_value", names_to = "threshold"
@@ -299,52 +299,52 @@ qc_calculate_spike_thresholds <- function(
     dat <- ss_pivot_wider(dat)
   }
 
-  dat <- dat %>%
-    rename(value = {{ var }}) %>%
-    group_by(county, station, deployment_range, sensor_serial_number) %>%
-    dplyr::arrange(timestamp_utc, .by_group = TRUE) %>%
+  dat <- dat |>
+    rename(value = {{ var }}) |>
+    group_by(county, station, deployment_range, sensor_serial_number) |>
+    dplyr::arrange(timestamp_utc, .by_group = TRUE) |>
     mutate(
       lag_value = lag(value),
       lead_value = lead(value),
       spike_ref = (lag_value + lead_value) / 2,
       spike_value = abs(value - spike_ref)
-    ) %>%
-    ungroup() %>%
+    ) |>
+    ungroup() |>
     group_by(...)
 
   if(is.null(stat)) {
     stop("Argument stat must be 'quartile' or 'mean_sd', not  NULL")
   } else if(stat == "quartile") {
 
-    dat <- dat %>%
-      summarise(q = quantile(spike_value, probs = prob, na.rm = TRUE)) %>%
+    dat <- dat |>
+      summarise(q = quantile(spike_value, probs = prob, na.rm = TRUE)) |>
       rename(spike_low = q)
 
     attr(dat$spike_low, "names") <- NULL
 
   } else if(stat == "mean_sd") {
 
-    dat <- dat %>%
+    dat <- dat |>
       summarise(
         mean_spike = mean(spike_value, na.rm = TRUE),
         sd_spike = sd(spike_value, na.rm = TRUE)
-      ) %>%
-      mutate(spike_low = mean_spike + n_sd * sd_spike) %>%
+      ) |>
+      mutate(spike_low = mean_spike + n_sd * sd_spike) |>
       select(-c(mean_spike, sd_spike))
 
   } else {
     stop(paste("Argument stat must be 'quartile' or 'mean_sd', not", stat))
   }
 
-  dat <- dat %>%
+  dat <- dat |>
     mutate(
       qc_test = "spike",
       variable = as.character(ensym(var)),
       variable = str_remove(variable, "value_"),
       spike_low = round(spike_low, digits = 2),
       spike_high = spike_low * fail_factor
-    ) %>%
-    select(qc_test, variable, everything()) %>%
+    ) |>
+    select(qc_test, variable, everything()) |>
     pivot_longer(
       cols = c(spike_low, spike_high),
       values_to = "threshold_value", names_to = "threshold"

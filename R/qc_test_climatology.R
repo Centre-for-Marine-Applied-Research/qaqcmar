@@ -29,7 +29,7 @@
 #'
 #' @family tests
 #'
-#' @importFrom dplyr %>% as_tibble bind_rows case_when left_join mutate rename tibble
+#' @importFrom dplyr as_tibble bind_rows case_when left_join mutate rename tibble
 #' @importFrom lubridate month parse_date_time
 #' @importFrom stringr str_detect str_remove_all str_replace
 #' @importFrom tidyr pivot_wider
@@ -50,12 +50,12 @@ qc_test_climatology <- function(
   # import default thresholds from internal data file & format
   if (is.null(climatology_table)) {
 
-    climatology_table <- thresholds %>%
+    climatology_table <- thresholds |>
       filter(qc_test == "climatology", county == !!county | is.na(county))
 
     # Inverness has separate thresholds for salinity compared to the other counties
     if (county == "Inverness") {
-      climatology_table <- climatology_table %>%
+      climatology_table <- climatology_table |>
         filter(
           !(is.na(county) &
               variable == "salinity_psu" &
@@ -63,8 +63,8 @@ qc_test_climatology <- function(
         )
     }
 
-    climatology_table <- climatology_table %>%
-      select(-c(qc_test, county, sensor_type)) %>%
+    climatology_table <- climatology_table |>
+      select(-c(qc_test, county, sensor_type)) |>
       tidyr::pivot_wider(
         names_from = "threshold", values_from = "threshold_value"
       )
@@ -73,8 +73,8 @@ qc_test_climatology <- function(
   colname_ts <- colnames(dat)[which(str_detect(colnames(dat), "timestamp"))]
 
   # add thresholds to dat and assign flags ---------------------------------------------------
-  dat <- ss_pivot_longer(dat) %>%
-    rename(tstamp = contains("timestamp")) %>%
+  dat <- ss_pivot_longer(dat) |>
+    rename(tstamp = contains("timestamp")) |>
     mutate(month = lubridate::month(tstamp))
 
   if(is.null(join_column)) {
@@ -84,7 +84,7 @@ qc_test_climatology <- function(
   }
 
 
-  dat <- dat %>%
+  dat <- dat |>
     mutate(
       climatology_flag = case_when(
         value > season_max | value < season_min ~ 3,
@@ -92,9 +92,9 @@ qc_test_climatology <- function(
         TRUE ~ 2
       ),
       climatology_flag = ordered(climatology_flag, levels = 1:4)
-    ) %>%
+    ) |>
     # remove extra columns
-    select(-c(season_min, season_max, month)) %>%
+    select(-c(season_min, season_max, month)) |>
     pivot_wider(
       names_from = variable,
       values_from = c(value, climatology_flag),

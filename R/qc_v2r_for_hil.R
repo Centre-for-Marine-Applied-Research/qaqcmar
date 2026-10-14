@@ -20,17 +20,17 @@
 
 qc_vr2_for_hil <- function(dat) {
 
-  dat %>%
+  dat |>
     distinct(
       county, station, depl_range = deployment_range,
-      sensor_type, sensor_serial_number, sensor_depth_at_low_tide_m) %>%
+      sensor_type, sensor_serial_number, sensor_depth_at_low_tide_m) |>
     filter(
       sensor_type == "vr2ar" | sensor_type == "hobo",
       sensor_depth_at_low_tide_m == max(sensor_depth_at_low_tide_m)
-    ) %>%
-    mutate(n = n()) %>%
-    ungroup() %>%
-    filter(n >= 2, sensor_type == "vr2ar") %>%
+    ) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    filter(n >= 2, sensor_type == "vr2ar") |>
     #pull(sensor_serial_number)
     mutate(
       variable = "temperature_degree_c",
@@ -41,7 +41,7 @@ qc_vr2_for_hil <- function(dat) {
       qc_flag_value = NA,
       human_in_loop_flag_value = 4,
       human_in_loop_comment = "vr2ar unit paired with hobo sensor for more accurate temperature data"
-    ) %>%
+    ) |>
     select(
       county, station, depl_range, variable, sensor_serial_number,
       timestamp_prompt, timestamp_utc_min, timestamp_utc_max,

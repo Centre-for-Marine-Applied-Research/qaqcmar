@@ -19,9 +19,9 @@
 #' @importFrom purrr map partial
 
 add_n_lag_columns <- function(dat, var, n_lags) {
-  map_lag <- n_lags %>% map(~ partial(lag, n = .x))
+  map_lag <- n_lags |> map(~ partial(lag, n = .x))
 
-  dat %>%
+  dat |>
     mutate(
       across(.cols = {{ var }}, .fns = map_lag, .names = "{.col}_lag{n_lags}")
     )
@@ -30,10 +30,10 @@ add_n_lag_columns <- function(dat, var, n_lags) {
 # add lead and lag columns to dat -----------------------------------------
 
 # add_lead_and_lag_columns <- function(dat, var, n){
-#   map_lag <- n %>% map(~partial(lag, n = .x))
-#   map_lead <- n %>% map(~partial(lead, n = .x))
+#   map_lag <- n |> map(~partial(lag, n = .x))
+#   map_lead <- n |> map(~partial(lead, n = .x))
 #
-#   dat %>%
+#   dat |>
 #     mutate(
 #       across(.cols = {{ var }}, .fns = map_lag, .names = "{.col}_lag{n}"),
 #       across(.cols = {{ var }}, .fns = map_lead, .names = "{.col}_lead{n}"),

@@ -8,7 +8,7 @@
 #' @return Returns \code{dat_wide}, with variables and flags pivoted to a long
 #'   format.
 #'
-#' @importFrom dplyr %>% any_of arrange filter relocate select
+#' @importFrom dplyr any_of arrange filter relocate select
 #' @importFrom tidyr pivot_longer
 #'
 #' @export
@@ -17,13 +17,13 @@
 # path <- system.file("testdata", package = "qaqcmar")
 # dat <- read.csv(paste0(path, "/example_data.csv"))
 
-# dat_long <- dat %>%
-#   qc_test_all() %>%
+# dat_long <- dat |>
+#   qc_test_all() |>
 #   qc_pivot_longer()
 #
-# dat_long <- dat %>%
-#   qc_test_all() %>%
-#   qc_assign_max_flag() %>%
+# dat_long <- dat |>
+#   qc_test_all() |>
+#   qc_assign_max_flag() |>
 #   qc_pivot_longer(qc_tests = "qc")
 
 
@@ -52,7 +52,7 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
   )
 
   # pivot the variables - this adds flags that shouldn't exist but will get cleaned up below
-  dat <- dat_wide %>%
+  dat <- dat_wide |>
     pivot_longer(
       cols = any_of(vars),
       names_to = "variable",
@@ -86,7 +86,7 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
   }
 
   # don't arrange by deployment_range (because it will be alphabetical not chronological)
-  dat %>%
+  dat |>
     arrange(station, sensor_type, variable, timestamp_utc)
 }
 
@@ -101,7 +101,7 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
 #' @return Returns \code{dat_wide} with the qc_test flag columns pivoted to a
 #'   long format.
 #'
-#' @importFrom dplyr %>% contains filter select
+#' @importFrom dplyr contains filter select
 #' @importFrom rlang sym
 #' @importFrom tidyr pivot_longer
 #'
@@ -112,16 +112,16 @@ pivot_flags_longer <- function(dat_wide, qc_test) {
 
   col_name <- paste0(qc_test, "_flag_variable")
 
-  dat_wide %>%
+  dat_wide |>
     pivot_longer(
       cols = contains(qc_test),
       names_to = paste0(qc_test, "_flag_variable"),
       names_prefix = paste0(qc_test, "_flag_"),
       values_to = paste0(qc_test, "_flag_value"),
       values_drop_na = TRUE
-    ) %>%
+    ) |>
     # for sensors that measure two variables, the above adds a row for each var
     # e.g., temperature value + temperature flag AND temperature value + DO flag
-    filter(!!sym(col_name) == variable) %>%
+    filter(!!sym(col_name) == variable) |>
     select(-!!sym(col_name))
 }

@@ -12,7 +12,7 @@
 #'
 #' @return Returns a data.frame with data from all deployments in folder.
 #'
-#' @importFrom dplyr %>% all_of arrange distinct mutate n row_number select
+#' @importFrom dplyr all_of arrange distinct mutate n row_number select
 #' @importFrom purrr list_rbind map
 #'
 #' @export
@@ -62,11 +62,11 @@ qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
     "temperature_degree_c"
   )
 
-  qc_test_cols <- thresholds %>%
-    select(qc_test, variable) %>%
-    distinct() %>%
-    filter(qc_test != "depth_crosscheck") %>%
-    mutate(col_name = paste(qc_test, "flag", variable, sep = "_")) %>%
+  qc_test_cols <- thresholds |>
+    select(qc_test, variable) |>
+    distinct() |>
+    filter(qc_test != "depth_crosscheck") |>
+    mutate(col_name = paste(qc_test, "flag", variable, sep = "_")) |>
     arrange(qc_test)
 
   qc_test_cols <- sort(c(
@@ -102,14 +102,14 @@ qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
   )
 
   # read in data, bind together
-  dat <- depls %>%
-    map(readRDS) %>%
+  dat <- depls |>
+    map(readRDS) |>
     list_rbind()
 
   # if any needed columns are NOT in dat, add them as na
-  dat %>%
-    bind_rows(df) %>%
-    filter(row_number() != n()) %>% # last row will be all NA, so need to remove it
+  dat |>
+    bind_rows(df) |>
+    filter(row_number() != n()) |> # last row will be all NA, so need to remove it
     select(all_of(all_cols))  # fix the column order
 
 }

@@ -36,7 +36,7 @@
 #'
 #' @family tests
 #'
-#' @importFrom dplyr %>% arrange case_when contains group_by if_else lag lead left_join mutate select
+#' @importFrom dplyr arrange case_when contains group_by if_else lag lead left_join mutate select
 #' @importFrom lubridate day
 #' @importFrom sensorstrings ss_pivot_longer
 #' @importFrom stringr str_detect str_remove_all
@@ -62,12 +62,12 @@ qc_test_spike <- function(
   # import default thresholds from internal data file
   if (is.null(spike_table)) {
 
-    spike_table <- thresholds %>%
+    spike_table <- thresholds |>
       filter(qc_test == "spike", county == !!county | is.na(county))
 
     # Inverness has separate thresholds for salinity compared to the other counties
     if (county == "Inverness") {
-      spike_table <- spike_table %>%
+      spike_table <- spike_table |>
         filter(
           !(is.na(county) &
               variable == "salinity_psu" &
@@ -75,8 +75,8 @@ qc_test_spike <- function(
         )
     }
 
-    spike_table <- spike_table %>%
-      select(-c(qc_test, county, month)) %>%
+    spike_table <- spike_table |>
+      select(-c(qc_test, county, month)) |>
       pivot_wider(values_from = "threshold_value", names_from = threshold)
   }
 
@@ -100,8 +100,8 @@ qc_test_spike <- function(
 
   } else if("sensor_type" %in% join_column) {
 
-    dat1 <- dat %>%
-      filter(variable == "sensor_depth_measured_m") %>%
+    dat1 <- dat |>
+      filter(variable == "sensor_depth_measured_m") |>
       left_join(
         filter(spike_table, variable == "sensor_depth_measured_m"),
         by = c("variable", join_column)
@@ -109,11 +109,11 @@ qc_test_spike <- function(
 
     join2 <- join_column[-which(join_column == "sensor_type")]
 
-    dat2 <- dat %>%
-      filter(variable != "sensor_depth_measured_m") %>%
+    dat2 <- dat |>
+      filter(variable != "sensor_depth_measured_m") |>
       left_join(
-        spike_table %>%
-        filter(variable != "sensor_depth_measured_m") %>%
+        spike_table |>
+        filter(variable != "sensor_depth_measured_m") |>
           select(-sensor_type),
         by = c("variable", join2)
       )
@@ -131,11 +131,11 @@ qc_test_spike <- function(
    #  browser()
   }
 
-  dat <- dat %>%
+  dat <- dat |>
     group_by(
       county, station, deployment_range, sensor_serial_number, variable
-    ) %>%
-    dplyr::arrange(timestamp_utc, .by_group = TRUE) %>%
+    ) |>
+    dplyr::arrange(timestamp_utc, .by_group = TRUE) |>
     mutate(
       lag_value = lag(value),
       lead_value = lead(value),
@@ -148,17 +148,17 @@ qc_test_spike <- function(
         TRUE ~ 2
       ),
       spike_flag = ordered(spike_flag, levels = 1:4)
-    ) %>%
+    ) |>
     ungroup()
 
   if(isFALSE(keep_spike_cols)) {
-    dat <- dat %>%
+    dat <- dat |>
       select(-c(lag_value, lead_value,
                 spike_ref, spike_value,
                 spike_high, spike_low))
   }
 
-  dat <- dat %>%
+  dat <- dat |>
     pivot_wider(
       names_from = variable,
       values_from = c(value, spike_flag),

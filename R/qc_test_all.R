@@ -19,7 +19,7 @@
 #'
 #' @return Returns \code{dat} with additional quality control flag columns.
 #'
-#' @importFrom dplyr %>% arrange distinct left_join
+#' @importFrom dplyr arrange distinct left_join
 #' @importFrom purrr reduce
 #'
 #' @export
@@ -54,7 +54,7 @@ qc_test_all <- function(
   # # remove columns that are all NA (because they will be dropped during testing,
   # # which causes a problem for the final join)
   # this doesn't work because lease columns gets dropped
-  # dat <- dat %>% select_if(~ !all(is.na(.)))
+  # dat <- dat |> select_if(~ !all(is.na(.)))
 
   # # use for the join and to order columns in output
   depl_cols <- c(
@@ -75,9 +75,9 @@ qc_test_all <- function(
   )
 
   #  use for the join and to order columns in output
-  var_cols <- dat %>%
-    ss_pivot_longer() %>%
-    distinct(variable) %>%
+  var_cols <- dat |>
+    ss_pivot_longer() |>
+    distinct(variable) |>
     arrange()
   var_cols <- var_cols$variable
 
@@ -141,11 +141,11 @@ qc_test_all <- function(
     depl_cols[which(depl_cols %in% colnames(dat))], var_cols)
 
   # join by all common columns
-  dat_out <- dat_out %>%
+  dat_out <- dat_out |>
     purrr::reduce(dplyr::left_join, by = join_cols)
 
   if("depth_crosscheck_flag" %in% colnames(dat_out)) {
-    dat_out <- dat_out %>%
+    dat_out <- dat_out |>
       relocate(depth_crosscheck_flag, .after = sensor_depth_at_low_tide_m)
   }
 

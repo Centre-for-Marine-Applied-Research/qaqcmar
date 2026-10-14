@@ -65,7 +65,7 @@
 #'
 #' @family tests
 #'
-#' @importFrom dplyr %>% all_of case_when group_by if_else left_join mutate select ungroup
+#' @importFrom dplyr all_of case_when group_by if_else left_join mutate select ungroup
 #' @importFrom sensorstrings ss_pivot_longer
 #' @importFrom stats sd
 #' @importFrom stringr str_remove_all
@@ -92,20 +92,20 @@ qc_test_rolling_sd <- function(
   # import default thresholds from internal data file -----------------------
   if (is.null(rolling_sd_table)) {
 
-    rolling_sd_table <- thresholds %>%
+    rolling_sd_table <- thresholds |>
       filter(qc_test == "rolling_sd", county == !!county | is.na(county))
 
     # Inverness has separate thresholds for salinity compared to the other counties
     if (county == "Inverness") {
-      rolling_sd_table <- rolling_sd_table %>%
+      rolling_sd_table <- rolling_sd_table |>
         filter(
           !(is.na(county) &
               variable == "salinity_psu" & threshold == "rolling_sd_max")
         )
     }
 
-    rolling_sd_table <- rolling_sd_table %>%
-      select(-c(county, qc_test, month, sensor_type)) %>%
+    rolling_sd_table <- rolling_sd_table |>
+      select(-c(county, qc_test, month, sensor_type)) |>
       pivot_wider(values_from = "threshold_value", names_from = threshold)
   }
 
@@ -118,23 +118,23 @@ qc_test_rolling_sd <- function(
     dat <- left_join(dat, rolling_sd_table, by = c("variable", join_column))
   }
 
-  dat <- dat %>%
+  dat <- dat |>
     group_by(
       county, station, deployment_range, sensor_serial_number, variable
-    ) %>%
-    dplyr::arrange(timestamp_utc, .by_group = TRUE) %>%
+    ) |>
+    dplyr::arrange(timestamp_utc, .by_group = TRUE) |>
     mutate(
       # sample interval
-      int_sample = difftime(timestamp_utc, lag(timestamp_utc), units = "mins"),
-      int_sample = round(as.numeric(int_sample)),
+      int_sample = as.numeric(difftime(timestamp_utc, lag(timestamp_utc), units = "mins")),
+     # int_sample = round(as.numeric(int_sample)),
 
       # number of samples in  period_hours
       # 60 mins / hour * 1 sample / int_sample mins * 24 hours / period
       n_sample = round((60 / int_sample) * period_hours),
-      # n_sample = if_else(is.na(n_sample), 1, n_sample), # first obs
       n_sample_effective = case_when(
         # first observation of each group is NA, which will give error in rollapply
         is.na(n_sample) ~ 0,
+        int_sample <= 0 ~ 0,  # duplicate timestamp
         # if the sample interval is greater than acceptable limit, set n_sample to 0
         # so that roll_sd will be NA
         int_sample > max_interval_hours * 60 ~ 0,
@@ -149,8 +149,14 @@ qc_test_rolling_sd <- function(
       sd_roll = round(sd_roll, digits = 2)
     )
 
+  n_dup <- sum(duplicated(dat[c("county", "station", "deployment_range",
+                                "sensor_serial_number", "variable", "timestamp_utc")]))
+  if (n_dup > 0) {
+    warning(n_dup, " duplicate timestamp(s) found; these observations get rolling_sd_flag = 2.")
+  }
+
   # assign flags
-  dat <- dat %>%
+  dat <- dat |>
     mutate(
       rolling_sd_flag = case_when(
         sd_roll > rolling_sd_max ~ 3,
@@ -158,20 +164,20 @@ qc_test_rolling_sd <- function(
         is.na(sd_roll) ~ 2
       ),
       rolling_sd_flag = ordered(rolling_sd_flag, levels = 1:4)
-    ) %>%
-    ungroup() %>%
+    ) |>
+    ungroup() |>
     select(-rolling_sd_max)
 
   # clean up columns --------------------------------------------------------
 
   # move this before the pivot so dat will have the correct number of rows
   if (isFALSE(keep_sd_cols)) {
-    dat <- dat %>%
+    dat <- dat |>
       select(-c(int_sample, n_sample, n_sample_effective, sd_roll))
   }
 
   #  pivot wider
-  dat <- dat %>%
+  dat <- dat |>
     pivot_wider(
       names_from = variable,
       values_from = c(value, rolling_sd_flag),
