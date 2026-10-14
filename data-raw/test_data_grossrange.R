@@ -1,3 +1,4 @@
+# October 14, 2026
 # February 10, 2023
 
 # Simulate data for the gross range test
@@ -11,17 +12,10 @@
 # * for the aquameasure and vr2ar sensors, the user_min is less than the sensor_min,
 # which means a flag of 3 (low) will not be assigned
 
-# library(dplyr)
-# library(lubridate)
-# library(here)
-# library(sensorstrings)
-# library(qaqcmar)
-# library(tidyr)
-
-#' @importfrom dplyr %>% filter mutate relocate select
+#' @importfrom dplyr filter mutate relocate select
 #' @importFrom here here
 #' @importFrom lubridate as_datetime days
-#' @importFrom sensorstrings  ss_convert_depth_to_ordered_factor ss_ggplot_variables
+#' @importFrom sensorstrings ss_convert_depth_to_ordered_factor ss_ggplot_variables
 
 # Raw data ----------------------------------------------------------------
 
@@ -39,7 +33,6 @@ grossrange_table <- thresholds %>%
 months <- seq(1, 12)
 days <- rep(c(1, 5, 10, 15, 28), 12)
 variables <- c("temperature_degree_c", "dissolved_oxygen_percent_saturation")
-# sensors = na.omit(unique(grossrange_table$sensor_type))
 sensors <- c("aquameasure", "hobo", "tidbit", "vr2ar")
 
 dat <- expand.grid(
@@ -85,7 +78,6 @@ dat <- expand.grid(
       sensor_type == "vr2ar" ~ 112,
       TRUE ~ NA_real_
     ),
-
     timestamp_utc = as_datetime(paste("2023", month, day, sep = "-")),
     # add values with known flags
     value = case_when(
@@ -113,21 +105,8 @@ dat <- expand.grid(
     deployment_range = "2023-Jan-01 to 2023-Dec-28"
   )
 
-
-dat[
-  which((dat$sensor_type == "aquameasure" |
-    dat$sensor_type == "vr2ar") & dat$day == 5),
-  "temperature_degree_c"
-] <- NA
-
-dat[
-  which(dat$sensor_type == "v2rar" & dat$day == 5),
-  "temperature_degree_c"
-] <- NA
-
 attributes(dat$temperature_degree_c) <- NULL
 attributes(dat$dissolved_oxygen_percent_saturation) <- NULL
-
 
 dat <- dat %>%
   select(county, station, deployment_range,
