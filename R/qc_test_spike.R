@@ -62,6 +62,8 @@ qc_test_spike <- function(
   # import default thresholds from internal data file
   if (is.null(spike_table)) {
 
+    assert_county_thresholds(county, "spike")
+
     spike_table <- thresholds |>
       filter(qc_test == "spike", county == !!county | is.na(county))
 
@@ -128,7 +130,6 @@ qc_test_spike <- function(
       select(spike_table, -sensor_type),
       by = c("variable", join_column)
     )
-   #  browser()
   }
 
   dat <- dat |>

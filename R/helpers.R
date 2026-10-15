@@ -27,19 +27,6 @@ add_n_lag_columns <- function(dat, var, n_lags) {
     )
 }
 
-# add lead and lag columns to dat -----------------------------------------
-
-# add_lead_and_lag_columns <- function(dat, var, n){
-#   map_lag <- n |> map(~partial(lag, n = .x))
-#   map_lead <- n |> map(~partial(lead, n = .x))
-#
-#   dat |>
-#     mutate(
-#       across(.cols = {{ var }}, .fns = map_lag, .names = "{.col}_lag{n}"),
-#       across(.cols = {{ var }}, .fns = map_lead, .names = "{.col}_lead{n}"),
-#     )
-# }
-
 
 #' Ensure there is one and only one county specified for the qc_test_* functions
 #'
@@ -55,6 +42,7 @@ add_n_lag_columns <- function(dat, var, n_lags) {
 #'   thresholds.
 
 assert_county <- function(dat, county_arg, foo) {
+  county <- NULL
 
   if(!is.null(county_arg) & !("county" %in% colnames(dat))) {
     county <- county_arg
@@ -92,9 +80,45 @@ assert_county <- function(dat, county_arg, foo) {
     county <- county_dat
   }
 
-  if (is.null(county)) {
-    stop("Must specify << county >> test function")
+  if (is.null(county) || is.na(county)) {
+    stop("Must specify << county >> argument or include a << county >> column in << dat >>")
   }
 
   county
 }
+
+
+#' Check that the county has default thresholds for a qc test
+#'
+#' @param county Character string returned by \code{assert_county()}.
+#'
+#' @param test Character string: the \code{qc_test} value in \code{thresholds}.
+#'
+#' @return Returns \code{county} invisibly, or stops with an error.
+#'
+#' @noRd
+
+assert_county_thresholds <- function(county, test) {
+
+  valid <- sort(unique(
+    thresholds$county[thresholds$qc_test == test & !is.na(thresholds$county)]
+  ))
+
+  if (!(county %in% valid)) {
+    close <- valid[tolower(valid) == tolower(county)]
+    hint <- if (length(close) == 1) {
+      paste0("\nDid you mean \"", close, "\"?")
+    } else {
+      paste0("\nCounties with ", test, " thresholds: ", paste(valid, collapse = ", "))
+    }
+
+    stop(
+      "No default ", test, " thresholds for county \"", county, "\".", hint,
+      "\nUse a valid county, or provide the thresholds in << ", test, "_table >>.",
+      call. = FALSE
+    )
+  }
+
+  invisible(county)
+}
+

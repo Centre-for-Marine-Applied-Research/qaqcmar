@@ -50,6 +50,8 @@ qc_test_climatology <- function(
   # import default thresholds from internal data file & format
   if (is.null(climatology_table)) {
 
+    assert_county_thresholds(county, "climatology")
+
     climatology_table <- thresholds |>
       filter(qc_test == "climatology", county == !!county | is.na(county))
 

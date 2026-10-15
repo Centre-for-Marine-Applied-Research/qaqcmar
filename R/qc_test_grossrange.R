@@ -59,6 +59,8 @@ qc_test_grossrange <- function(
   # import default thresholds from internal data file -----------------------
   if (is.null(grossrange_table)) {
 
+    assert_county_thresholds(county, "grossrange")
+
     grossrange_table <- thresholds |>
       filter(qc_test == "grossrange", county == !!county | is.na(county))
 

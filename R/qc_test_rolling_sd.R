@@ -92,6 +92,8 @@ qc_test_rolling_sd <- function(
   # import default thresholds from internal data file -----------------------
   if (is.null(rolling_sd_table)) {
 
+    assert_county_thresholds(county, "rolling_sd")
+
     rolling_sd_table <- thresholds |>
       filter(qc_test == "rolling_sd", county == !!county | is.na(county))
 
