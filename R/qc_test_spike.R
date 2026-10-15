@@ -62,7 +62,7 @@ qc_test_spike <- function(
   if (is.null(spike_table)) {
     assert_county_thresholds(county, "spike")
 
-    spike_table <- thresholds |>
+    spike_table <- qaqcmar::thresholds |>
       filter(qc_test == "spike", county == !!county | is.na(county))
 
     # Inverness has separate thresholds for salinity compared to the other counties

@@ -61,7 +61,7 @@ qc_test_depth_crosscheck <- function(
 
   # import default thresholds from internal data file -----------------------
   if (is.null(depth_table)) {
-    depth_table <- thresholds |>
+    depth_table <- qaqcmar::thresholds |>
       filter(
         qc_test == "depth_crosscheck",
         county == !!county | is.na(county)
