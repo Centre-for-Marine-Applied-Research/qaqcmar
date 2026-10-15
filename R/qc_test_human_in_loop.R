@@ -48,6 +48,12 @@ qc_test_human_in_loop <- function(
   human_in_loop_table = NULL,
   qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")
 ) {
+  if (is.null(human_in_loop_table)) {
+    message("human-in-loop table is NULL. No flags applied")
+
+    return(dat)
+  }
+
   if (nrow(human_in_loop_table) == 0) {
     message(
       paste(
