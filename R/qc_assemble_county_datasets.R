@@ -26,15 +26,19 @@ qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
       path <- file.path(
         "R:/data_branches/water_quality/processed_data/qc_data"
       )
-      region_col <- "county"
     }
     if (prov == "nb") {
       path <- file.path(
         "R:/data_branches/nb_water_quality/processed_data/qc_data"
       )
-      region_col <- "region"
     }
   }
+  if (prov == "ns") {
+    region_col <- "county"
+  } else {
+    region_col <- "region"
+  }
+
   # column order ------------------------------------------------------------
 
   # use for the join and to order columns in output
@@ -102,6 +106,10 @@ qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
     pattern = "\\.rds$",
     full.names = TRUE
   )
+
+  if (length(depls) == 0) {
+    stop("No .rds files found in ", file.path(path, folder))
+  }
 
   # read in data, bind together
   dat <- depls |>
