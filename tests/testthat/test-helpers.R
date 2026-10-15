@@ -5,13 +5,13 @@ dat <- readRDS(paste0(path, "/test_data_grossrange.RDS"))
 dat_no_county <- dplyr::select(dat, -county)
 
 test_that("assert_county() returns errors if more than one county is detected", {
-
   # different county in dat compared to function argument
   expect_error(
     assert_county(
       data.frame(county = rep("x", times = 10)),
       county = "y",
-      "qc_test_grossrange()")
+      "qc_test_grossrange()"
+    )
   )
 
   # more than one county in dat
@@ -19,7 +19,8 @@ test_that("assert_county() returns errors if more than one county is detected", 
     assert_county(
       data.frame(county = c(rep("x", 5), rep("y", 5))),
       county_arg = NULL,
-      foo = "qc_test_grossrange()")
+      foo = "qc_test_grossrange()"
+    )
   )
 
   # no county specified
@@ -27,7 +28,9 @@ test_that("assert_county() returns errors if more than one county is detected", 
     assert_county(
       data.frame(col1 = seq(1:10)),
       county_arg = NULL,
-      foo = "qc_test_grossrange()")
+      foo = "qc_test_grossrange()"
+    ),
+    "Must specify << county >>"
   )
 
   # county specified in dat
@@ -35,7 +38,8 @@ test_that("assert_county() returns errors if more than one county is detected", 
     assert_county(
       data.frame(county = rep("x", 10)),
       county_arg = NULL,
-      foo = "qc_test_grossrange()"),
+      foo = "qc_test_grossrange()"
+    ),
     "x"
   )
 
@@ -44,10 +48,10 @@ test_that("assert_county() returns errors if more than one county is detected", 
     assert_county(
       data.frame(col1 = seq(1:10)),
       county_arg = "y",
-      foo = "qc_test_grossrange()"),
+      foo = "qc_test_grossrange()"
+    ),
     "y"
   )
-
 })
 
 test_that("a lower-case county stops and suggests the right spelling", {
@@ -74,12 +78,19 @@ test_that("a county with no thresholds stops and lists the valid ones", {
 
 test_that("a county without default thresholds is fine with a user table", {
   tab <- data.frame(
-    sensor_type = "aquameasure", variable = "temperature_degree_c",
-    sensor_min = -5, sensor_max = 35, user_min = -1, user_max = 25
+    sensor_type = "aquameasure",
+    variable = "temperature_degree_c",
+    sensor_min = -5,
+    sensor_max = 35,
+    user_min = -1,
+    user_max = 25
   )
   expect_no_error(
     qc_test_grossrange(
-      dplyr::filter(dplyr::mutate(dat, county = "Kings"), sensor_type == "aquameasure"),
+      dplyr::filter(
+        dplyr::mutate(dat, county = "Kings"),
+        sensor_type == "aquameasure"
+      ),
       grossrange_table = tab
     )
   )

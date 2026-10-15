@@ -7,3 +7,5 @@ dev
 ^data-raw$
 ^README\.Rmd$
 ^\.github$
+^\.vscode$
+^[.]?air[.]toml$

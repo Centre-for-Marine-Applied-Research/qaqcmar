@@ -37,11 +37,11 @@
 #' @export
 
 qc_test_climatology <- function(
-    dat,
-    climatology_table = NULL,
-    join_column = NULL,
-    county = NULL) {
-
+  dat,
+  climatology_table = NULL,
+  join_column = NULL,
+  county = NULL
+) {
   message("applying climatology test")
 
   # check that not providing more than one county
@@ -49,7 +49,6 @@ qc_test_climatology <- function(
 
   # import default thresholds from internal data file & format
   if (is.null(climatology_table)) {
-
     assert_county_thresholds(county, "climatology")
 
     climatology_table <- thresholds |>
@@ -60,15 +59,16 @@ qc_test_climatology <- function(
       climatology_table <- climatology_table |>
         filter(
           !(is.na(county) &
-              variable == "salinity_psu" &
-              (threshold == "season_min" | threshold == "season_max"))
+            variable == "salinity_psu" &
+            (threshold == "season_min" | threshold == "season_max"))
         )
     }
 
     climatology_table <- climatology_table |>
       select(-c(qc_test, county, sensor_type)) |>
       tidyr::pivot_wider(
-        names_from = "threshold", values_from = "threshold_value"
+        names_from = "threshold",
+        values_from = "threshold_value"
       )
   }
 
@@ -79,12 +79,15 @@ qc_test_climatology <- function(
     rename(tstamp = contains("timestamp")) |>
     mutate(month = lubridate::month(tstamp))
 
-  if(is.null(join_column)) {
+  if (is.null(join_column)) {
     dat <- left_join(dat, climatology_table, by = c("month", "variable"))
   } else {
-    dat <- left_join(dat, climatology_table, by = c("month", "variable", join_column))
+    dat <- left_join(
+      dat,
+      climatology_table,
+      by = c("month", "variable", join_column)
+    )
   }
-
 
   dat <- dat |>
     mutate(

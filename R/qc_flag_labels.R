@@ -31,8 +31,11 @@ qc_assign_flag_labels <- function(dat) {
         # add Pass and pass to accommodate db
         ~ case_when(
           .x == 1 | .x == "Pass" | .x == "pass" ~ "Pass",
-          .x == 2 | .x == "Not Evaluated" | .x == "not evaluated" ~ "Not Evaluated",
-          .x == 3 | .x == "suspect/of interest" |
+          .x == 2 |
+            .x == "Not Evaluated" |
+            .x == "not evaluated" ~ "Not Evaluated",
+          .x == 3 |
+            .x == "suspect/of interest" |
             .x == "Suspect/Of Interest" ~ "Suspect/Of Interest",
           .x == 4 | .x == "Fail" | .x == "fail" ~ "Fail"
         )

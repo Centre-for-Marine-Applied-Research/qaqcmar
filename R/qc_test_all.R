@@ -25,28 +25,32 @@
 #' @export
 
 qc_test_all <- function(
-    dat,
-    qc_tests = NULL,
-    county = NULL,
+  dat,
+  qc_tests = NULL,
+  county = NULL,
 
-    climatology_table = NULL,
-    depth_table = NULL,
-    grossrange_table = NULL,
-    rolling_sd_table = NULL,
-    spike_table = NULL,
-    join_column = NULL,
-    join_column_spike = NULL,
+  climatology_table = NULL,
+  depth_table = NULL,
+  grossrange_table = NULL,
+  rolling_sd_table = NULL,
+  spike_table = NULL,
+  join_column = NULL,
+  join_column_spike = NULL,
 
-    period_hours = 24,
-    max_interval_hours = 2,
-    align_window = "center",
-    keep_sd_cols = FALSE,
-    keep_spike_cols = FALSE
+  period_hours = 24,
+  max_interval_hours = 2,
+  align_window = "center",
+  keep_sd_cols = FALSE,
+  keep_spike_cols = FALSE
 ) {
-
   if (is.null(qc_tests)) {
-    qc_tests <- c("climatology", "depth_crosscheck",
-                  "grossrange", "rolling_sd", "spike")
+    qc_tests <- c(
+      "climatology",
+      "depth_crosscheck",
+      "grossrange",
+      "rolling_sd",
+      "spike"
+    )
   }
 
   qc_tests <- tolower(qc_tests)
@@ -63,13 +67,13 @@ qc_test_all <- function(
     "waterbody",
     "station",
     "lease",
-    "latitude" ,
-    "longitude" ,
-    "deployment_range"   ,
+    "latitude",
+    "longitude",
+    "deployment_range",
     "string_configuration",
-    "sensor_type"     ,
-    "sensor_serial_number"  ,
-    "timestamp_utc"  ,
+    "sensor_type",
+    "sensor_serial_number",
+    "timestamp_utc",
     "sensor_depth_at_low_tide_m",
     "depth_crosscheck_flag"
   )
@@ -124,7 +128,7 @@ qc_test_all <- function(
     )
   }
 
-  if("spike" %in% qc_tests) {
+  if ("spike" %in% qc_tests) {
     dat_out[[5]] <- qc_test_spike(
       dat,
       spike_table = spike_table,
@@ -138,17 +142,18 @@ qc_test_all <- function(
 
   # join results from each test
   join_cols <- c(
-    depl_cols[which(depl_cols %in% colnames(dat))], var_cols)
+    depl_cols[which(depl_cols %in% colnames(dat))],
+    var_cols
+  )
 
   # join by all common columns
   dat_out <- dat_out |>
     purrr::reduce(dplyr::left_join, by = join_cols)
 
-  if("depth_crosscheck_flag" %in% colnames(dat_out)) {
+  if ("depth_crosscheck_flag" %in% colnames(dat_out)) {
     dat_out <- dat_out |>
       relocate(depth_crosscheck_flag, .after = sensor_depth_at_low_tide_m)
   }
 
   dat_out
 }
-

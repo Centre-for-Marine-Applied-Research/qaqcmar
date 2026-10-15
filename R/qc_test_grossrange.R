@@ -46,11 +46,11 @@
 #' @export
 
 qc_test_grossrange <- function(
-    dat,
-    grossrange_table = NULL,
-    county = NULL,
-    join_column = NULL) {
-
+  dat,
+  grossrange_table = NULL,
+  county = NULL,
+  join_column = NULL
+) {
   message("applying grossrange test")
 
   # check that not providing more than one county
@@ -58,7 +58,6 @@ qc_test_grossrange <- function(
 
   # import default thresholds from internal data file -----------------------
   if (is.null(grossrange_table)) {
-
     assert_county_thresholds(county, "grossrange")
 
     grossrange_table <- thresholds |>
@@ -69,8 +68,8 @@ qc_test_grossrange <- function(
       grossrange_table <- grossrange_table |>
         filter(
           !(is.na(county) &
-          variable == "salinity_psu" &
-          (threshold == "user_min" | threshold == "user_max"))
+            variable == "salinity_psu" &
+            (threshold == "user_min" | threshold == "user_max"))
         )
     }
 
@@ -102,7 +101,6 @@ qc_test_grossrange <- function(
     ) |>
     colnames()
 
-
   # if a hobo do sensor was used, change sensor_type from hobo to hobo do
   # because the temperature grossrange is different
   if ("dissolved_oxygen_uncorrected_mg_per_l" %in% dat_vars) {
@@ -119,10 +117,14 @@ qc_test_grossrange <- function(
   # add thresholds to dat and assign flags ---------------------------------------------------
   dat <- ss_pivot_longer(dat)
 
-  if(is.null(join_column)) {
+  if (is.null(join_column)) {
     dat <- left_join(dat, grossrange_table, by = c("sensor_type", "variable"))
   } else {
-    dat <- left_join(dat, grossrange_table, by = c("sensor_type", "variable", join_column))
+    dat <- left_join(
+      dat,
+      grossrange_table,
+      by = c("sensor_type", "variable", join_column)
+    )
   }
 
   dat <- dat |>

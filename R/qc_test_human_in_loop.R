@@ -44,28 +44,27 @@
 #' @export
 
 qc_test_human_in_loop <- function(
-    dat,
-    human_in_loop_table = NULL,
-    qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")
+  dat,
+  human_in_loop_table = NULL,
+  qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")
 ) {
-
-  if(nrow(human_in_loop_table) == 0) {
+  if (nrow(human_in_loop_table) == 0) {
     message(
       paste(
         "no human in the loop flags to apply for <<",
         unique(dat$station),
-        unique(dat$deployment_range), ">>"
-      ))
+        unique(dat$deployment_range),
+        ">>"
+      )
+    )
   } else {
-
     message("applying human in the loop flags")
 
-    for(i in seq_along(1:nrow(human_in_loop_table))) {
-
+    for (i in seq_along(1:nrow(human_in_loop_table))) {
       human_in_loop_table_i <- human_in_loop_table[i, ]
 
-      if(i > 1 && !("human_in_loop" %in% qc_tests)) {
-        qc_tests = c(qc_tests, "human_in_loop")
+      if (i > 1 && !("human_in_loop" %in% qc_tests)) {
+        qc_tests <- c(qc_tests, "human_in_loop")
       }
 
       dat_i <- qc_apply_human_in_loop(
@@ -106,17 +105,17 @@ qc_test_human_in_loop <- function(
 #' @importFrom dplyr contains distinct if_any if_else filter last_col left_join relocate rename select
 #' @importFrom data.table := between
 
-
 qc_apply_human_in_loop <- function(
-    dat,
-    human_in_loop_table = NULL,
-    qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")
+  dat,
+  human_in_loop_table = NULL,
+  qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")
 ) {
-
   # checks ------------------------------------------------------------------
 
-  if(length(unique(dat$station)) > 1 ||
-     length(unique(dat$deployment_range)) > 1) {
+  if (
+    length(unique(dat$station)) > 1 ||
+      length(unique(dat$deployment_range)) > 1
+  ) {
     stop("more than one deployment found in dat")
   }
 
@@ -131,17 +130,16 @@ qc_apply_human_in_loop <- function(
   hil_qc_test_ref_column <- human_in_loop_table$qc_test_column
   hil_ref_flag_value <- human_in_loop_table$qc_flag_value
   hil_flag_value <- human_in_loop_table$human_in_loop_flag_value
-  hil_flag_comment <-	human_in_loop_table$human_in_loop_comment
-
+  hil_flag_comment <- human_in_loop_table$human_in_loop_comment
 
   # account for different input scenarios -----------------------------------
-  if(is.na(hil_var) && is.na(hil_sn)) {
+  if (is.na(hil_var) && is.na(hil_sn)) {
     var_sn <- dat |>
       dplyr::select(-contains("flag")) |>
       ss_pivot_longer()
     hil_var <- unique(var_sn$variable)
     hil_sn <- unique(var_sn$sensor_serial_number)
-  } else if(is.na(hil_var) && !is.na(hil_sn)) {
+  } else if (is.na(hil_var) && !is.na(hil_sn)) {
     hil_var <- dat |>
       dplyr::select(-contains("flag")) |>
       ss_pivot_longer() |>
@@ -157,8 +155,12 @@ qc_apply_human_in_loop <- function(
     hil_sn <- hil_sn$sensor_serial_number
   }
 
-  if(is.na(hil_timestamp_min)) hil_timestamp_min <- min(dat$timestamp_utc)
-  if(is.na(hil_timestamp_max)) hil_timestamp_max <- max(dat$timestamp_utc)
+  if (is.na(hil_timestamp_min)) {
+    hil_timestamp_min <- min(dat$timestamp_utc)
+  }
+  if (is.na(hil_timestamp_max)) {
+    hil_timestamp_max <- max(dat$timestamp_utc)
+  }
 
   if (hil_timestamp_prompt == "between") {
     filter_text <- "between(timestamp_utc, hil_timestamp_min, hil_timestamp_max)"
@@ -166,10 +168,16 @@ qc_apply_human_in_loop <- function(
     filter_text <- "(timestamp_utc <= hil_timestamp_min |
     timestamp_utc >= hil_timestamp_max)"
   } else {
-    stop(paste0("hil_timestamp_prompt must be << 'between' >> or << 'outside' >>,\nnot << ", hil_timestamp_prompt, " >>"))
+    stop(paste0(
+      "hil_timestamp_prompt must be << 'between' >> or << 'outside' >>,\nnot << ",
+      hil_timestamp_prompt,
+      " >>"
+    ))
   }
 
-  if(is.na(hil_ref_flag_value)) hil_ref_flag_value <- c(1, 2, 3, 4)
+  if (is.na(hil_ref_flag_value)) {
+    hil_ref_flag_value <- c(1, 2, 3, 4)
+  }
 
   # apply human in the loop flags -------------------------------------------
   dat <- dat |>
@@ -177,11 +185,11 @@ qc_apply_human_in_loop <- function(
 
   # for instances where qc_test_human_in_loop() needs to be applied more than once
   # don't change to NA or there will be issues with qc_assign_max_flag()
-  if(!("human_in_loop_flag_value" %in% colnames(dat))) {
+  if (!("human_in_loop_flag_value" %in% colnames(dat))) {
     dat <- mutate(dat, human_in_loop_flag_value = 1)
   }
 
-  if(!("hil_comment" %in% colnames(dat))) {
+  if (!("hil_comment" %in% colnames(dat))) {
     dat <- mutate(dat, hil_comment = NA_character_)
   }
 
@@ -192,10 +200,11 @@ qc_apply_human_in_loop <- function(
     mutate(
       human_in_loop_flag_value = as.numeric(human_in_loop_flag_value),
       human_in_loop_flag_value = if_else(
-        (variable %in% hil_var &
-           sensor_serial_number %in% hil_sn &
-           eval(parse(text = filter_text)) &
-           human_in_loop_reference_flag_col %in% hil_ref_flag_value),
+        (variable %in%
+          hil_var &
+          sensor_serial_number %in% hil_sn &
+          eval(parse(text = filter_text)) &
+          human_in_loop_reference_flag_col %in% hil_ref_flag_value),
         hil_flag_value,
         human_in_loop_flag_value
       ),
@@ -211,7 +220,7 @@ qc_apply_human_in_loop <- function(
 
   dat_comment <- dat_hil |>
     filter(
-      if_any(contains("human_in_loop"), function (x) x == hil_flag_value)
+      if_any(contains("human_in_loop"), function(x) x == hil_flag_value)
     ) |>
     mutate(
       hil_comment = if_else(is.na(hil_comment), hil_flag_comment, hil_comment)
@@ -221,5 +230,4 @@ qc_apply_human_in_loop <- function(
     select(-hil_comment) |>
     left_join(dat_comment, by = join_cols) |>
     relocate(hil_comment, .after = last_col())
-
 }

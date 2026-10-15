@@ -7,15 +7,17 @@
 
 # Raw data ----------------------------------------------------------------
 
-int <- 30                # generate simulated data every 30 minutes
+int <- 30 # generate simulated data every 30 minutes
 n_int <- (60 / int) * 24 # number of intervals in 24 hours
-amp <- 1                 # tidal amplitude
+amp <- 1 # tidal amplitude
 
 ts <- data.frame(
   timestamp_utc = seq(
-    as_datetime("2023-01-01 12:00:00"), as_datetime("2023-01-05 12:00:00"),
+    as_datetime("2023-01-01 12:00:00"),
+    as_datetime("2023-01-05 12:00:00"),
     by = paste0(int, " mins")
-  ))
+  )
+)
 
 dat2 <- ts %>%
   mutate(
@@ -80,9 +82,15 @@ dat <- bind_rows(dat2, dat5, dat10, dat15, dat20) %>%
     values_to = "value"
   ) %>%
   select(
-    county, station, deployment_range, timestamp_utc,
+    county,
+    station,
+    deployment_range,
+    timestamp_utc,
     sensor_depth_at_low_tide_m,
-    sensor_type, sensor_serial_number, variable, value
+    sensor_type,
+    sensor_serial_number,
+    variable,
+    value
   ) %>%
   mutate(value = round(value, digits = 2))
 
@@ -92,4 +100,3 @@ dat <- bind_rows(dat2, dat5, dat10, dat15, dat20) %>%
 
 # Export rds file
 saveRDS(dat, file = here("inst/testdata/test_data_estimated_depth.RDS"))
-

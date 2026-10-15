@@ -7,13 +7,11 @@
 # Day 15: Spike Flag 4 (high)
 # Day 27: Spike Flag 3 (high)
 
-
 # library(dplyr)
 # library(lubridate)
 # library(here)
 # library(sensorstrings)
 # library(qaqcmar)
-
 
 #' @importfrom dplyr %>% filter mutate relocate select
 #' @importFrom here here
@@ -33,7 +31,8 @@ trans <- 100 # oscillate around 100 %
 # simulate data
 dat <- data.frame(
   timestamp_utc = seq(
-    as_datetime("2023-01-01 12:00:00"), as_datetime("2023-01-22 12:00:00"),
+    as_datetime("2023-01-01 12:00:00"),
+    as_datetime("2023-01-22 12:00:00"),
     by = paste0(int, " mins")
   )
 ) %>%
@@ -46,8 +45,9 @@ dat <- data.frame(
       TRUE ~ amp2
     ),
     # simulated data
-    dissolved_oxygen_percent_saturation =
-      amp * sin(2 * pi / n_int * index) + trans,
+    dissolved_oxygen_percent_saturation = amp *
+      sin(2 * pi / n_int * index) +
+      trans,
     # metadata (required for sensorstrings and qaqcmar plot functions)
     county = "Halifax",
     waterbody = "mcnabs",
@@ -59,9 +59,14 @@ dat <- data.frame(
     sensor_serial_number = 123,
   ) %>%
   select(
-    county, waterbody, station, deployment_range,
-    sensor_type, sensor_serial_number,
-    timestamp_utc, sensor_depth_at_low_tide_m,
+    county,
+    waterbody,
+    station,
+    deployment_range,
+    sensor_type,
+    sensor_serial_number,
+    timestamp_utc,
+    sensor_depth_at_low_tide_m,
     sensor_depth_measured_m,
     dissolved_oxygen_percent_saturation
   )

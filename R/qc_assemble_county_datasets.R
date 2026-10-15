@@ -19,16 +19,17 @@
 #'
 
 qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
-
-  if(prov == "ns") {
+  if (prov == "ns") {
     path <- file.path(
-      "R:/data_branches/water_quality/processed_data/qc_data")
+      "R:/data_branches/water_quality/processed_data/qc_data"
+    )
 
     region_col <- "county"
   }
-  if(prov == "nb") {
+  if (prov == "nb") {
     path <- file.path(
-      "R:/data_branches/nb_water_quality/processed_data/qc_data")
+      "R:/data_branches/nb_water_quality/processed_data/qc_data"
+    )
 
     region_col <- "region"
   }
@@ -41,20 +42,20 @@ qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
     "waterbody",
     "station",
     "lease",
-    "latitude" ,
-    "longitude" ,
-    "deployment_range"   ,
+    "latitude",
+    "longitude",
+    "deployment_range",
     "string_configuration",
     "sensor_type",
     "sensor_serial_number",
-    "timestamp_utc"  ,
+    "timestamp_utc",
     "sensor_depth_at_low_tide_m",
     "depth_crosscheck_flag",
     "hil_comment"
   )
 
   var_cols <- c(
-    "dissolved_oxygen_percent_saturation"   ,
+    "dissolved_oxygen_percent_saturation",
     "dissolved_oxygen_uncorrected_mg_per_l",
     "ph_ph",
     "salinity_psu",
@@ -77,11 +78,11 @@ qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
     "human_in_loop_flag_ph_ph",
     "human_in_loop_flag_salinity_psu",
     "human_in_loop_flag_sensor_depth_measured_m",
-    "human_in_loop_flag_temperature_degree_c")
-  )
+    "human_in_loop_flag_temperature_degree_c"
+  ))
 
   qc_max_cols <- c(
-    "qc_flag_dissolved_oxygen_percent_saturation"   ,
+    "qc_flag_dissolved_oxygen_percent_saturation",
     "qc_flag_dissolved_oxygen_uncorrected_mg_per_l",
     "qc_flag_salinity_psu",
     "qc_flag_ph_ph",
@@ -90,7 +91,7 @@ qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
   )
 
   # all columns that should be in the data
-  all_cols <- c(depl_cols,  var_cols, qc_test_cols, qc_max_cols)
+  all_cols <- c(depl_cols, var_cols, qc_test_cols, qc_max_cols)
   df <- data.frame(matrix(nrow = 1, ncol = length(all_cols)))
   colnames(df) <- all_cols
 
@@ -110,6 +111,5 @@ qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
   dat |>
     bind_rows(df) |>
     filter(row_number() != n()) |> # last row will be all NA, so need to remove it
-    select(all_of(all_cols))  # fix the column order
-
+    select(all_of(all_cols)) # fix the column order
 }

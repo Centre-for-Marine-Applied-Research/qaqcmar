@@ -33,30 +33,43 @@ test_that("qc_test_grossrange() assigns correct flags", {
       dat_qc |>
         filter(day == 10) |>
         distinct(grossrange_flag_value) |>
-        dplyr::pull(grossrange_flag_value)), 1)
+        dplyr::pull(grossrange_flag_value)
+    ),
+    1
+  )
 
   expect_equal(
     as.numeric(
       dat_qc |>
         filter(day == 5 & !(sensor_type %in% c("vr2ar", "aquameasure"))) |>
         distinct(grossrange_flag_value) |>
-        dplyr::pull(grossrange_flag_value)), 3)
+        dplyr::pull(grossrange_flag_value)
+    ),
+    3
+  )
 
   expect_equal(
     as.numeric(
       dat_qc |>
         filter(day == 28) |>
         distinct(grossrange_flag_value) |>
-        dplyr::pull(grossrange_flag_value)), 3)
+        dplyr::pull(grossrange_flag_value)
+    ),
+    3
+  )
 
   expect_equal(
     as.numeric(
       dat_qc |>
         filter(day == 1 | day == 15) |>
         distinct(grossrange_flag_value) |>
-        dplyr::pull(grossrange_flag_value)), 4)
+        dplyr::pull(grossrange_flag_value)
+    ),
+    4
+  )
 
   expect_equal(
-    sort(as.numeric(unique(dat_qc$grossrange_flag_value))), c(1, 3, 4)
+    sort(as.numeric(unique(dat_qc$grossrange_flag_value))),
+    c(1, 3, 4)
   )
 })

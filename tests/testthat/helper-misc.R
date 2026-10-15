@@ -9,7 +9,13 @@ flag_labels <- data.frame(flag = c(1, 2, 3, 4)) %>%
 
 path <- system.file("testdata", package = "qaqcmar")
 
-qc_tests <- c("climatology", "grossrange", "rolling_sd", "spike", "depth_crosscheck")
+qc_tests <- c(
+  "climatology",
+  "grossrange",
+  "rolling_sd",
+  "spike",
+  "depth_crosscheck"
+)
 
 n_var <- readRDS(paste0(path, "/test_data_rolling_sd.RDS")) %>%
   ss_pivot_longer() %>%
@@ -49,7 +55,6 @@ dat_long_max <- dat_long %>%
   qc_assign_max_flag()
 
 
-
 # pivot max flags ---------------------------------------------------------
 
 dat_pivot_long_max <- dat_wide_max %>%
@@ -57,9 +62,3 @@ dat_pivot_long_max <- dat_wide_max %>%
 
 dat_pivot_long_max2 <- dat_wide_max2 %>%
   qc_pivot_longer(qc_tests = "qc")
-
-
-
-
-
-

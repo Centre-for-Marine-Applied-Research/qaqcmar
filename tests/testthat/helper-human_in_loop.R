@@ -46,7 +46,8 @@ hil_table <- rbind(hil_1, hil_2)
 qc_hil <- dat_hil %>%
   qc_test_rolling_sd() %>%
   qc_test_human_in_loop(
-    qc_tests = "rolling_sd", human_in_loop_table = hil_table
+    qc_tests = "rolling_sd",
+    human_in_loop_table = hil_table
   )
 
 # p <- qc_plot_flags(qc_hil, qc_tests = "human_in_loop")
@@ -68,21 +69,27 @@ qc_hil %>%
 #
 # qc_plot_flags(qc_hil_max, qc_tests = "qc")
 
-
 qc_hil_4 <- qc_hil %>%
   filter(timestamp_utc >= as_datetime("2023-01-15 12:30:00"))
 
 qc_hil_1 <- qc_hil %>%
   dplyr::anti_join(
     qc_hil_4,
-    join_by(county, waterbody, station, deployment_range,
-            sensor_type,
-            sensor_serial_number, timestamp_utc, sensor_depth_at_low_tide_m,
-            dissolved_oxygen_percent_saturation, sensor_depth_measured_m,
-            rolling_sd_flag_dissolved_oxygen_percent_saturation,
-            rolling_sd_flag_sensor_depth_measured_m,
-            human_in_loop_flag_dissolved_oxygen_percent_saturation,
-            human_in_loop_flag_sensor_depth_measured_m, hil_comment)
+    join_by(
+      county,
+      waterbody,
+      station,
+      deployment_range,
+      sensor_type,
+      sensor_serial_number,
+      timestamp_utc,
+      sensor_depth_at_low_tide_m,
+      dissolved_oxygen_percent_saturation,
+      sensor_depth_measured_m,
+      rolling_sd_flag_dissolved_oxygen_percent_saturation,
+      rolling_sd_flag_sensor_depth_measured_m,
+      human_in_loop_flag_dissolved_oxygen_percent_saturation,
+      human_in_loop_flag_sensor_depth_measured_m,
+      hil_comment
+    )
   )
-
-

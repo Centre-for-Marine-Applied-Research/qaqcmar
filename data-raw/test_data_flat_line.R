@@ -9,7 +9,8 @@ library(tidyr)
 # Raw data ----------------------------------------------------------------
 
 timestamp_utc <- seq(
-  as_datetime("2023-04-01 12:00:00"), as_datetime("2023-04-15 12:00:00"),
+  as_datetime("2023-04-01 12:00:00"),
+  as_datetime("2023-04-15 12:00:00"),
   by = "6 hour"
 )
 variables <- c(
@@ -29,22 +30,26 @@ ts_4 <- c(timestamp_utc[15:21], timestamp_utc[43:55])
 
 
 dat <- expand.grid(
-  timestamp_utc = timestamp_utc, variable = variables, sensor_type = sensors
+  timestamp_utc = timestamp_utc,
+  variable = variables,
+  sensor_type = sensors
 ) %>%
   # only keep possible sensor-variable combinations
   filter(
     (sensor_type == "aquameasure" &
-      variable %in% c(
-        "temperature_degree_c",
-        "dissolved_oxygen_percent_saturation",
-        "salinity_psu",
-        "sensor_depth_measured_m"
-      )) |
-      (sensor_type == "hobo" &
-        variable %in% c(
+      variable %in%
+        c(
           "temperature_degree_c",
-          "dissolved_oxygen_uncorrected_mg_per_l"
+          "dissolved_oxygen_percent_saturation",
+          "salinity_psu",
+          "sensor_depth_measured_m"
         )) |
+      (sensor_type == "hobo" &
+        variable %in%
+          c(
+            "temperature_degree_c",
+            "dissolved_oxygen_uncorrected_mg_per_l"
+          )) |
       (sensor_type == "tidbit" & variable == "temperature_degree_c") |
       (sensor_type == "vr2ar" &
         variable %in% c("temperature_degree_c", "sensor_depth_measured_m"))
@@ -65,7 +70,10 @@ am <- dat %>%
       variable == "dissolved_oxygen_percent_saturation" ~
         round(rnorm(n(), 100, 5), digits = 1),
       variable == "salinity_psu" ~ round(rnorm(n(), 30, 2), digits = 1),
-      variable == "sensor_depth_measured_m" ~ round(rnorm(n(), 7, 1), digits = 1),
+      variable == "sensor_depth_measured_m" ~ round(
+        rnorm(n(), 7, 1),
+        digits = 1
+      ),
       variable == "temperature_degree_c" ~ round(rnorm(n(), 15, 2), digits = 2),
     )
   ) %>%
@@ -73,34 +81,45 @@ am <- dat %>%
   # stuck for 3 values in a row
   mutate(
     dissolved_oxygen_percent_saturation = if_else(
-      timestamp_utc %in% ts_3, 80.0, dissolved_oxygen_percent_saturation
+      timestamp_utc %in% ts_3,
+      80.0,
+      dissolved_oxygen_percent_saturation
     ),
     salinity_psu = if_else(timestamp_utc %in% ts_3, 20.0, salinity_psu),
     sensor_depth_measured_m = if_else(
-      timestamp_utc %in% ts_3, 5, sensor_depth_measured_m
+      timestamp_utc %in% ts_3,
+      5,
+      sensor_depth_measured_m
     ),
     temperature_degree_c = if_else(
-      timestamp_utc %in% ts_3, 13, temperature_degree_c
+      timestamp_utc %in% ts_3,
+      13,
+      temperature_degree_c
     )
   ) %>%
   # stuck for 5 values in a row
   mutate(
     dissolved_oxygen_percent_saturation = if_else(
-      timestamp_utc %in% ts_4, 120.0, dissolved_oxygen_percent_saturation
+      timestamp_utc %in% ts_4,
+      120.0,
+      dissolved_oxygen_percent_saturation
     ),
     salinity_psu = if_else(timestamp_utc %in% ts_4, 40.0, salinity_psu),
     sensor_depth_measured_m = if_else(
-      timestamp_utc %in% ts_4, 9, sensor_depth_measured_m
+      timestamp_utc %in% ts_4,
+      9,
+      sensor_depth_measured_m
     ),
     temperature_degree_c = if_else(
-      timestamp_utc %in% ts_4, 17, temperature_degree_c
+      timestamp_utc %in% ts_4,
+      17,
+      temperature_degree_c
     )
   )
 
 # am %>%
 #   ss_ggplot_variables() +
 #   geom_point(size = 3)
-
 
 # hobo data
 set.seed(5464)
@@ -119,19 +138,27 @@ hobo <- dat %>%
   # stuck for 3 values in a row
   mutate(
     dissolved_oxygen_uncorrected_mg_per_l = if_else(
-      timestamp_utc %in% ts_3, 7, dissolved_oxygen_uncorrected_mg_per_l
+      timestamp_utc %in% ts_3,
+      7,
+      dissolved_oxygen_uncorrected_mg_per_l
     ),
     temperature_degree_c = if_else(
-      timestamp_utc %in% ts_3, 18, temperature_degree_c
+      timestamp_utc %in% ts_3,
+      18,
+      temperature_degree_c
     )
   ) %>%
   # stuck for 5 values in a row
   mutate(
     dissolved_oxygen_uncorrected_mg_per_l = if_else(
-      timestamp_utc %in% ts_4, 11, dissolved_oxygen_uncorrected_mg_per_l
+      timestamp_utc %in% ts_4,
+      11,
+      dissolved_oxygen_uncorrected_mg_per_l
     ),
     temperature_degree_c = if_else(
-      timestamp_utc %in% ts_4, 22, temperature_degree_c
+      timestamp_utc %in% ts_4,
+      22,
+      temperature_degree_c
     )
   )
 
@@ -166,13 +193,17 @@ tidbit <- dat %>%
   # stuck for 3 values in a row
   mutate(
     temperature_degree_c = if_else(
-      timestamp_utc %in% ts_3, 8, temperature_degree_c
+      timestamp_utc %in% ts_3,
+      8,
+      temperature_degree_c
     )
   ) %>%
   # stuck for 5 values in a row
   mutate(
     temperature_degree_c = if_else(
-      timestamp_utc %in% ts_4, 12, temperature_degree_c
+      timestamp_utc %in% ts_4,
+      12,
+      temperature_degree_c
     )
   )
 
@@ -188,7 +219,10 @@ vem <- dat %>%
     sensor_depth_at_low_tide_m = 25,
     sensor_serial_number = 1011,
     value = case_when(
-      variable == "sensor_depth_measured_m" ~ round(rnorm(n(), 15, 3), digits = 1),
+      variable == "sensor_depth_measured_m" ~ round(
+        rnorm(n(), 15, 3),
+        digits = 1
+      ),
       variable == "temperature_degree_c" ~ round(rnorm(n(), 5, 2), digits = 2),
     )
   ) %>%
@@ -196,19 +230,27 @@ vem <- dat %>%
   # stuck for 3 values in a row
   mutate(
     sensor_depth_measured_m = if_else(
-      timestamp_utc %in% ts_3, 10, sensor_depth_measured_m
+      timestamp_utc %in% ts_3,
+      10,
+      sensor_depth_measured_m
     ),
     temperature_degree_c = if_else(
-      timestamp_utc %in% ts_3, 3, temperature_degree_c
+      timestamp_utc %in% ts_3,
+      3,
+      temperature_degree_c
     )
   ) %>%
   # stuck for 5 values in a row
   mutate(
     sensor_depth_measured_m = if_else(
-      timestamp_utc %in% ts_4, 20.0, sensor_depth_measured_m
+      timestamp_utc %in% ts_4,
+      20.0,
+      sensor_depth_measured_m
     ),
     temperature_degree_c = if_else(
-      timestamp_utc %in% ts_4, 8, temperature_degree_c
+      timestamp_utc %in% ts_4,
+      8,
+      temperature_degree_c
     )
   )
 
@@ -216,7 +258,6 @@ vem <- dat %>%
 # vem %>%
 #  ss_ggplot_variables() +
 #  geom_point(size = 3)
-
 
 dat_flat <- bind_rows(am, hobo, tidbit, vem)
 

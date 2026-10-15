@@ -37,4 +37,7 @@ This function does not automatically group by any variables. To calculate the
 user thresholds by group (e.g., county) use
 \code{dplyr::group_by(group_variable)}, and send the results to
 \code{qc_calculate_user_thresholds()}.
+
+NA values are silently dropped before mean and standard deviation are
+calculated.
 }

@@ -49,8 +49,3 @@ qc_depth_2 <- qc_depth %>%
 
 qc_depth_3 <- qc_depth %>%
   filter(sensor_depth_at_low_tide_m == 15)
-
-
-
-
-

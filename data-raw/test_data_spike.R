@@ -7,13 +7,11 @@
 # Day 15: Spike Flag 4 (high)
 # Day 27: Spike Flag 3 (high)
 
-
 # library(dplyr)
 # library(lubridate)
 # library(here)
 # library(sensorstrings)
 # library(qaqcmar)
-
 
 #' @importfrom dplyr %>% filter mutate relocate select
 #' @importFrom here here
@@ -43,11 +41,13 @@ dat <- expand.grid(month = months, day = days, variable = variables) %>%
     # add values with known flags
     value = case_when(
       day == 3 & variable == "temperature_degree_c" ~ value + 1,
-      day == 3 & variable == "dissolved_oxygen_percent_saturation" ~ value + 2.5,
+      day == 3 & variable == "dissolved_oxygen_percent_saturation" ~ value +
+        2.5,
       day == 10 & variable == "temperature_degree_c" ~ value + 2,
       day == 10 & variable == "dissolved_oxygen_percent_saturation" ~ value + 8,
       day == 17 & variable == "temperature_degree_c" ~ value - 1,
-      day == 17 & variable == "dissolved_oxygen_percent_saturation" ~ value - 2.5,
+      day == 17 & variable == "dissolved_oxygen_percent_saturation" ~ value -
+        2.5,
       TRUE ~ value
     )
   ) %>%
@@ -61,7 +61,6 @@ dat <- expand.grid(month = months, day = days, variable = variables) %>%
 
 # Export rds file
 saveRDS(dat, file = here("inst/testdata/test_data_spike.RDS"))
-
 
 #
 # dat %>%

@@ -11,7 +11,6 @@
 #' The tests check that each data frame include the expected flag value, and
 #' only the expected flag value.
 
-
 #' @importFrom dplyr %>% anti_join
 #' @importFrom lubridate day
 
@@ -44,4 +43,3 @@ qc_cl_1 <- qc_cl %>%
 
 qc_cl_3 <- qc_cl %>%
   filter(day == 1 | day == 28)
-

@@ -3,8 +3,6 @@ path <- system.file("testdata", package = "qaqcmar")
 dat <- readRDS(paste0(path, "/test_data_rolling_sd.RDS"))
 
 test_that("qc_test_rolling_sd() assigns correct flags", {
-
-
   dat_qc <- dat %>%
     qc_test_rolling_sd(keep_sd_cols = TRUE) %>%
     qc_pivot_longer(qc_tests = "rolling_sd") %>%
@@ -14,35 +12,52 @@ test_that("qc_test_rolling_sd() assigns correct flags", {
     as.numeric(
       dat_qc |>
         filter(
-          between(timestamp_utc,
-                  as_datetime("2023-01-01 23:30:00"),
-                  as_datetime("2023-01-07 13:30:00"))) |>
+          between(
+            timestamp_utc,
+            as_datetime("2023-01-01 23:30:00"),
+            as_datetime("2023-01-07 13:30:00")
+          )
+        ) |>
         distinct(rolling_sd_flag_value) |>
         dplyr::pull(rolling_sd_flag_value)
-    ), 1)
+    ),
+    1
+  )
 
   expect_equal(
     as.numeric(
       dat_qc |>
-        filter(between(timestamp_utc,
-                       as_datetime("2023-01-01 12:00:00"),
-                       as_datetime("2023-01-01 23:00:00")) |
-                 between(timestamp_utc,
-                         as_datetime("2023-01-22 00:30:00"),
-                         as_datetime("2023-02-15 12:00:00"))) |>
+        filter(
+          between(
+            timestamp_utc,
+            as_datetime("2023-01-01 12:00:00"),
+            as_datetime("2023-01-01 23:00:00")
+          ) |
+            between(
+              timestamp_utc,
+              as_datetime("2023-01-22 00:30:00"),
+              as_datetime("2023-02-15 12:00:00")
+            )
+        ) |>
         distinct(rolling_sd_flag_value) |>
         dplyr::pull(rolling_sd_flag_value)
-    ), 2)
+    ),
+    2
+  )
 
   expect_equal(
     as.numeric(
       dat_qc |>
-        filter(between(timestamp_utc,
-                       as_datetime("2023-01-07 14:00:00"),
-                       as_datetime("2023-01-22 00:00:00"))) |>
+        filter(between(
+          timestamp_utc,
+          as_datetime("2023-01-07 14:00:00"),
+          as_datetime("2023-01-22 00:00:00")
+        )) |>
         distinct(rolling_sd_flag_value) |>
         dplyr::pull(rolling_sd_flag_value)
-    ), 3)
+    ),
+    3
+  )
 })
 
 test_that("qc_test_rolling_sd() assigns 2 for intervals > min_sample_interval", {
@@ -77,7 +92,7 @@ test_that("qc_test_rolling_sd() gives flag 2 to a duplicate timestamp", {
   flag_dup <- out$rolling_sd_flag_dissolved_oxygen_percent_saturation[
     out$timestamp_utc == dup$timestamp_utc &
       out$dissolved_oxygen_percent_saturation ==
-      dup$dissolved_oxygen_percent_saturation
+        dup$dissolved_oxygen_percent_saturation
   ]
   expect_equal(as.numeric(flag_dup), 2)
 })

@@ -13,7 +13,6 @@
 #' @export
 
 qc_pivot_wider <- function(dat_long) {
-
   #check if depth_crosscheck will ever get caught in this
 
   dat <- dat_long |>
@@ -26,4 +25,3 @@ qc_pivot_wider <- function(dat_long) {
 
   dat
 }
-

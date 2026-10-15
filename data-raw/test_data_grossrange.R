@@ -36,15 +36,21 @@ variables <- c("temperature_degree_c", "dissolved_oxygen_percent_saturation")
 sensors <- c("aquameasure", "hobo", "tidbit", "vr2ar")
 
 dat <- expand.grid(
-  month = months, day = days, variable = variables, sensor_type = sensors
+  month = months,
+  day = days,
+  variable = variables,
+  sensor_type = sensors
 ) %>%
   distinct(month, day, variable, sensor_type) %>%
   # filter out impossible sensor-variable combinations
   filter(
     !((variable == "dissolved_oxygen_percent_saturation" |
       variable == "dissolved_oxygen_mg_per_l") &
-      (sensor_type == "tidbit" | sensor_type == "hobo" | sensor_type == "vr2ar")),
-    !(variable == "dissolved_oxygen_percent_saturation" & sensor_type == "hobo do")
+      (sensor_type == "tidbit" |
+        sensor_type == "hobo" |
+        sensor_type == "vr2ar")),
+    !(variable == "dissolved_oxygen_percent_saturation" &
+      sensor_type == "hobo do")
   ) %>%
   # join with the sensor and user thresholds
   left_join(
@@ -83,7 +89,8 @@ dat <- expand.grid(
     value = case_when(
       day == 1 ~ sensor_min - 5, # flag 4
       day == 5 ~ sensor_min + 1, # flag 3
-      day == 10 ~ case_when( # flag 1
+      day == 10 ~ case_when(
+        # flag 1
         variable == "temperature_degree_c" & sensor_type == "hobo" ~ 2,
         variable == "temperature_degree_c" & sensor_type == "aquameasure" ~ 5,
         variable == "temperature_degree_c" & sensor_type == "hobo do" ~ 10,
@@ -109,15 +116,20 @@ attributes(dat$temperature_degree_c) <- NULL
 attributes(dat$dissolved_oxygen_percent_saturation) <- NULL
 
 dat <- dat %>%
-  select(county, station, deployment_range,
-         sensor_type, sensor_serial_number, sensor_depth_at_low_tide_m,
-         timestamp_utc,
-         dissolved_oxygen_percent_saturation,
-         temperature_degree_c
+  select(
+    county,
+    station,
+    deployment_range,
+    sensor_type,
+    sensor_serial_number,
+    sensor_depth_at_low_tide_m,
+    timestamp_utc,
+    dissolved_oxygen_percent_saturation,
+    temperature_degree_c
   )
 
 # Export rds file
-saveRDS(dat, file = system.file("testdata/test_data_grossrange.RDS", package = "qaqcmar"))
-
-
-
+saveRDS(
+  dat,
+  file = system.file("testdata/test_data_grossrange.RDS", package = "qaqcmar")
+)

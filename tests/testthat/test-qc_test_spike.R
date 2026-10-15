@@ -7,7 +7,6 @@ dat <- readRDS(paste0(path, "/test_data_spike.RDS"))
 
 
 test_that("qc_test_spike() assigns correct flags", {
-
   dat_qc <- dat %>%
     qc_test_spike(county = "Halifax") %>%
     mutate(day = day(timestamp_utc)) %>%
@@ -19,27 +18,38 @@ test_that("qc_test_spike() assigns correct flags", {
         mutate(month = month(timestamp_utc)) |>
         filter((month == 1 & day == 1) | (month == 2 & day == 28)) |>
         distinct(spike_flag_value) |>
-        dplyr::pull(spike_flag_value)), 2)
+        dplyr::pull(spike_flag_value)
+    ),
+    2
+  )
 
   expect_equal(
     as.numeric(
       dat_qc |>
         filter(day %in% c(3, 9, 11, 17)) |>
         distinct(spike_flag_value) |>
-        dplyr::pull(spike_flag_value)), 3)
+        dplyr::pull(spike_flag_value)
+    ),
+    3
+  )
 
   expect_equal(
     as.numeric(
       dat_qc |>
         filter(day == 10) |>
         distinct(spike_flag_value) |>
-        dplyr::pull(spike_flag_value)), 4)
+        dplyr::pull(spike_flag_value)
+    ),
+    4
+  )
 
   expect_equal(
     as.numeric(
       dat_qc |>
-        filter(!(day %in% c(1 , 3, 9, 10, 11, 17, 28))) |>
+        filter(!(day %in% c(1, 3, 9, 10, 11, 17, 28))) |>
         distinct(spike_flag_value) |>
-        dplyr::pull(spike_flag_value)), 1)
-
+        dplyr::pull(spike_flag_value)
+    ),
+    1
+  )
 })

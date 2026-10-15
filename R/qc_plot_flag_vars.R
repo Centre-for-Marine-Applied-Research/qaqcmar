@@ -36,20 +36,21 @@
 #'
 
 qc_plot_flags <- function(
-    dat,
-    qc_tests = c("climatology",
-                 "depth_crosscheck",
-                 "grossrange",
-                 "rolling_sd",
-                 "spike"),
-    vars = "all",
-    labels = TRUE,
-    ncol = NULL,
-    flag_title = TRUE,
-    plotly_friendly = FALSE,
-    jitter_height = 0
+  dat,
+  qc_tests = c(
+    "climatology",
+    "depth_crosscheck",
+    "grossrange",
+    "rolling_sd",
+    "spike"
+  ),
+  vars = "all",
+  labels = TRUE,
+  ncol = NULL,
+  flag_title = TRUE,
+  plotly_friendly = FALSE,
+  jitter_height = 0
 ) {
-
   p <- list(NULL)
   p_out <- list(NULL)
 
@@ -71,8 +72,7 @@ qc_plot_flags <- function(
     )
 
   # depth_crosscheck plot is made with a different function from the other tests
-  if("depth_crosscheck" %in% qc_tests) {
-
+  if ("depth_crosscheck" %in% qc_tests) {
     qc_tests <- qc_tests[qc_tests != "depth_crosscheck"]
 
     p_out[["depth_crosscheck"]] <- ggplot_depth_crosscheck(
@@ -86,11 +86,17 @@ qc_plot_flags <- function(
     p_out <- Filter(Negate(is.null), p_out)
   }
 
-  if (vars == "all") vars <- unique(dat$variable)
+  if (vars == "all") {
+    vars <- unique(dat$variable)
+  }
 
-  if (isTRUE(labels)) dat <- dat |> qc_assign_flag_labels()
+  if (isTRUE(labels)) {
+    dat <- dat |> qc_assign_flag_labels()
+  }
 
-  if (is.null(ncol)) ncol <- 1
+  if (is.null(ncol)) {
+    ncol <- 1
+  }
 
   # plot for each variable
   for (i in seq_along(vars)) {
@@ -109,7 +115,9 @@ qc_plot_flags <- function(
 
       p[[qc_test_j]] <- ggplot_flags(
         dat_i,
-        qc_test = qc_test_j, var = var_i, ncol = ncol,
+        qc_test = qc_test_j,
+        var = var_i,
+        ncol = ncol,
         plotly_friendly = plotly_friendly,
         flag_title = flag_title
       )
@@ -143,14 +151,13 @@ qc_plot_flags <- function(
 #'
 #' @importFrom gtools mixedsort
 
-
 ggplot_flags <- function(
-    dat,
-    qc_test,
-    var,
-    ncol = NULL,
-    flag_title = TRUE,
-    plotly_friendly = FALSE
+  dat,
+  qc_test,
+  var,
+  ncol = NULL,
+  flag_title = TRUE,
+  plotly_friendly = FALSE
 ) {
   # https://www.visualisingdata.com/2019/08/five-ways-to-design-for-red-green-colour-blindness/
   flag_colours <- c("chartreuse4", "grey24", "#EDA247", "#DB4325")
@@ -170,12 +177,13 @@ ggplot_flags <- function(
       strip.background = element_rect(fill = "white", colour = "darkgrey")
     )
 
-  if(isFALSE(plotly_friendly)) {
+  if (isFALSE(plotly_friendly)) {
     p <- p + guides(color = guide_legend(override.aes = list(size = 4)))
   }
 
-
-  if (isTRUE(flag_title)) p <- p + ggtitle(paste0(qc_test, " test: ", var))
+  if (isTRUE(flag_title)) {
+    p <- p + ggtitle(paste0(qc_test, " test: ", var))
+  }
 
   p
 }
@@ -202,12 +210,12 @@ ggplot_flags <- function(
 #' @export
 
 ggplot_depth_crosscheck <- function(
-    dat,
-    flag_title = TRUE,
-    labels = TRUE,
-    jitter_height = 0,
-    ncol = NULL) {
-
+  dat,
+  flag_title = TRUE,
+  labels = TRUE,
+  jitter_height = 0,
+  ncol = NULL
+) {
   flag_colours <- c("chartreuse4", "grey24", "#EDA247", "#DB4325")
 
   labels <- labels
@@ -216,11 +224,15 @@ ggplot_depth_crosscheck <- function(
     dat <- dat |> rename(timestamp_utc = tstamp) |> ss_pivot_wider()
   }
 
-  if(!("sensor_depth_measured_m" %in% colnames(dat))) {
-    stop("sensor_depth_measured_m must be present in dat to plot depth_crosscheck figure")
+  if (!("sensor_depth_measured_m" %in% colnames(dat))) {
+    stop(
+      "sensor_depth_measured_m must be present in dat to plot depth_crosscheck figure"
+    )
   }
-  if(!("sensor_depth_at_low_tide_m" %in% colnames(dat))) {
-    stop("sensor_depth_at_low_tide_m must be present in dat to plot depth_crosscheck figure")
+  if (!("sensor_depth_at_low_tide_m" %in% colnames(dat))) {
+    stop(
+      "sensor_depth_at_low_tide_m must be present in dat to plot depth_crosscheck figure"
+    )
   }
 
   dat <- dat |>
@@ -228,39 +240,52 @@ ggplot_depth_crosscheck <- function(
       !is.na(sensor_depth_measured_m) & !is.na(sensor_depth_at_low_tide_m)
     ) |>
     group_by(
-      county, station, deployment_range,
-      sensor_serial_number, depth_label, sensor_depth_at_low_tide_m,
+      county,
+      station,
+      deployment_range,
+      sensor_serial_number,
+      depth_label,
+      sensor_depth_at_low_tide_m,
       depth_crosscheck_flag
     ) |>
     summarise(
-      min_sensor_depth_measured_m =
-        min(sensor_depth_measured_m, na.rm = TRUE)
+      min_sensor_depth_measured_m = min(sensor_depth_measured_m, na.rm = TRUE)
     ) |>
     ungroup()
 
-  if (isTRUE(labels)) dat <- dat |> qc_assign_flag_labels()
+  if (isTRUE(labels)) {
+    dat <- dat |> qc_assign_flag_labels()
+  }
 
-  if(nrow(dat) == 0) {
+  if (nrow(dat) == 0) {
     stop("No observations to plot for depth_crosscheck figure.")
   }
 
-  p <- ggplot(dat,
-    aes(min_sensor_depth_measured_m, sensor_depth_at_low_tide_m,
-        col = depth_crosscheck_flag)
+  p <- ggplot(
+    dat,
+    aes(
+      min_sensor_depth_measured_m,
+      sensor_depth_at_low_tide_m,
+      col = depth_crosscheck_flag
+    )
   ) +
     geom_hline(
       yintercept = unique(dat$sensor_depth_at_low_tide_m),
-      linewidth = 1, col = "grey70"
+      linewidth = 1,
+      col = "grey70"
     ) +
     geom_vline(
       xintercept = unique(dat$sensor_depth_at_low_tide_m),
-      linewidth = 1, col = "grey70"
+      linewidth = 1,
+      col = "grey70"
     ) +
     geom_point(
-      size = 3, alpha = 1, show.legend = TRUE,
+      size = 3,
+      alpha = 1,
+      show.legend = TRUE,
       position = position_jitter(width = 0, height = jitter_height)
     ) +
-    scale_colour_manual("Flag Value",values = flag_colours, drop = FALSE) +
+    scale_colour_manual("Flag Value", values = flag_colours, drop = FALSE) +
     facet_wrap(~depth_label, ncol = ncol) +
     theme_light() +
     theme(
@@ -268,8 +293,9 @@ ggplot_depth_crosscheck <- function(
       strip.background = element_rect(fill = "white", colour = "darkgrey")
     )
 
-  if (isTRUE(flag_title)) p + ggtitle("depth_crosscheck test")
+  if (isTRUE(flag_title)) {
+    p + ggtitle("depth_crosscheck test")
+  }
 
   p
 }
-

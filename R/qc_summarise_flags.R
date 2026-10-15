@@ -16,7 +16,6 @@
 #' @export
 
 qc_summarise_flags <- function(dat, qc_tests = NULL, ...) {
-
   if (!("variable" %in% colnames(dat))) {
     dat <- qc_pivot_longer(dat, qc_tests = qc_tests)
   }
@@ -34,7 +33,7 @@ qc_summarise_flags <- function(dat, qc_tests = NULL, ...) {
     mutate(qc_test = str_remove(qc_test, "_flag_value")) |>
     group_by(qc_test, variable, flag_value, ..., n_obs) |>
     # don't use "flag" in column name because qc_assign_flag_labels will try to convert, resulting in NA
-    summarise(n_fl  = n()) |>
+    summarise(n_fl = n()) |>
     ungroup() |>
     mutate(n_percent = round(100 * n_fl / n_obs, digits = 2)) |>
     qc_assign_flag_labels() |>

@@ -75,15 +75,15 @@
 #' @export
 
 qc_test_rolling_sd <- function(
-    dat,
-    rolling_sd_table = NULL,
-    county = NULL,
-    join_column = NULL,
-    period_hours = 24,
-    max_interval_hours = 2,
-    align_window = "center",
-    keep_sd_cols = FALSE) {
-
+  dat,
+  rolling_sd_table = NULL,
+  county = NULL,
+  join_column = NULL,
+  period_hours = 24,
+  max_interval_hours = 2,
+  align_window = "center",
+  keep_sd_cols = FALSE
+) {
   message("applying rolling_sd test. This could take several minutes")
 
   # check that not providing more than one county
@@ -91,7 +91,6 @@ qc_test_rolling_sd <- function(
 
   # import default thresholds from internal data file -----------------------
   if (is.null(rolling_sd_table)) {
-
     assert_county_thresholds(county, "rolling_sd")
 
     rolling_sd_table <- thresholds |>
@@ -102,7 +101,8 @@ qc_test_rolling_sd <- function(
       rolling_sd_table <- rolling_sd_table |>
         filter(
           !(is.na(county) &
-              variable == "salinity_psu" & threshold == "rolling_sd_max")
+            variable == "salinity_psu" &
+            threshold == "rolling_sd_max")
         )
     }
 
@@ -116,7 +116,7 @@ qc_test_rolling_sd <- function(
     mutate(row_id = row_number()) |>
     ss_pivot_longer()
 
-  if(is.null(join_column)) {
+  if (is.null(join_column)) {
     dat <- left_join(dat, rolling_sd_table, by = "variable")
   } else {
     dat <- left_join(dat, rolling_sd_table, by = c("variable", join_column))
@@ -124,13 +124,21 @@ qc_test_rolling_sd <- function(
 
   dat <- dat |>
     group_by(
-      county, station, deployment_range, sensor_serial_number, variable
+      county,
+      station,
+      deployment_range,
+      sensor_serial_number,
+      variable
     ) |>
     dplyr::arrange(timestamp_utc, .by_group = TRUE) |>
     mutate(
       # sample interval
-      int_sample = as.numeric(difftime(timestamp_utc, lag(timestamp_utc), units = "mins")),
-     # int_sample = round(as.numeric(int_sample)),
+      int_sample = as.numeric(difftime(
+        timestamp_utc,
+        lag(timestamp_utc),
+        units = "mins"
+      )),
+      # int_sample = round(as.numeric(int_sample)),
 
       # number of samples in  period_hours
       # 60 mins / hour * 1 sample / int_sample mins * 24 hours / period
@@ -138,7 +146,7 @@ qc_test_rolling_sd <- function(
       n_sample_effective = case_when(
         # first observation of each group is NA, which will give error in rollapply
         is.na(n_sample) ~ 0,
-        int_sample <= 0 ~ 0,  # duplicate timestamp
+        int_sample <= 0 ~ 0, # duplicate timestamp
         # if the sample interval is greater than acceptable limit, set n_sample to 0
         # so that roll_sd will be NA
         int_sample > max_interval_hours * 60 ~ 0,
@@ -148,15 +156,26 @@ qc_test_rolling_sd <- function(
       sd_roll = rollapply(
         value,
         width = n_sample_effective,
-        align = align_window, FUN = sd, fill = NA
+        align = align_window,
+        FUN = sd,
+        fill = NA
       ),
       sd_roll = round(sd_roll, digits = 2)
     )
 
-  n_dup <- sum(duplicated(dat[c("county", "station", "deployment_range",
-                                "sensor_serial_number", "variable", "timestamp_utc")]))
+  n_dup <- sum(duplicated(dat[c(
+    "county",
+    "station",
+    "deployment_range",
+    "sensor_serial_number",
+    "variable",
+    "timestamp_utc"
+  )]))
   if (n_dup > 0) {
-    warning(n_dup, " duplicate timestamp(s) found; these observations get rolling_sd_flag = 2.")
+    warning(
+      n_dup,
+      " duplicate timestamp(s) found; these observations get rolling_sd_flag = 2."
+    )
   }
 
   # assign flags

@@ -5,7 +5,6 @@
 # other technical solution here:
 # https://dplyr.tidyverse.org/articles/programming.html
 
-
 utils::globalVariables(
   c(
     "sensor_serial_number",

@@ -26,9 +26,7 @@
 #   qc_assign_max_flag() |>
 #   qc_pivot_longer(qc_tests = "qc")
 
-
 qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
-
   if (is.null(qc_tests)) {
     qc_tests <- c(
       "climatology",
@@ -36,7 +34,7 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
       "grossrange",
       "rolling_sd",
       "spike",
-     "qc"
+      "qc"
     )
   }
 
@@ -107,9 +105,7 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
 #'
 #' @export
 
-
 pivot_flags_longer <- function(dat_wide, qc_test) {
-
   col_name <- paste0(qc_test, "_flag_variable")
 
   dat_wide |>

@@ -44,44 +44,56 @@ add_n_lag_columns <- function(dat, var, n_lags) {
 assert_county <- function(dat, county_arg, foo) {
   county <- NULL
 
-  if(!is.null(county_arg) & !("county" %in% colnames(dat))) {
+  if (!is.null(county_arg) & !("county" %in% colnames(dat))) {
     county <- county_arg
   }
 
-  if(!is.null(county_arg) & ("county" %in% colnames(dat))) {
+  if (!is.null(county_arg) & ("county" %in% colnames(dat))) {
     county_dat <- unique(dat$county)
 
-    if(length(county_dat) > 1) {
+    if (length(county_dat) > 1) {
       stop(
-        paste("More than one county found in << dat >>: ",
-              paste(county_dat, collapse = " and ")))
+        paste(
+          "More than one county found in << dat >>: ",
+          paste(county_dat, collapse = " and ")
+        )
+      )
     }
 
-    if(county_dat != county_arg) {
+    if (county_dat != county_arg) {
       stop(
-        "Two different values for << county >> were found in << ", foo, " >>:\n",
-        county_arg, " was provided in the function argument, \n and ",
-        county_dat, " was found in << dat >>"
+        "Two different values for << county >> were found in << ",
+        foo,
+        " >>:\n",
+        county_arg,
+        " was provided in the function argument, \n and ",
+        county_dat,
+        " was found in << dat >>"
       )
     }
 
     county <- county_arg
   }
 
-  if(is.null(county_arg) & ("county" %in% colnames(dat))) {
+  if (is.null(county_arg) & ("county" %in% colnames(dat))) {
     county_dat <- unique(dat$county)
 
-    if(length(county_dat) > 1) {
+    if (length(county_dat) > 1) {
       stop(
-        paste("More than one county found in << dat >>: ",
-              paste(county_dat, collapse = " and ")))
+        paste(
+          "More than one county found in << dat >>: ",
+          paste(county_dat, collapse = " and ")
+        )
+      )
     }
 
     county <- county_dat
   }
 
   if (is.null(county) || is.na(county)) {
-    stop("Must specify << county >> argument or include a << county >> column in << dat >>")
+    stop(
+      "Must specify << county >> argument or include a << county >> column in << dat >>"
+    )
   }
 
   county
@@ -99,7 +111,6 @@ assert_county <- function(dat, county_arg, foo) {
 #' @noRd
 
 assert_county_thresholds <- function(county, test) {
-
   valid <- sort(unique(
     thresholds$county[thresholds$qc_test == test & !is.na(thresholds$county)]
   ))
@@ -109,16 +120,27 @@ assert_county_thresholds <- function(county, test) {
     hint <- if (length(close) == 1) {
       paste0("\nDid you mean \"", close, "\"?")
     } else {
-      paste0("\nCounties with ", test, " thresholds: ", paste(valid, collapse = ", "))
+      paste0(
+        "\nCounties with ",
+        test,
+        " thresholds: ",
+        paste(valid, collapse = ", ")
+      )
     }
 
     stop(
-      "No default ", test, " thresholds for county \"", county, "\".", hint,
-      "\nUse a valid county, or provide the thresholds in << ", test, "_table >>.",
+      "No default ",
+      test,
+      " thresholds for county \"",
+      county,
+      "\".",
+      hint,
+      "\nUse a valid county, or provide the thresholds in << ",
+      test,
+      "_table >>.",
       call. = FALSE
     )
   }
 
   invisible(county)
 }
-

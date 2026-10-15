@@ -12,14 +12,14 @@ climatology_table <- thresholds %>%
   filter(qc_test == "climatology", county == "Lunenburg" | is.na(county)) %>%
   select(-c(qc_test, county, sensor_type)) %>%
   pivot_wider(names_from = "threshold", values_from = "threshold_value") #%>%
-  # bind_rows(
-  #   data.frame(
-  #     variable = rep("dissolved_oxygen_percent_saturation", 12),
-  #     month = seq(1, 12),
-  #     season_min = rep(95, 12),
-  #     season_max = rep(105, 12)
-  #   )
-  # )
+# bind_rows(
+#   data.frame(
+#     variable = rep("dissolved_oxygen_percent_saturation", 12),
+#     month = seq(1, 12),
+#     season_min = rep(95, 12),
+#     season_max = rep(105, 12)
+#   )
+# )
 
 months <- seq(1, 12)
 days <- rep(c(1, 10, 28), 12)
@@ -46,13 +46,19 @@ dat <- expand.grid(month = months, day = days, variable = variables) %>%
     county = "Lunenburg",
     station = "White Tower",
     deployment_range = "2023-Jan-01 to 2023-Dec-28",
-    sensor_serial_number = "123", sensor_type = "abc"
+    sensor_serial_number = "123",
+    sensor_type = "abc"
   ) %>%
-  select(county, station, deployment_range,
-         sensor_type, sensor_serial_number, sensor_depth_at_low_tide_m,
-         timestamp_utc,
-         dissolved_oxygen_percent_saturation,
-         temperature_degree_c
+  select(
+    county,
+    station,
+    deployment_range,
+    sensor_type,
+    sensor_serial_number,
+    sensor_depth_at_low_tide_m,
+    timestamp_utc,
+    dissolved_oxygen_percent_saturation,
+    temperature_degree_c
   )
 
 
@@ -65,4 +71,3 @@ attributes(dat$dissolved_oxygen_percent_saturation) <- NULL
 
 # Export rds file
 saveRDS(dat, file = here("inst/testdata/test_data_climatology.RDS"))
-
