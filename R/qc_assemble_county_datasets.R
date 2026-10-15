@@ -19,21 +19,22 @@
 #'
 
 qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
-  if (prov == "ns") {
-    path <- file.path(
-      "R:/data_branches/water_quality/processed_data/qc_data"
-    )
+  prov <- match.arg(prov, c("ns", "nb"))
 
-    region_col <- "county"
+  if (is.null(path)) {
+    if (prov == "ns") {
+      path <- file.path(
+        "R:/data_branches/water_quality/processed_data/qc_data"
+      )
+      region_col <- "county"
+    }
+    if (prov == "nb") {
+      path <- file.path(
+        "R:/data_branches/nb_water_quality/processed_data/qc_data"
+      )
+      region_col <- "region"
+    }
   }
-  if (prov == "nb") {
-    path <- file.path(
-      "R:/data_branches/nb_water_quality/processed_data/qc_data"
-    )
-
-    region_col <- "region"
-  }
-
   # column order ------------------------------------------------------------
 
   # use for the join and to order columns in output
