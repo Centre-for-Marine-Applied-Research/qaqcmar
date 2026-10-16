@@ -54,7 +54,7 @@
 #'
 #' @noRd
 
-qc_core_thresholds <- function(keys, qc_test, county) {
+qc_lookup_thresholds <- function(keys, qc_test, county) {
   thr <- qaqcmar::thresholds |>
     filter(qc_test == !!qc_test, county == !!county | is.na(county)) |>
     pivot_wider(names_from = threshold, values_from = threshold_value) |>

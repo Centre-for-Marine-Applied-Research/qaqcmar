@@ -1,7 +1,4 @@
 # Generated with Claude Opus 5.5
-# Tests for qc_core_thresholds(keys, qc_test, county) on qaqcmar branch new-core.
-# Expected values are typed in from qaqcmar::thresholds (16 Oct 2026). If a
-# threshold value changes, update the number here too.
 
 sal <- data.frame(
   variable = "salinity_psu",
@@ -9,28 +6,28 @@ sal <- data.frame(
   month = 7L
 )
 
-test_that("qc_core_thresholds() returns the threshold columns for each test", {
+test_that("qc_lookup_thresholds() returns the threshold columns for each test", {
   key_cols <- c("variable", "sensor_key", "month")
 
   expect_setequal(
-    colnames(qc_core_thresholds(sal, "grossrange", "Halifax")),
+    colnames(qc_lookup_thresholds(sal, "grossrange", "Halifax")),
     c(key_cols, "sensor_min", "sensor_max", "user_min", "user_max")
   )
   expect_setequal(
-    colnames(qc_core_thresholds(sal, "climatology", "Halifax")),
+    colnames(qc_lookup_thresholds(sal, "climatology", "Halifax")),
     c(key_cols, "season_min", "season_max")
   )
   expect_setequal(
-    colnames(qc_core_thresholds(sal, "spike", "Halifax")),
+    colnames(qc_lookup_thresholds(sal, "spike", "Halifax")),
     c(key_cols, "spike_low", "spike_high")
   )
   expect_setequal(
-    colnames(qc_core_thresholds(sal, "rolling_sd", "Halifax")),
+    colnames(qc_lookup_thresholds(sal, "rolling_sd", "Halifax")),
     c(key_cols, "rolling_sd_max")
   )
 })
 
-test_that("qc_core_thresholds() returns one row per key", {
+test_that("qc_lookup_thresholds() returns one row per key", {
   keys <- data.frame(
     variable = c(
       "temperature_degree_c",
@@ -41,12 +38,12 @@ test_that("qc_core_thresholds() returns one row per key", {
     month = 7L
   )
 
-  expect_equal(nrow(qc_core_thresholds(keys, "grossrange", "Halifax")), 3)
+  expect_equal(nrow(qc_lookup_thresholds(keys, "grossrange", "Halifax")), 3)
 })
 
 test_that("Inverness salinity uses the Inverness rows", {
-  inv <- qc_core_thresholds(sal, "grossrange", "Inverness")
-  hfx <- qc_core_thresholds(sal, "grossrange", "Halifax")
+  inv <- qc_lookup_thresholds(sal, "grossrange", "Inverness")
+  hfx <- qc_lookup_thresholds(sal, "grossrange", "Halifax")
 
   # sensor limits are the same; user limits are Inverness vs province-wide
   expect_equal(inv$sensor_min, 0)
@@ -57,15 +54,15 @@ test_that("Inverness salinity uses the Inverness rows", {
   expect_equal(hfx$user_max, 34.655)
 
   expect_equal(
-    qc_core_thresholds(sal, "rolling_sd", "Inverness")$rolling_sd_max,
+    qc_lookup_thresholds(sal, "rolling_sd", "Inverness")$rolling_sd_max,
     0.26
   )
   expect_equal(
-    qc_core_thresholds(sal, "rolling_sd", "Halifax")$rolling_sd_max,
+    qc_lookup_thresholds(sal, "rolling_sd", "Halifax")$rolling_sd_max,
     0.42
   )
-  expect_equal(qc_core_thresholds(sal, "spike", "Inverness")$spike_high, 0.9)
-  expect_equal(qc_core_thresholds(sal, "spike", "Halifax")$spike_high, 1.35)
+  expect_equal(qc_lookup_thresholds(sal, "spike", "Inverness")$spike_high, 0.9)
+  expect_equal(qc_lookup_thresholds(sal, "spike", "Halifax")$spike_high, 1.35)
 })
 
 test_that("hobo do has its own temperature sensor limits", {
@@ -74,7 +71,7 @@ test_that("hobo do has its own temperature sensor limits", {
     sensor_key = c("hobo", "hobo do"),
     month = 7L
   )
-  out <- qc_core_thresholds(keys, "grossrange", "Halifax")
+  out <- qc_lookup_thresholds(keys, "grossrange", "Halifax")
 
   # rows come back sorted by sensor_key: hobo, then hobo do
   expect_equal(out$sensor_min, c(-40, -5))
@@ -89,7 +86,7 @@ test_that("climatology thresholds are looked up by month", {
     sensor_key = "hobo",
     month = c(1L, 7L)
   )
-  out <- qc_core_thresholds(keys, "climatology", "Halifax")
+  out <- qc_lookup_thresholds(keys, "climatology", "Halifax")
 
   expect_equal(out$season_min, c(-2.112, 0.301))
   expect_equal(out$season_max, c(6.954, 22.309))
@@ -101,7 +98,7 @@ test_that("depth spike thresholds depend on sensor type", {
     sensor_key = c("aquameasure", "vr2ar"),
     month = 7L
   )
-  out <- qc_core_thresholds(keys, "spike", "Annapolis")
+  out <- qc_lookup_thresholds(keys, "spike", "Annapolis")
 
   expect_equal(out$spike_low, c(0.8, 1))
   expect_equal(out$spike_high, c(2.4, 3))
@@ -114,8 +111,8 @@ test_that("keys with no thresholds are left out", {
     month = 7L
   )
 
-  expect_equal(nrow(qc_core_thresholds(chl, "grossrange", "Halifax")), 0)
-  expect_equal(nrow(qc_core_thresholds(chl, "rolling_sd", "Halifax")), 0)
+  expect_equal(nrow(qc_lookup_thresholds(chl, "grossrange", "Halifax")), 0)
+  expect_equal(nrow(qc_lookup_thresholds(chl, "rolling_sd", "Halifax")), 0)
 })
 
 # Phase A: today's qc_test_grossrange() has no thresholds for a sensor type
@@ -127,5 +124,5 @@ test_that("gross range gives no thresholds for a sensor type without sensor limi
     month = 7L
   )
 
-  expect_equal(nrow(qc_core_thresholds(abc, "grossrange", "Halifax")), 0)
+  expect_equal(nrow(qc_lookup_thresholds(abc, "grossrange", "Halifax")), 0)
 })
