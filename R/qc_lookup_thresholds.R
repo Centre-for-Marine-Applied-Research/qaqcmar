@@ -50,7 +50,6 @@
 #'
 #' @importFrom dplyr across arrange filter group_by inner_join last rename select summarise where
 #' @importFrom tidyr pivot_wider
-#' @importFrom stats na.omit
 #'
 #' @noRd
 
@@ -81,7 +80,7 @@ qc_lookup_thresholds <- function(keys, qc_test, county) {
       spec = !is.na(thr_county) + !is.na(thr_sensor_type)
     ) |>
     summarise(
-      across(where(is.numeric), ~ dplyr::last(na.omit(.x))),
+      across(where(is.numeric), ~ dplyr::last(.x[!is.na(.x)])),
       .groups = "drop"
     ) |>
     group_by(variable, sensor_key, month) |>
