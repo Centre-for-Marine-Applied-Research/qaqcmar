@@ -128,6 +128,14 @@ utils::globalVariables(
     "qc_test_column",
     "timestamp_utc_min",
     "timestamp_utc_max",
-    "timestamp_prompt"
+    "timestamp_prompt",
+
+    # core_prepare
+    "sensor_key",
+
+    # qc_lookup_thresholds
+    "thr_county",
+    "thr_month",
+    "thr_sensor_type"
   )
 )
