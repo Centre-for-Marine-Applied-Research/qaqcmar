@@ -93,7 +93,7 @@ qc_test_rolling_sd <- function(
   if (is.null(rolling_sd_table)) {
     assert_county_thresholds(county, "rolling_sd")
 
-    rolling_sd_table <- thresholds |>
+    rolling_sd_table <- qaqcmar::thresholds |>
       filter(qc_test == "rolling_sd", county == !!county | is.na(county))
 
     # Inverness has separate thresholds for salinity compared to the other counties

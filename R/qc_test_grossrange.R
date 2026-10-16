@@ -60,7 +60,7 @@ qc_test_grossrange <- function(
   if (is.null(grossrange_table)) {
     assert_county_thresholds(county, "grossrange")
 
-    grossrange_table <- thresholds |>
+    grossrange_table <- qaqcmar::thresholds |>
       filter(qc_test == "grossrange", county == !!county | is.na(county))
 
     # Inverness has separate thresholds for salinity compared to the other counties

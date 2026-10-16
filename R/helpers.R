@@ -108,15 +108,19 @@ assert_county <- function(dat, county_arg, foo) {
 #'
 #' @return Returns \code{county} invisibly, or stops with an error.
 #'
+#' @importFrom dplyr pull
+#'
 #' @noRd
 
 assert_county_thresholds <- function(county, test) {
-  valid <- sort(unique(
-    thresholds$county[thresholds$qc_test == test & !is.na(thresholds$county)]
-  ))
+  valid_county <- qaqcmar::thresholds |>
+    filter(qc_test == test & !is.na(county)) |>
+    distinct(county) |>
+    arrange(county) |>
+    pull(county)
 
-  if (!(county %in% valid)) {
-    close <- valid[tolower(valid) == tolower(county)]
+  if (!(county %in% valid_county)) {
+    close <- valid_county[tolower(valid_county) == tolower(county)]
     hint <- if (length(close) == 1) {
       paste0("\nDid you mean \"", close, "\"?")
     } else {
@@ -124,7 +128,7 @@ assert_county_thresholds <- function(county, test) {
         "\nCounties with ",
         test,
         " thresholds: ",
-        paste(valid, collapse = ", ")
+        paste(valid_county, collapse = ", ")
       )
     }
 

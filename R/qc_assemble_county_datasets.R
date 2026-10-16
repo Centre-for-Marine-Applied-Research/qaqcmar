@@ -68,7 +68,7 @@ qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
     "temperature_degree_c"
   )
 
-  qc_test_cols <- thresholds |>
+  qc_test_cols <- qaqcmar::thresholds |>
     select(qc_test, variable) |>
     distinct() |>
     filter(qc_test != "depth_crosscheck") |>

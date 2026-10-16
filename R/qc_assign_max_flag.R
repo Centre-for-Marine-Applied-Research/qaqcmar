@@ -48,7 +48,7 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
     "hil_comment"
   )
 
-  qc_test_cols <- thresholds |>
+  qc_test_cols <- qaqcmar::thresholds |>
     select(qc_test, variable) |>
     distinct() |>
     mutate(col_name = paste(qc_test, "flag", variable, sep = "_")) |>
