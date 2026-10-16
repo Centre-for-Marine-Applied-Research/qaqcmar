@@ -48,8 +48,7 @@
 #'   Join it to the long data with
 #'   `left_join(long, thr, by = c("variable", "sensor_key", "month"))`.
 #'
-#' @importFrom dplyr across arrange filter group_by inner_join last rename
-#'   select summarise where
+#' @importFrom dplyr across arrange filter group_by inner_join last rename select summarise where
 #' @importFrom tidyr pivot_wider
 #' @importFrom stats na.omit
 #'
@@ -64,12 +63,13 @@ qc_core_thresholds <- function(keys, qc_test, county) {
       thr_month = month,
       thr_county = county
     )
-  keys |>
+  out <- keys |>
     inner_join(thr, by = "variable", relationship = "many-to-many") |>
     filter(
       is.na(thr_sensor_type) | thr_sensor_type == sensor_key,
       is.na(thr_month) | thr_month == month
     ) |>
+    # this sorts from least specific to most specific (province -> county)
     arrange(!is.na(thr_county), !is.na(thr_sensor_type), !is.na(thr_month)) |>
     # rows with the same key and specificity are combined column-wise
     # (grossrange stores sensor and user limits on separate rows)
@@ -77,6 +77,7 @@ qc_core_thresholds <- function(keys, qc_test, county) {
       variable,
       sensor_key,
       month,
+      # specificity score for county and sensor
       spec = !is.na(thr_county) + !is.na(thr_sensor_type)
     ) |>
     summarise(
@@ -86,8 +87,14 @@ qc_core_thresholds <- function(keys, qc_test, county) {
     group_by(variable, sensor_key, month) |>
     arrange(spec, .by_group = TRUE) |>
     summarise(
-      across(where(is.numeric), ~ dplyr::last(na.omit(.x))),
+      across(where(is.numeric), ~ dplyr::last(.x[!is.na(.x)])),
       .groups = "drop"
     ) |>
     select(-any_of(c("spec", "thr_month", "qc_test")))
+
+  if (qc_test == "grossrange") {
+    out <- filter(out, !is.na(sensor_min), !is.na(user_min), !is.na(user_max))
+  }
+
+  out
 }

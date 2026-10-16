@@ -136,6 +136,7 @@ utils::globalVariables(
     # qc_lookup_thresholds
     "thr_county",
     "thr_month",
-    "thr_sensor_type"
+    "thr_sensor_type",
+    "spec"
   )
 )
