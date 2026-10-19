@@ -198,3 +198,58 @@ qc_core_rolling_sd <- function(
 
   dat
 }
+
+
+#' Apply the depth crosscheck test to long data
+#'
+#' For each sensor with measured depth, compares the minimum measured depth
+#' with `sensor_depth_at_low_tide_m`. Each deployment gets the worst of its
+#' sensors' flags, repeated on every row of that deployment. Deployments with
+#' no measured depth get 2. Not part of `qc_flag`.
+#'
+#' @param dat Long data from `qc_core_prepare()`, with a
+#'   `sensor_depth_at_low_tide_m` column.
+#' @param depth_diff_max Largest acceptable difference (m) between the
+#'   estimated and minimum measured depth.
+#'
+#' @return `dat` with the same rows in the same order, plus
+#'   `depth_crosscheck_flag` (integer, 1 to 4).
+#'
+#' @importFrom dplyr across all_of coalesce filter group_by if_else left_join mutate summarise
+#'
+#' @noRd
+qc_core_depth_crosscheck <- function(dat, depth_diff_max) {
+  deployment_cols <- intersect(
+    c("county", "region", "station", "deployment_range"),
+    colnames(dat)
+  )
+
+  # one flag per sensor with measured depth
+  sensor_flags <- dat |>
+    filter(variable == "sensor_depth_measured_m") |>
+    group_by(across(all_of(
+      c(deployment_cols, "sensor_serial_number", "sensor_depth_at_low_tide_m")
+    ))) |>
+    summarise(min_measured = min(value), .groups = "drop") |>
+    mutate(
+      depth_crosscheck_flag = if_else(
+        abs(sensor_depth_at_low_tide_m - min_measured) > depth_diff_max,
+        3L,
+        1L
+      )
+    )
+
+  # worst sensor flag per deployment
+  deployment_flags <- sensor_flags |>
+    group_by(across(all_of(deployment_cols))) |>
+    summarise(
+      depth_crosscheck_flag = max(depth_crosscheck_flag),
+      .groups = "drop"
+    )
+
+  # deployments with no measured depth get 2
+  dat |>
+    left_join(deployment_flags, by = deployment_cols) |>
+    # find NAs and convert to flag 2
+    mutate(depth_crosscheck_flag = coalesce(depth_crosscheck_flag, 2L))
+}
