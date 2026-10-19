@@ -35,13 +35,14 @@
 #'   Not required if there is a \code{county} column in \code{dat} or if
 #'   \code{depth_table} is provided.
 #'
-#' @param crosscheck_table Logical value. If \code{TRUE}, the table used to
+#' @param return_sensor_table Logical value. If \code{TRUE}, the table used to
 #'   evaluate the difference between measured depth and estimated depth
-#'   (\code{min_measured} and \code{abs_diff}) is returned instead of
-#'   \code{dat}. Default is \code{FALSE}.
+#'   (\code{min_measured} and \code{abs_diff}, one row per sensor) is
+#'   returned instead of \code{dat}. Sensors that did not measure depth get
+#'   flag 2. Default is \code{FALSE}.
 #'
 #' @return Returns \code{dat} in a wide format, with depth crosscheck flag
-#'   column named "depth_crosscheck_flag_value".
+#'   column named "depth_crosscheck_flag".
 #'
 #' @importFrom dplyr filter group_by join_by left_join mutate rename right_join select summarise ungroup
 #' @importFrom tidyr pivot_longer pivot_wider
@@ -52,104 +53,39 @@ qc_test_depth_crosscheck <- function(
   dat,
   depth_table = NULL,
   county = NULL,
-  crosscheck_table = FALSE
+  return_sensor_table = FALSE
 ) {
   message("applying depth_crosscheck test")
 
   # check that not providing more than one county
   county <- assert_county(dat, county, "qc_test_depth_crosscheck()")
+  dat <- qc_core_set_aside_flags(dat, "depth_crosscheck")
 
-  # import default thresholds from internal data file -----------------------
-  if (is.null(depth_table)) {
-    depth_table <- qaqcmar::thresholds |>
-      filter(
-        qc_test == "depth_crosscheck",
-        county == !!county | is.na(county)
-      ) |>
-      select(-c(qc_test, county, month, sensor_type)) |>
-      pivot_wider(values_from = "threshold_value", names_from = threshold)
-  }
+  if (isTRUE(return_sensor_table)) {
+    if (is.null(depth_table)) {
+      depth_diff_max <- qaqcmar::thresholds |>
+        filter(qc_test == "depth_crosscheck") |>
+        pull(threshold_value)
+    } else {
+      depth_diff_max <- depth_table$depth_diff_max
+    }
 
-  # add thresholds to dat and assign flags ---------------------------------------------------
-
-  # create a table with the estimated (log) depth and minimum measured depth
-  # for each deployment
-  # apply flag
-  dat_depth <- dat |>
-    filter(!is.na(sensor_depth_measured_m)) |>
-    group_by(
-      county,
-      station,
-      deployment_range,
-      sensor_serial_number,
-      sensor_depth_at_low_tide_m
-    ) |>
-    summarise(min_measured = min(sensor_depth_measured_m)) |>
-    ungroup() |>
-    # make sure there is a row for every station, deployment, sensor
-    right_join(
-      dat |>
-        distinct(
-          county,
-          station,
-          deployment_range,
-          sensor_serial_number,
-          sensor_depth_at_low_tide_m
-        ),
-      by = join_by(
-        county,
-        station,
-        deployment_range,
-        sensor_serial_number,
-        sensor_depth_at_low_tide_m
-      )
-    ) |>
-    # calculate difference and apply preliminary flag
-    mutate(
-      abs_diff = abs(sensor_depth_at_low_tide_m - min_measured),
-
-      depth_diff_max = depth_table$depth_diff_max,
-      depth_crosscheck_flag = case_when(
-        abs_diff > depth_diff_max ~ 3,
-        abs_diff <= depth_diff_max ~ 1,
-        # for sensors without measured depth, set flag to 0 for now so that these
-        # deployments are not counted in the max() below
-        # will be converted to 2 before export
-        is.na(abs_diff) ~ 0
-      )
-    )
-
-  # find the worst flag for each deployment (not counting "Not Evaluated")
-  dat_depth2 <- dat_depth |>
-    group_by(county, station, deployment_range) |>
-    summarise(depth_crosscheck_flag = max(depth_crosscheck_flag)) |>
-    ungroup()
-
-  # join flags to data and convert 0 to 2
-  dat <- dat |>
-    left_join(dat_depth2, by = join_by(county, station, deployment_range)) |>
-    mutate(
-      depth_crosscheck_flag = if_else(
-        depth_crosscheck_flag == 0,
-        2,
-        depth_crosscheck_flag
-      ),
-      depth_crosscheck_flag = ordered(depth_crosscheck_flag, levels = 1:4)
-    )
-
-  # clean up columns --------------------------------------------------------
-
-  if (isTRUE(crosscheck_table)) {
-    dat_depth |>
+    out <- dat$dat |>
+      qc_core_prepare() |>
+      qc_core_depth_crosscheck(depth_diff_max, return_sensor_table = TRUE) |>
       mutate(
-        depth_crosscheck_flag = if_else(
-          depth_crosscheck_flag == 0,
-          2,
-          depth_crosscheck_flag
-        ),
         depth_crosscheck_flag = ordered(depth_crosscheck_flag, levels = 1:4)
       )
-  } else {
-    dat
+
+    return(out)
   }
+
+  # if depth_table is NULL, qc_core_run() uses the default threshold
+  dat$dat |>
+    qc_core_run(
+      qc_tests = "depth_crosscheck",
+      county = county,
+      depth_table = depth_table
+    ) |>
+    qc_core_to_wide(flags = dat$flags)
 }

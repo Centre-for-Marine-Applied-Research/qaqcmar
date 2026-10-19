@@ -8,7 +8,7 @@ qc_test_depth_crosscheck(
   dat,
   depth_table = NULL,
   county = NULL,
-  crosscheck_table = FALSE
+  return_sensor_table = FALSE
 )
 }
 \arguments{
@@ -25,14 +25,15 @@ was collected. Used to filter the default \code{depth_crosscheck_table}.
 Not required if there is a \code{county} column in \code{dat} or if
 \code{depth_table} is provided.}
 
-\item{crosscheck_table}{Logical value. If \code{TRUE}, the table used to
+\item{return_sensor_table}{Logical value. If \code{TRUE}, the table used to
 evaluate the difference between measured depth and estimated depth
-(\code{min_measured} and \code{abs_diff}) is returned instead of
-\code{dat}. Default is \code{FALSE}.}
+(\code{min_measured} and \code{abs_diff}, one row per sensor) is
+returned instead of \code{dat}. Sensors that did not measure depth get
+flag 2. Default is \code{FALSE}.}
 }
 \value{
 Returns \code{dat} in a wide format, with depth crosscheck flag
-column named "depth_crosscheck_flag_value".
+column named "depth_crosscheck_flag".
 }
 \description{
 Sensor depth at low tide is estimated from tide charts and the position of

@@ -212,6 +212,10 @@ qc_core_rolling_sd <- function(
 #'   `sensor_depth_at_low_tide_m` column.
 #' @param depth_diff_max Largest acceptable difference (m) between the
 #'   estimated and minimum measured depth.
+#' @param return_sensor_table Logical. If `TRUE`, returns the per-sensor table
+#'   (one row per sensor: `min_measured`, `abs_diff`, `depth_diff_max`,
+#'   `depth_crosscheck_flag`) instead of `dat`. Sensors with no measured
+#'   depth get 2.
 #'
 #' @return `dat` with the same rows in the same order, plus
 #'   `depth_crosscheck_flag` (integer, 1 to 4).
@@ -219,7 +223,11 @@ qc_core_rolling_sd <- function(
 #' @importFrom dplyr across all_of coalesce filter group_by if_else left_join mutate summarise
 #'
 #' @noRd
-qc_core_depth_crosscheck <- function(dat, depth_diff_max) {
+qc_core_depth_crosscheck <- function(
+  dat,
+  depth_diff_max,
+  return_sensor_table = FALSE
+) {
   deployment_cols <- intersect(
     c("county", "region", "station", "deployment_range"),
     colnames(dat)
@@ -239,6 +247,23 @@ qc_core_depth_crosscheck <- function(dat, depth_diff_max) {
         1L
       )
     )
+
+  if (isTRUE(return_sensor_table)) {
+    sensor_cols <- c(
+      deployment_cols,
+      "sensor_serial_number",
+      "sensor_depth_at_low_tide_m"
+    )
+    sensor_table <- dat |>
+      distinct(across(all_of(sensor_cols))) |>
+      left_join(sensor_flags, by = sensor_cols) |>
+      mutate(
+        depth_diff_max = depth_diff_max,
+        depth_crosscheck_flag = coalesce(depth_crosscheck_flag, 2L),
+        .before = depth_crosscheck_flag
+      )
+    return(sensor_table)
+  }
 
   # worst sensor flag per deployment
   deployment_flags <- sensor_flags |>

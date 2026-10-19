@@ -26,13 +26,63 @@
 #' @export
 
 qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
-  if (is.null(qc_tests)) {
-    qc_tests <- c("climatology", "grossrange", "rolling_sd", "spike")
+  if ("variable" %in% colnames(dat)) {
+    dat <- qc_pivot_wider(dat)
   }
 
-  # use for the join and to order columns in output
+  if (is.null(qc_tests)) {
+    qc_tests <- c(
+      "climatology",
+      "grossrange",
+      "rolling_sd",
+      "spike",
+      "human_in_loop"
+    )
+  }
+
+  # flag columns are named <test>_flag_<variable>; depth_crosscheck_flag
+  # does not match, so it is never included
+  flag_cols <- grep(
+    paste0("^(", paste(qc_tests, collapse = "|"), ")_flag_"),
+    colnames(dat),
+    value = TRUE
+  )
+  if (length(flag_cols) == 0) {
+    stop("<< dat >> has no flag columns for << qc_tests >>.", call. = FALSE)
+  }
+
+  dat <- mutate(dat, row_id = row_number())
+
+  # one row per observation and variable, one column per test, then the max
+  max_flags <- dat |>
+    select(row_id, all_of(flag_cols)) |>
+    pivot_longer(
+      -row_id,
+      names_to = c(".value", "variable"),
+      names_pattern = "^(.+_flag)_(.+)$"
+    ) |>
+    mutate(across(-c(row_id, variable), ~ as.integer(as.character(.x)))) |>
+    qc_core_max_flags() |>
+    select(row_id, variable, qc_flag) |>
+    pivot_wider(
+      names_from = variable,
+      values_from = qc_flag,
+      names_prefix = "qc_flag_"
+    ) |>
+    mutate(across(-row_id, ~ ordered(.x, levels = 1:4)))
+
+  dat <- dat |>
+    left_join(max_flags, by = "row_id") |>
+    select(-row_id)
+
+  if (!isTRUE(return_all)) {
+    dat <- select(dat, -all_of(flag_cols))
+  }
+
+  # order columns: deployment, variables, test flags, max flags, anything left
   depl_cols <- c(
     "county",
+    "region",
     "waterbody",
     "station",
     "lease",
@@ -47,95 +97,15 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
     "depth_crosscheck_flag",
     "hil_comment"
   )
+  qc_cols <- sort(grep("^qc_flag_", colnames(dat), value = TRUE))
+  var_cols <- sort(sub("^qc_flag_", "", qc_cols))
 
-  qc_test_cols <- qaqcmar::thresholds |>
-    select(qc_test, variable) |>
-    distinct() |>
-    mutate(col_name = paste(qc_test, "flag", variable, sep = "_")) |>
-    arrange(qc_test)
-  qc_test_cols <- qc_test_cols$col_name
-
-  qc_test_cols <- sort(c(
-    qc_test_cols,
-    "human_in_loop_flag_dissolved_oxygen_percent_saturation",
-    "human_in_loop_flag_dissolved_oxygen_uncorrected_mg_per_l",
-    "human_in_loop_flag_salinity_psu",
-    "human_in_loop_flag_sensor_depth_measured_m",
-    "human_in_loop_flag_temperature_degree_c"
-  ))
-
-  qc_max_cols <- c(
-    "qc_flag_dissolved_oxygen_percent_saturation",
-    "qc_flag_dissolved_oxygen_uncorrected_mg_per_l",
-    "qc_flag_salinity_psu",
-    "qc_flag_sensor_depth_measured_m",
-    "qc_flag_temperature_degree_c"
-  )
-
-  # save the original data frame to join the qc_flag columns ti
-  if ("variable" %in% colnames(dat)) {
-    dat_og <- dat |> qc_pivot_wider()
-  } else {
-    dat_og <- dat
-  }
-
-  # pivot dat
-  if (!("variable" %in% colnames(dat))) {
-    dat <- qc_pivot_longer(dat, qc_tests = qc_tests)
-  }
-
-  # use to join and sort the columns of the output
-  var_cols <- sort(unique(dat$variable))
-
-  # rename columns so depth_crosscheck_test doesn't affect max_flag
-  if ("depth_crosscheck_flag" %in% colnames(dat)) {
-    dat <- rename(dat, depth_crosscheck = depth_crosscheck_flag)
-  }
-
-  # find the maximum flag for each variable
-  dat <- dat |>
-    mutate(
-      qc_col = pmap(select(dat, contains("flag")), max, na.rm = TRUE),
-      qc_col = unlist(qc_col),
-      qc_col = ordered(qc_col, levels = 1:4)
-    ) |>
-    select(-contains("flag_value")) |>
-    rename(qc_flag = qc_col) |>
-    pivot_wider(
-      names_from = variable,
-      values_from = c(value, qc_flag)
+  dat |>
+    select(
+      any_of(depl_cols),
+      any_of(var_cols),
+      any_of(sort(flag_cols)),
+      all_of(qc_cols),
+      everything()
     )
-
-  if ("depth_crosscheck" %in% colnames(dat)) {
-    dat <- rename(dat, depth_crosscheck_flag = depth_crosscheck)
-  }
-
-  colnames(dat) <- str_remove_all(colnames(dat), pattern = "value_")
-
-  if (isTRUE(return_all)) {
-    join_cols <- c(
-      depl_cols[which(depl_cols %in% colnames(dat_og))],
-      var_cols
-    )
-
-    dat <- dat_og |>
-      left_join(dat, by = join_cols) |>
-      select(
-        any_of(depl_cols), # deployment columns
-        all_of(var_cols), # variable values
-        any_of(qc_test_cols), # qc flags
-        any_of(qc_max_cols), # max qc flags
-        everything() # anything left
-      )
-  } else {
-    dat <- dat |>
-      select(
-        any_of(depl_cols), # deployment columns
-        all_of(var_cols), # variable values
-        any_of(qc_max_cols), # max qc flags
-        everything() # anything left
-      )
-  }
-
-  dat
 }

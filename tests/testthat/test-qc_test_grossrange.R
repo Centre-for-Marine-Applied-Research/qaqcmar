@@ -18,15 +18,13 @@
 # only the expected flag value.
 
 path <- system.file("testdata", package = "qaqcmar")
+dat <- readRDS(paste0(path, "/test_data_grossrange.RDS"))
+dat_qc <- dat |>
+  qc_test_grossrange(county = "Lunenburg") |>
+  qc_pivot_longer(qc_tests = "grossrange") |>
+  mutate(day = lubridate::day(timestamp_utc))
 
 test_that("qc_test_grossrange() assigns correct flags", {
-  dat <- readRDS(paste0(path, "/test_data_grossrange.RDS"))
-
-  dat_qc <- dat |>
-    qc_test_grossrange(county = "Lunenburg") |>
-    qc_pivot_longer(qc_tests = "grossrange") |>
-    mutate(day = lubridate::day(timestamp_utc))
-
   expect_equal(
     as.numeric(
       dat_qc |>
