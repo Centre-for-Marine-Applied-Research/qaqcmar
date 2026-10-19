@@ -30,10 +30,3 @@ for each variable in the form "climatology_flag_variable".
 \description{
 Apply the climatology test
 }
-\seealso{
-Other tests:
-\code{\link[=qc_test_grossrange]{qc_test_grossrange()}},
-\code{\link[=qc_test_rolling_sd]{qc_test_rolling_sd()}},
-\code{\link[=qc_test_spike]{qc_test_spike()}}
-}
-\concept{tests}

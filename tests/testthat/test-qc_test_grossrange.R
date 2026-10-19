@@ -19,7 +19,6 @@
 
 path <- system.file("testdata", package = "qaqcmar")
 
-
 test_that("qc_test_grossrange() assigns correct flags", {
   dat <- readRDS(paste0(path, "/test_data_grossrange.RDS"))
 

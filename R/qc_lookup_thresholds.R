@@ -54,7 +54,7 @@
 #'   Join it to the long data with
 #'   `left_join(long, thr, by = c("variable", "sensor_key", "month"))`.
 #'
-#' @importFrom dplyr across arrange filter group_by inner_join last rename select summarise where
+#' @importFrom dplyr across arrange bind_rows filter group_by last rename select summarise tibble where
 #' @importFrom tidyr pivot_wider
 #'
 #' @noRd

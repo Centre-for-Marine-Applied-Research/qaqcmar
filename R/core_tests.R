@@ -8,8 +8,7 @@
 #' @return `dat` with the same rows in the same order, plus
 #'   `grossrange_flag` (integer, 1 to 4). Rows with no thresholds get 2.
 #'
-#' @importFrom dplyr across any_of arrange bind_rows filter group_by inner_join last rename select summarise tibble where
-#' @importFrom tidyr pivot_wider
+#' @importFrom dplyr case_when mutate
 #'
 #' @noRd
 

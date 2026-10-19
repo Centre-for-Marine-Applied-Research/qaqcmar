@@ -13,8 +13,6 @@ qc_test_all(
   grossrange_table = NULL,
   rolling_sd_table = NULL,
   spike_table = NULL,
-  join_column = NULL,
-  join_column_spike = NULL,
   period_hours = 24,
   max_interval_hours = 2,
   align_window = "center",
@@ -78,17 +76,6 @@ Interest". For variable = sensor_depth_measured_m, the column
 Default values are used if \code{spike_table = NULL}. To see the
 default \code{spike_table}, type \code{subset(thresholds,
   qc_test == "spike")} in the console.}
-
-\item{join_column}{Optional character string of a column name that is in both
-\code{dat} and \code{grossrange_table}. The specified column will be used
-to join the two tables. Default is \code{join_column = NULL}, and the
-tables are joined only on the \code{sensor_type} and \code{variable}
-columns.}
-
-\item{join_column_spike}{Optional character string of a column name that is in both
-\code{dat} and \code{spike_table}. The specified column will be used to
-join the two tables. Default is \code{join_column = NULL}, and the tables
-are joined only on the \code{sensor_type} and \code{variable} columns.}
 
 \item{period_hours}{Length of a full cycle in hours. Default assumes a daily
 cycle of \code{period_hours = 24}.}

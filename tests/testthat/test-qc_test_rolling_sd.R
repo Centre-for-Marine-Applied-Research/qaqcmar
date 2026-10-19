@@ -72,8 +72,6 @@ test_that("qc_test_rolling_sd() assigns 2 for intervals > min_sample_interval", 
 
 
 test_that("qc_test_rolling_sd() gives flag 2 to a duplicate timestamp", {
-  #dat <- readRDS(file.path(path, "test_data_rolling_sd.RDS"))
-
   # duplicate one observation, with a different value so it can be found
   dup <- dat[100, ]
   dup$dissolved_oxygen_percent_saturation <-
@@ -137,9 +135,9 @@ test_that("qc_test_rolling_sd() works with 30-second sampling", {
 
   expect_equal(nrow(out), n)
   # interval kept in minutes, not rounded to 0
-  expect_equal(unique(out$int_sample[-1]), 0.5) #[-1] to remove first row, which is NA
+  expect_equal(unique(out$int_sample_temperature_degree_c[-1]), 0.5) #[-1] to remove first row, which is NA
   # 24 hours of 30-second samples
-  expect_equal(unique(out$n_sample[-1]), 2880)
+  expect_equal(unique(out$n_sample_temperature_degree_c[-1]), 2880)
 
   # rows with a full centred window are evaluated (flag 1);
   # rows near the ends are not (flag 2)

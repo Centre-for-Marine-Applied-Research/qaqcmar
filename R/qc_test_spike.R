@@ -46,7 +46,8 @@ qc_test_spike <- function(
     qc_core_run(
       qc_tests = "spike",
       county = county,
-      spike_table = spike_table
+      spike_table = spike_table,
+      keep_spike_cols = keep_spike_cols
     ) |>
     qc_core_to_wide(flags = dat$flags)
 }

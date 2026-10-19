@@ -81,7 +81,11 @@ qc_test_rolling_sd <- function(
     qc_core_run(
       qc_tests = "rolling_sd",
       county = county,
-      rolling_sd_table = rolling_sd_table
+      rolling_sd_table = rolling_sd_table,
+      period_hours = period_hours,
+      max_interval_hours = max_interval_hours,
+      align_window = align_window,
+      keep_sd_cols = keep_sd_cols
     ) |>
     qc_core_to_wide(flags = dat$flags)
 }
