@@ -125,3 +125,41 @@ test_that("qc_core_rolling_sd() gives NA when there is no threshold", {
 
   expect_equal(out$rolling_sd_flag[c(1, 2)], c(2L, NA))
 })
+
+# depth crosscheck --------------------------------------------------
+
+depth_dat <- data.frame(
+  row_id = 1:9,
+  station = "A",
+  deployment_range = c("d1", "d1", "d1", "d2", "d2", "d2", "d2", "d3", "d3"),
+  sensor_serial_number = c(1, 1, 2, 3, 3, 4, 4, 5, 5),
+  sensor_depth_at_low_tide_m = c(5, 5, 10, 5, 5, 5, 5, 5, 5),
+  variable = c(
+    "sensor_depth_measured_m",
+    "sensor_depth_measured_m",
+    "temperature_degree_c",
+    "sensor_depth_measured_m",
+    "sensor_depth_measured_m",
+    "sensor_depth_measured_m",
+    "temperature_degree_c",
+    "temperature_degree_c",
+    "temperature_degree_c"
+  ),
+  value = c(9, 10, 12, 12, 13, 5, 11, 12, 13)
+)
+
+test_that("qc_core_depth_crosscheck() gives each deployment its worst sensor flag", {
+  out <- qc_core_depth_crosscheck(depth_dat, depth_diff_max = 4)
+
+  # d1: 1 (a diff equal to depth_diff_max passes)
+  # d2: 3 (one failing sensor fails the deployment)
+  # d3: 2 (no measured depth)
+  expect_equal(out$depth_crosscheck_flag, c(1L, 1L, 1L, 3L, 3L, 3L, 3L, 2L, 2L))
+})
+
+test_that("qc_core_depth_crosscheck() only adds the flag column", {
+  out <- qc_core_depth_crosscheck(depth_dat, depth_diff_max = 4)
+
+  expect_equal(out[colnames(depth_dat)], depth_dat)
+  expect_equal(colnames(out), c(colnames(depth_dat), "depth_crosscheck_flag"))
+})
