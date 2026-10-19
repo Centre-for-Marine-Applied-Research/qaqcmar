@@ -1,6 +1,6 @@
+# Generated with Claude Opus 5.5
+
 #' Apply the grossrange test to long data
-#'
-#' # Generated with Claude Opus 5.5
 #'
 #' @param dat Long data with gross range thresholds, from
 #'   `qc_append_thresholds(dat, "grossrange", county)`.
@@ -8,7 +8,8 @@
 #' @return `dat` with the same rows in the same order, plus
 #'   `grossrange_flag` (integer, 1 to 4). Rows with no thresholds get 2.
 #'
-#' @importFrom dplyr case_when mutate
+#' @importFrom dplyr across any_of arrange bind_rows filter group_by inner_join last rename select summarise tibble where
+#' @importFrom tidyr pivot_wider
 #'
 #' @noRd
 

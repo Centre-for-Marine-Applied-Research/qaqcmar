@@ -29,6 +29,11 @@ qc_core_run <- function(
   dat,
   qc_tests,
   county,
+  climatology_table = NULL,
+  depth_table = NULL,
+  grossrange_table = NULL,
+  rolling_sd_table = NULL,
+  spike_table = NULL,
   period_hours = 24,
   max_interval_hours = 2,
   align_window = "center",
@@ -46,27 +51,42 @@ qc_core_run <- function(
 
   if ("climatology" %in% qc_tests) {
     dat <- dat |>
-      qc_append_thresholds("climatology", county) |>
+      qc_append_thresholds(
+        "climatology",
+        county,
+        threshold_table = climatology_table
+      ) |>
       qc_core_climatology()
   }
 
   if ("depth_crosscheck" %in% qc_tests) {
-    depth_diff_max <- qaqcmar::thresholds |>
-      filter(qc_test == "depth_crosscheck") |>
-      pull(threshold_value)
-
+    if (is.null(depth_table)) {
+      depth_diff_max <- qaqcmar::thresholds |>
+        filter(qc_test == "depth_crosscheck") |>
+        pull(threshold_value)
+    } else {
+      depth_diff_max <- depth_table$depth_diff_max
+    }
     dat <- qc_core_depth_crosscheck(dat, depth_diff_max = depth_diff_max)
   }
 
   if ("grossrange" %in% qc_tests) {
     dat <- dat |>
-      qc_append_thresholds("grossrange", county) |>
+      qc_append_thresholds(
+        "grossrange",
+        county,
+        threshold_table = grossrange_table
+      ) |>
       qc_core_grossrange()
   }
 
   if ("rolling_sd" %in% qc_tests) {
     dat <- dat |>
-      qc_append_thresholds("rolling_sd", county) |>
+      qc_append_thresholds(
+        "rolling_sd",
+        county,
+        threshold_table = rolling_sd_table
+      ) |>
       qc_core_rolling_sd(
         period_hours = period_hours,
         max_interval_hours = max_interval_hours,
@@ -77,7 +97,7 @@ qc_core_run <- function(
 
   if ("spike" %in% qc_tests) {
     dat <- dat |>
-      qc_append_thresholds("spike", county) |>
+      qc_append_thresholds("spike", county, threshold_table = spike_table) |>
       qc_core_spike(keep_spike_cols = keep_spike_cols)
   }
 

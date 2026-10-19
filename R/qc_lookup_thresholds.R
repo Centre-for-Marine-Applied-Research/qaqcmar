@@ -1,6 +1,6 @@
+# Generated with Claude Opus 5.5
+
 #' Look up thresholds for one QC test
-#'
-#' Generated with Claude Opus 5.5
 #'
 #' Finds the thresholds that apply to each combination of variable, sensor and
 #' month in the data, for one test and one county, from the long-format
@@ -39,6 +39,12 @@
 #' @param county Character string. One county, as in `thresholds$county`.
 #'   Rows for other counties are ignored; province-wide rows (`county` `NA`)
 #'   are always used.
+#' @param threhold_table Optional table of thresholds for `qc_test`, in wide
+#'  format: `variable` plus one column per threshold (e.g. `season_min`,
+#'  `season_max`), and optionally `sensor_type` and `month`. As in
+#'  `thresholds`, `NA` (or a missing column) in `sensor_type` or `month`
+#'  means "applies to any". Used instead of `thresholds`, as is: a
+#'  `county` column is ignored. Default `NULL` uses `qaqcmar::thresholds`.
 #'
 #' @return A tibble with one row per key that has at least one candidate
 #'   threshold row: `variable`, `sensor_key`, `month`, plus one column per
@@ -53,10 +59,28 @@
 #'
 #' @noRd
 
-qc_lookup_thresholds <- function(keys, qc_test, county) {
-  thr <- qaqcmar::thresholds |>
-    filter(qc_test == !!qc_test, county == !!county | is.na(county)) |>
-    pivot_wider(names_from = threshold, values_from = threshold_value) |>
+qc_lookup_thresholds <- function(
+  keys,
+  qc_test,
+  county,
+  threshold_table = NULL
+) {
+  if (is.null(table)) {
+    thr <- qaqcmar::thresholds |>
+      filter(qc_test == !!qc_test, county == !!county | is.na(county)) |>
+      pivot_wider(names_from = threshold, values_from = threshold_value)
+  } else {
+    # binding to an empty template adds any missing county, sensor_type and
+    # month columns as NA ("applies to any")
+    template <- tibble(
+      county = character(),
+      sensor_type = character(),
+      month = numeric()
+    )
+    thr <- bind_rows(template, select(threshold_table, -any_of("county")))
+  }
+
+  thr <- thr |>
     rename(
       thr_sensor_type = sensor_type,
       thr_month = month,
