@@ -33,6 +33,7 @@
 #'
 #' @importFrom dplyr everything mutate select summarise
 #' @importFrom ggplot2 ensym
+#' @importFrom stats sd
 #' @importFrom stringr str_remove
 #' @importFrom tidyr pivot_longer
 #'
@@ -312,6 +313,7 @@ qc_calculate_depth_crosscheck_thresholds <- function(
 #'   \code{threshold}, and \code{threshold_value}.
 #'
 #' @importFrom dplyr everything group_by mutate summarise ungroup
+#' @importFrom stats sd
 #' @importFrom tidyr pivot_longer
 #' @importFrom sensorstrings ss_pivot_wider
 #'

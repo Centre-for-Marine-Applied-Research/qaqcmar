@@ -24,12 +24,6 @@
 #'   was collected. Used to filter the default \code{grossrange_table}. Not
 #'   required if there is a \code{county} column in \code{dat}.
 #'
-#' @param join_column Optional character string of a column name that is in both
-#'   \code{dat} and \code{grossrange_table}. The specified column will be used
-#'   to join the two tables. Default is \code{join_column = NULL}, and the
-#'   tables are joined only on the \code{sensor_type} and \code{variable}
-#'   columns.
-#'
 #' @return Returns \code{dat} in a wide format, with grossrange flag columns for
 #'   each variable in the form "grossrange_flag_variable".
 #'

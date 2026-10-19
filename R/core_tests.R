@@ -131,6 +131,7 @@ qc_core_spike <- function(dat, keep_spike_cols = FALSE) {
 #'   to 4). `qc_core_to_wide()` restores the original order by `row_id`.
 #'
 #' @importFrom dplyr case_when lag mutate ungroup select
+#' @importFrom stats sd
 #' @importFrom zoo rollapply
 #'
 #' @noRd

@@ -19,7 +19,6 @@ Imports:
     stats,
     stringr,
     tidyr (>= 1.0.0),
-    tidyselect (>= 1.0.0),
     zoo
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
