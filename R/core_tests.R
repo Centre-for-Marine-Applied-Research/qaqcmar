@@ -60,18 +60,19 @@ qc_core_climatology <- function(dat) {
 #'
 #' @param dat Long data with spike thresholds, from
 #'   `qc_append_thresholds(dat, "spike", county)`.
+#'
 #' @param keep_spike_cols  Logical. If `TRUE`, the helper columns `lag_value`,
 #'   `lead_value`, `spike_ref` and `spike_value` are kept.
 #'
-#' @return  `dat` sorted by series and time, plus `spike_flag` (integer, 1 to
+#' @return `dat` sorted by series and time, plus `spike_flag` (integer, 1 to
 #'   4). `qc_core_to_wide()` restores the original order by `row_id`.
 #'
 #' @importFrom dplyr case_when lag lead mutate ungroup select
 #'
 #' @noRd
 
-qc_core_spike <- function(dat, keep_spike_cols) {
-  dat |>
+qc_core_spike <- function(dat, keep_spike_cols = FALSE) {
+  dat <- dat |>
     qc_core_group_series() |>
     mutate(
       lag_value = lag(value),
@@ -86,6 +87,14 @@ qc_core_spike <- function(dat, keep_spike_cols) {
       )
     ) |>
     ungroup()
+
+  if (isFALSE(keep_spike_cols)) {
+    dat <- select(
+      dat,
+      -c(lag_value, lead_value, spike_ref, spike_value)
+    )
+  }
+  dat
 }
 
 #' Apply the rolling sd test to long data
