@@ -1,6 +1,6 @@
 # Generated with Claude Opus 5.5
 
-dat_wide <- readRDS(
+dat_wide_core <- readRDS(
   paste0(
     system.file("testdata", package = "qaqcmar"),
     "/test_data_grossrange.RDS"
@@ -8,10 +8,10 @@ dat_wide <- readRDS(
 )
 
 test_that("qc_core_to_wide() undoes qc_core_prepare()", {
-  out <- qc_core_to_wide(qc_core_prepare(dat_wide))
+  out <- qc_core_to_wide(qc_core_prepare(dat_wide_core))
 
   has_values <- rowSums(
-    !is.na(dat_wide[c(
+    !is.na(dat_wide_core[c(
       "dissolved_oxygen_percent_saturation",
       "temperature_degree_c"
     )])
@@ -19,16 +19,16 @@ test_that("qc_core_to_wide() undoes qc_core_prepare()", {
     0
 
   # same columns (in the standard order), same values, same row order
-  expect_setequal(colnames(out), colnames(dat_wide))
+  expect_setequal(colnames(out), colnames(dat_wide_core))
   expect_equal(
-    as.data.frame(out[colnames(dat_wide)]),
-    as.data.frame(dat_wide[has_values, ]),
+    as.data.frame(out[colnames(dat_wide_core)]),
+    as.data.frame(dat_wide_core[has_values, ]),
     ignore_attr = TRUE
   )
 })
 
 test_that("qc_core_to_wide() names flags by test and variable, as ordered factors", {
-  out <- qc_core_run(dat_wide, "grossrange", county = "Lunenburg") |>
+  out <- qc_core_run(dat_wide_core, "grossrange", county = "Lunenburg") |>
     qc_core_to_wide()
 
   expect_true(all(
@@ -46,7 +46,7 @@ test_that("qc_core_to_wide() names flags by test and variable, as ordered factor
 })
 
 test_that("qc_core_to_wide() joins set-aside flags back on row_id", {
-  dat <- qc_test_grossrange(dat_wide, county = "Lunenburg")
+  dat <- qc_test_grossrange(dat_wide_core, county = "Lunenburg")
   parts <- qc_core_set_aside_flags(dat, "spike")
 
   out <- qc_core_run(parts$dat, "spike", county = "Lunenburg") |>
@@ -61,7 +61,7 @@ test_that("qc_core_to_wide() joins set-aside flags back on row_id", {
 
 test_that("qc_core_to_wide() gives helper columns one column per variable", {
   out <- qc_core_run(
-    dat_wide,
+    dat_wide_core,
     "spike",
     county = "Lunenburg",
     keep_spike_cols = TRUE
@@ -69,7 +69,7 @@ test_that("qc_core_to_wide() gives helper columns one column per variable", {
     qc_core_to_wide()
 
   # one row per timestamp and sensor, not one per variable (QC-5)
-  expect_equal(nrow(out), nrow(qc_core_to_wide(qc_core_prepare(dat_wide))))
+  expect_equal(nrow(out), nrow(qc_core_to_wide(qc_core_prepare(dat_wide_core))))
   expect_true(all(
     c(
       "spike_value_temperature_degree_c",

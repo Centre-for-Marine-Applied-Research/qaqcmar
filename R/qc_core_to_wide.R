@@ -15,8 +15,7 @@
 #' @return Wide data with one row per `row_id`, in `row_id` order, without
 #'   `row_id`, `sensor_key` and `month`.
 #'
-#' @importFrom dplyr across all_of any_of arrange everything left_join mutate
-#'   select
+#' @importFrom dplyr across all_of any_of arrange everything left_join mutate select
 #' @importFrom tidyr pivot_wider
 #'
 #' @noRd
