@@ -25,8 +25,7 @@ n_var <- nrow(n_var)
 dat_wide <- readRDS(paste0(path, "/test_data_rolling_sd.RDS")) %>%
   qc_test_all(
     qc_tests = qc_tests,
-    county = "Halifax",
-    join_column_spike = "sensor_type"
+    county = "Halifax"
   )
 
 dat_long <- dat_wide %>%

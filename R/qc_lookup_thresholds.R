@@ -65,7 +65,7 @@ qc_lookup_thresholds <- function(
   county,
   threshold_table = NULL
 ) {
-  if (is.null(table)) {
+  if (is.null(threshold_table)) {
     thr <- qaqcmar::thresholds |>
       filter(qc_test == !!qc_test, county == !!county | is.na(county)) |>
       pivot_wider(names_from = threshold, values_from = threshold_value)

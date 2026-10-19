@@ -4,33 +4,20 @@
 \alias{qc_test_climatology}
 \title{Apply the climatology test}
 \usage{
-qc_test_climatology(
-  dat,
-  climatology_table = NULL,
-  join_column = NULL,
-  county = NULL
-)
+qc_test_climatology(dat, climatology_table = NULL, county = NULL)
 }
 \arguments{
 \item{dat}{Data frame of sensor string data in wide format.}
 
-\item{climatology_table}{Data frame with at least 4 columns: \code{variable}:
-must match the names of the variables being tested in \code{dat};
+\item{climatology_table}{Data frame with columns \code{variable},
 \code{month}: numeric values from 1 to 12 for each variable;
 \code{season_min}: minimum reasonable value for the corresponding variable
 and month; \code{season_max}: maximum reasonable value for the
-corresponding variable and month. Optional additional column(s) that is
-used to join with \code{dat}. This column must have the same name as the
-string \code{join_column}.
+corresponding variable and month.
 
 Default values are used if \code{climatology_table = NULL}. To see the
 default \code{climatology_table}, type \code{subset(thresholds,
   qc_test == "climatology")} in the console.}
-
-\item{join_column}{Optional character string of a column name that is in both
-\code{dat} and \code{climatology_table}. The specified column will be used
-to join the two tables. Default is \code{join_column = NULL}, and the
-tables are joined only on the \code{month} and \code{variable} columns.}
 
 \item{county}{Character string indicating the county from which \code{dat}
 was collected. Used to filter the default \code{climatology_table}. Not

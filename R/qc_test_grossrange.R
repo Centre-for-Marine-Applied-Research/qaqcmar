@@ -45,7 +45,7 @@
 qc_test_grossrange <- function(
   dat,
   grossrange_table = NULL,
-  county = NULL,
+  county = NULL
 ) {
   message("applying grossrange test")
 
@@ -54,9 +54,9 @@ qc_test_grossrange <- function(
   if (is.null(grossrange_table)) {
     assert_county_thresholds(county, "grossrange")
   }
-dat <- qc_core_set_aside_flags(dat, "grossrange")
+  dat <- qc_core_set_aside_flags(dat, "grossrange")
 
-# if grossrange_table is NULL, qc_core_run() uses the default thresholds
+  # if grossrange_table is NULL, qc_core_run() uses the default thresholds
   dat$dat |>
     qc_core_run(
       qc_tests = "grossrange",

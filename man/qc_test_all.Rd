@@ -33,14 +33,11 @@ c("climatology", "depth_crosscheck", "grossrange", "rolling_sd", "spike")}.}
 was collected. Used to filter the default \code{climatology_table}. Not
 required if there is a \code{county} column in \code{dat}.}
 
-\item{climatology_table}{Data frame with at least 4 columns: \code{variable}:
-must match the names of the variables being tested in \code{dat};
+\item{climatology_table}{Data frame with columns \code{variable},
 \code{month}: numeric values from 1 to 12 for each variable;
 \code{season_min}: minimum reasonable value for the corresponding variable
 and month; \code{season_max}: maximum reasonable value for the
-corresponding variable and month. Optional additional column(s) that is
-used to join with \code{dat}. This column must have the same name as the
-string \code{join_column}.
+corresponding variable and month.
 
 Default values are used if \code{climatology_table = NULL}. To see the
 default \code{climatology_table}, type \code{subset(thresholds,
@@ -52,14 +49,11 @@ Default values are used if \code{depth_table = NULL}. To see the
 default \code{depth__table}, type \code{subset(thresholds,
   qc_test == "depth_crosscheck")} in the console.}
 
-\item{grossrange_table}{Data frame with at least 7 columns: \code{variable}:
-entries must match the names of the variables being tested in \code{dat}.
-\code{sensor_type}: type of sensor that recorded the observation;
-\code{sensor_min}: minimum value the sensor can record; \code{sensor_max}:
-maximum value the sensor can record. \code{user_min}: minimum reasonable
-value; \code{user_max}: maximum reasonable value. Optional additional
-column(s) that is used to join with \code{dat}. This column must have the
-same name as the string \code{join_column}.
+\item{grossrange_table}{Data frame with columns \code{variable},
+\code{sensor_type}, \code{sensor_min}, \code{sensor_max},
+\code{user_min} and \code{user_max}. An \code{NA} in \code{sensor_type}
+means the row applies to any sensor. Use \code{sensor_type = "hobo do"}
+for hobo sensors that record dissolved oxygen.
 
 Default values are used if \code{grossrange_table = NULL}. To see the
 default \code{grossrange_table}, type \code{subset(thresholds,
@@ -68,9 +62,7 @@ default \code{grossrange_table}, type \code{subset(thresholds,
 \item{rolling_sd_table}{Data frame with at least two columns:
 \code{variable}: must match the names of the variables being tested in
 \code{dat}. \code{rolling_sd_max}: maximum accepted value for the rolling
-standard deviation. Optional additional column that is used to join with
-\code{dat}. This column must have the same name as the string
-\code{join_column}.
+standard deviation.
 
 Default values are used if \code{rolling_sd_table = NULL}. To see the
 default \code{rolling_sd_table}, type \code{subset(thresholds,
@@ -83,17 +75,15 @@ should match the names of the variables being tested in \code{dat}.
 Interest". For variable = sensor_depth_measured_m, the column
 \code{sensor_type} is also required.
 
-Optional additional column(s) that is used to join with \code{dat}. This
-column must have the same name as the string \code{join_column}.
-
 Default values are used if \code{spike_table = NULL}. To see the
 default \code{spike_table}, type \code{subset(thresholds,
   qc_test == "spike")} in the console.}
 
 \item{join_column}{Optional character string of a column name that is in both
-\code{dat} and \code{climatology_table}. The specified column will be used
+\code{dat} and \code{grossrange_table}. The specified column will be used
 to join the two tables. Default is \code{join_column = NULL}, and the
-tables are joined only on the \code{month} and \code{variable} columns.}
+tables are joined only on the \code{sensor_type} and \code{variable}
+columns.}
 
 \item{join_column_spike}{Optional character string of a column name that is in both
 \code{dat} and \code{spike_table}. The specified column will be used to

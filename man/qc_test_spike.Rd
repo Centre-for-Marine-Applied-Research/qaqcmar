@@ -4,13 +4,7 @@
 \alias{qc_test_spike}
 \title{Apply the spike test}
 \usage{
-qc_test_spike(
-  dat,
-  county = NULL,
-  join_column = NULL,
-  spike_table = NULL,
-  keep_spike_cols = FALSE
-)
+qc_test_spike(dat, county = NULL, spike_table = NULL, keep_spike_cols = FALSE)
 }
 \arguments{
 \item{dat}{Data frame of sensor string data in wide format.}
@@ -19,22 +13,12 @@ qc_test_spike(
 was collected. Used to filter the default \code{spike_table}. Not
 required if there is a \code{county} column in \code{dat}.}
 
-\item{join_column}{Optional character string of a column name that is in both
-\code{dat} and \code{spike_table}. The specified column will be used to
-join the two tables. Default is \code{join_column = NULL}, and the tables
-are joined only on the \code{variable} columns (unless the variable is
-sensor_depth_at_low_tide_m, in which case the tables are also joined by the
-\code{sensor_type} column).}
-
 \item{spike_table}{Data frame with at least 3 columns: \code{variable}:
 should match the names of the variables being tested in \code{dat}.
 \code{spike_low}: maximum acceptable spike value to "Pass", and
 \code{spike_high}: maximum acceptable value to be flagged "Suspect/Of
 Interest". For variable = sensor_depth_measured_m, the column
 \code{sensor_type} is also required.
-
-Optional additional column(s) that is used to join with \code{dat}. This
-column must have the same name as the string \code{join_column}.
 
 Default values are used if \code{spike_table = NULL}. To see the
 default \code{spike_table}, type \code{subset(thresholds,

@@ -4,24 +4,16 @@
 \alias{qc_test_grossrange}
 \title{Apply the gross range test}
 \usage{
-qc_test_grossrange(
-  dat,
-  grossrange_table = NULL,
-  county = NULL,
-  join_column = NULL
-)
+qc_test_grossrange(dat, grossrange_table = NULL, county = NULL)
 }
 \arguments{
 \item{dat}{Data frame of sensor string data in wide format.}
 
-\item{grossrange_table}{Data frame with at least 7 columns: \code{variable}:
-entries must match the names of the variables being tested in \code{dat}.
-\code{sensor_type}: type of sensor that recorded the observation;
-\code{sensor_min}: minimum value the sensor can record; \code{sensor_max}:
-maximum value the sensor can record. \code{user_min}: minimum reasonable
-value; \code{user_max}: maximum reasonable value. Optional additional
-column(s) that is used to join with \code{dat}. This column must have the
-same name as the string \code{join_column}.
+\item{grossrange_table}{Data frame with columns \code{variable},
+\code{sensor_type}, \code{sensor_min}, \code{sensor_max},
+\code{user_min} and \code{user_max}. An \code{NA} in \code{sensor_type}
+means the row applies to any sensor. Use \code{sensor_type = "hobo do"}
+for hobo sensors that record dissolved oxygen.
 
 Default values are used if \code{grossrange_table = NULL}. To see the
 default \code{grossrange_table}, type \code{subset(thresholds,
