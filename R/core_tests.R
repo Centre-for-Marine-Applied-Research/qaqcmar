@@ -19,7 +19,7 @@ qc_core_grossrange <- function(dat) {
         value > sensor_max | value < sensor_min ~ 4L,
         (value <= sensor_max & value > user_max) |
           (value >= sensor_min & value < user_min) ~ 3L,
-        value <= user_max | value >= user_min ~ 1L,
+        value <= user_max & value >= user_min ~ 1L,
         .default = 2L
       )
     )

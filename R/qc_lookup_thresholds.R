@@ -145,7 +145,13 @@ qc_lookup_thresholds <- function(
     select(-any_of(c("spec", "thr_month", "qc_test")))
 
   if (qc_test == "grossrange") {
-    out <- filter(out, !is.na(sensor_min), !is.na(user_min), !is.na(user_max))
+    out <- filter(
+      out,
+      !is.na(sensor_min),
+      !is.na(sensor_max),
+      !is.na(user_min),
+      !is.na(user_max)
+    )
   }
 
   out
