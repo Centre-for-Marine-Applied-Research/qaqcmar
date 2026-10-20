@@ -58,28 +58,29 @@ test_that("pass-through columns are unchanged", {
   expect_equal(long$timestamp_utc, dat_gr$timestamp_utc[long$row_id])
 })
 
-test_that("sensor_key marks hobo DO rows, and sensor_type is unchanged", {
+test_that("sensor_key marks the whole hobo DO logger, and sensor_type is unchanged", {
   dat <- data.frame(
     county = "Halifax",
     station = "A",
-    deployment_range = "2023-Jan-01 to 2023-Dec-31",
-    sensor_type = c("hobo", "hobo", "hobo", "tidbit"),
-    sensor_serial_number = c(1, 1, 2, 3),
-    timestamp_utc = as.POSIXct("2023-06-01", tz = "UTC") + 0:3 * 600,
-    dissolved_oxygen_uncorrected_mg_per_l = c(8, NA, NA, NA),
-    temperature_degree_c = c(10, 11, 12, 13)
+    deployment_range = c(
+      rep("2023-Jan-01 to 2023-Dec-31", 4),
+      "2024-Jan-01 to 2024-Dec-31"
+    ),
+    sensor_type = c("hobo", "hobo", "hobo", "tidbit", "hobo"),
+    sensor_serial_number = c(1, 1, 2, 3, 1),
+    timestamp_utc = as.POSIXct("2023-06-01", tz = "UTC") + 0:4 * 600,
+    dissolved_oxygen_uncorrected_mg_per_l = c(8, NA, NA, NA, NA),
+    temperature_degree_c = c(10, 11, 12, 13, 14)
   )
 
   # phase A: row by row
   long <- qc_core_prepare(dat)
   key <- long$sensor_key[long$variable == "temperature_degree_c"]
-  expect_equal(key, c("hobo do", "hobo", "hobo", "tidbit"))
-  expect_equal(unique(long$sensor_type), c("hobo", "tidbit"))
 
-  # # phase B: the whole sensor (serial 1), but not the other hobo (serial 2)
-  # long <- qc_core_prepare(dat, hobo_do = "sensor")
-  # key <- long$sensor_key[long$variable == "temperature_degree_c"]
-  # expect_equal(key, c("hobo do", "hobo do", "hobo", "tidbit"))
+  # serial 1 in 2023 recorded DO, so both its rows are "hobo do"; serial 2,
+  # the tidbit and serial 1 in another deployment are not
+  expect_equal(key, c("hobo do", "hobo do", "hobo", "tidbit", "hobo"))
+  expect_equal(unique(long$sensor_type), c("hobo", "tidbit"))
 })
 
 test_that("month comes from timestamp_utc", {

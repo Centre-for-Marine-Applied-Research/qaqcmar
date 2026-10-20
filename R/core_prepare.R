@@ -176,8 +176,6 @@ qc_core_set_aside_flags <- function(dat, qc_tests) {
 #'
 #' @noRd
 qc_core_prepare <- function(dat) {
-  #hobo_do <- match.arg(hobo_do)
-
   required <- c(
     "station",
     "deployment_range",
@@ -208,18 +206,21 @@ qc_core_prepare <- function(dat) {
   }
 
   # sensor_key: sensor_type for the threshold lookup, with "hobo do" for hobo
-  # DO loggers (their temperature sensor limits differ). Decided in wide
-  # format, before the pivot, because the rule looks at the DO column.
+  # DO loggers. A hobo is "hobo do"
+  # for all its rows if it ever records DO. Decided in wide format, before the
+  # pivot, because the rule looks at the DO column.
   do_col <- "dissolved_oxygen_uncorrected_mg_per_l"
   if (do_col %in% colnames(dat)) {
-    dat <- mutate(
-      dat,
-      sensor_key = if_else(
-        sensor_type == "hobo" & !is.na(.data[[do_col]]),
-        "hobo do",
-        sensor_type
-      )
-    )
+    dat <- dat |>
+      group_by(station, deployment_range, sensor_serial_number) |>
+      mutate(
+        sensor_key = if_else(
+          sensor_type == "hobo" & any(!is.na(.data[[do_col]])),
+          "hobo do",
+          sensor_type
+        )
+      ) |>
+      ungroup()
   } else {
     dat <- mutate(dat, sensor_key = sensor_type)
   }

@@ -70,3 +70,24 @@ test_that("qc_test_grossrange() assigns correct flags", {
     c(1, 3, 4)
   )
 })
+
+test_that("qc_test_grossrange() uses hobo do limits on DO logger rows without DO", {
+  dat <- data.frame(
+    county = "Halifax",
+    station = "A",
+    deployment_range = "2023-Jan-01 to 2023-Dec-31",
+    sensor_type = "hobo",
+    sensor_serial_number = 1,
+    timestamp_utc = as.POSIXct("2023-06-01", tz = "UTC") + 0:1 * 600,
+    dissolved_oxygen_uncorrected_mg_per_l = c(8, NA),
+    temperature_degree_c = c(10, 45)
+  )
+
+  out <- suppressMessages(qc_test_grossrange(dat))
+
+  # 45 is above the hobo do sensor_max (40), but not the hobo sensor_max (70)
+  expect_equal(
+    out$grossrange_flag_temperature_degree_c,
+    ordered(c(1, 4), levels = 1:4)
+  )
+})
