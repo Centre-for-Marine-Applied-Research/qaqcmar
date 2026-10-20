@@ -52,3 +52,26 @@ test_that("qc_test_spike() assigns correct flags", {
     1
   )
 })
+
+test_that("qc_test_spike() uses sensor-specific depth thresholds by default", {
+  # the same 0.8 m depth jump on an aquameasure and a vr2ar (Halifax:
+  # aquameasure spike_low 0.35, spike_high 1.05; vr2ar spike_low 1, spike_high 3)
+  dat <- data.frame(
+    county = "Halifax",
+    station = "A",
+    deployment_range = "2023-Jan-01 to 2023-Dec-31",
+    sensor_type = rep(c("aquameasure", "vr2ar"), each = 3),
+    sensor_serial_number = rep(c(1, 2), each = 3),
+    sensor_depth_at_low_tide_m = rep(c(2, 5), each = 3),
+    timestamp_utc = as.POSIXct("2023-06-01", tz = "UTC") + rep(0:2, 2) * 600,
+    sensor_depth_measured_m = c(2, 2.8, 2, 5, 5.8, 5)
+  )
+
+  out <- suppressMessages(qc_test_spike(dat))
+
+  # middle observation: 3 for the aquameasure, 1 for the vr2ar
+  expect_equal(
+    out$spike_flag_sensor_depth_measured_m,
+    ordered(c(2, 3, 2, 2, 1, 2), levels = 1:4)
+  )
+})
