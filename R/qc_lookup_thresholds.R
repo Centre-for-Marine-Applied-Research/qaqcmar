@@ -54,7 +54,7 @@
 #'   Join it to the long data with
 #'   `left_join(long, thr, by = c("variable", "sensor_key", "month"))`.
 #'
-#' @importFrom dplyr across arrange bind_rows filter group_by last rename select summarise tibble where
+#' @importFrom dplyr across anti_join arrange bind_rows distinct filter group_by last rename select semi_join summarise tibble where
 #' @importFrom tidyr pivot_wider
 #'
 #' @noRd
@@ -86,6 +86,35 @@ qc_lookup_thresholds <- function(
       thr_month = month,
       thr_county = county
     )
+
+  # stop if a variable has sensor-specific thresholds (e.g. gross range, depth
+  # spike) but the sensor type in the data matches none of them
+  sensor_thr <- thr |>
+    filter(!is.na(thr_sensor_type)) |>
+    distinct(variable, thr_sensor_type)
+
+  unknown <- keys |>
+    semi_join(sensor_thr, by = "variable") |>
+    anti_join(sensor_thr, by = c("variable", "sensor_key" = "thr_sensor_type"))
+
+  if (nrow(unknown) > 0) {
+    stop(
+      "No ",
+      qc_test,
+      " thresholds for sensor_type \"",
+      paste(unique(unknown$sensor_key), collapse = "\", \""),
+      "\" (",
+      paste(unique(unknown$variable), collapse = ", "),
+      ").",
+      "\nSensor types with ",
+      qc_test,
+      " thresholds: ",
+      paste(sort(unique(sensor_thr$thr_sensor_type)), collapse = ", "),
+      ".",
+      call. = FALSE
+    )
+  }
+
   out <- keys |>
     inner_join(thr, by = "variable", relationship = "many-to-many") |>
     filter(

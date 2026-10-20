@@ -91,3 +91,20 @@ test_that("qc_test_grossrange() uses hobo do limits on DO logger rows without DO
     ordered(c(1, 4), levels = 1:4)
   )
 })
+
+test_that("qc_test_grossrange() stops for a misspelled sensor type", {
+  dat <- data.frame(
+    county = "Halifax",
+    station = "A",
+    deployment_range = "2023-Jan-01 to 2023-Dec-31",
+    sensor_type = "aquameasur",
+    sensor_serial_number = 1,
+    timestamp_utc = as.POSIXct("2023-06-01", tz = "UTC"),
+    temperature_degree_c = 60
+  )
+
+  expect_error(
+    suppressMessages(qc_test_grossrange(dat)),
+    'sensor_type "aquameasur"'
+  )
+})

@@ -115,14 +115,22 @@ test_that("keys with no thresholds are left out", {
   expect_equal(nrow(qc_lookup_thresholds(chl, "rolling_sd", "Halifax")), 0)
 })
 
-# Phase A: today's qc_test_grossrange() has no thresholds for a sensor type
-# without sensor limits, so it gets flag 2. [phase B] this becomes a stop().
-test_that("gross range gives no thresholds for a sensor type without sensor limits", {
+test_that("an unknown sensor type stops only where thresholds depend on the sensor", {
   abc <- data.frame(
-    variable = "temperature_degree_c",
+    variable = c("temperature_degree_c", "sensor_depth_measured_m"),
     sensor_key = "abc",
     month = 7L
   )
 
-  expect_equal(nrow(qc_lookup_thresholds(abc, "grossrange", "Halifax")), 0)
+  # gross range: every variable has sensor limits
+  expect_error(
+    qc_lookup_thresholds(abc[1, ], "grossrange", "Halifax"),
+    'No grossrange thresholds for sensor_type "abc"'
+  )
+  # spike: only depth thresholds depend on the sensor
+  expect_error(
+    qc_lookup_thresholds(abc[2, ], "spike", "Halifax"),
+    'No spike thresholds for sensor_type "abc"'
+  )
+  expect_equal(nrow(qc_lookup_thresholds(abc[1, ], "spike", "Halifax")), 1)
 })
