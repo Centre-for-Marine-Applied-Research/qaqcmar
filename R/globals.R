@@ -48,6 +48,9 @@ utils::globalVariables(
     "spike_value",
     "spike_high",
     "spike_low",
+    "dup",
+    "dup_prev",
+    "near_dup",
 
     # qc_test_rolling_sd
     "county",

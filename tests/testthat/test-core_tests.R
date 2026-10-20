@@ -74,6 +74,29 @@ test_that("qc_core_spike() gives 2 when there are no thresholds", {
   expect_equal(unique(qc_core_spike(dat)$spike_flag), 2L)
 })
 
+test_that("qc_core_spike() warns about duplicate timestamps and gives them and their neighbours 2", {
+  dat <- data.frame(
+    row_id = 1:8,
+    station = "A",
+    deployment_range = "2023-Jan-01 to 2023-Dec-31",
+    sensor_serial_number = 1,
+    variable = "temperature_degree_c",
+    timestamp_utc = as.POSIXct("2023-06-01", tz = "UTC") +
+      c(0, 1, 2, 3, 3, 4, 5, 6) * 600,
+    value = c(1, 1, 1, 1, 9, 1, 1, 1),
+    spike_low = 1,
+    spike_high = 3
+  )
+
+  expect_warning(
+    out <- qc_core_spike(dat),
+    "1 duplicate timestamp"
+  )
+  # rows 4 and 5 share a timestamp; rows 3 and 6 are their neighbours
+  expect_equal(out$spike_flag, c(2L, 1L, 2L, 2L, 2L, 2L, 1L, 2L))
+})
+
+
 # rolling sd --------------------------------------------------------------
 
 # one sensor, every 10 minutes, with a 3-hour gap before row 8

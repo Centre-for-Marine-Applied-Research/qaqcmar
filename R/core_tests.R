@@ -52,11 +52,14 @@ qc_core_climatology <- function(dat) {
 
 #' Apply the spike test to long data
 #'
-#' # Generated with Claude Opus 5.5
 #' The spike value of an observation is its distance from the mean of the
 #' observations before and after it in the same series (see
 #' `qc_core_group_series()`). The first and last observation of each series
 #' get flag 2.
+#'
+#'  Observations at a duplicate timestamp, and the observations just before and
+#' after them, also get flag 2. This is because which duplicate counts as the
+#' neighbour depends only on row order, so their spike value is arbitrary. A warning will be printed if this occurs.
 #'
 #' @param dat Long data with spike thresholds, from
 #'   `qc_append_thresholds(dat, "spike", county)`.
@@ -67,7 +70,7 @@ qc_core_climatology <- function(dat) {
 #' @return `dat` sorted by series and time, plus `spike_flag` (integer, 1 to
 #'   4). `qc_core_to_wide()` restores the original order by `row_id`.
 #'
-#' @importFrom dplyr case_when lag lead mutate ungroup select
+#' @importFrom dplyr case_when coalesce if_else lag lead mutate ungroup select
 #'
 #' @noRd
 
@@ -84,9 +87,25 @@ qc_core_spike <- function(dat, keep_spike_cols = FALSE) {
         (spike_value <= spike_high & spike_value > spike_low) ~ 3L,
         spike_value <= spike_low ~ 1L,
         .default = 2L
-      )
+      ),
+      # duplicate timestamps, and the observations next to them, get 2
+      dup_prev = coalesce(timestamp_utc == lag(timestamp_utc), FALSE), # FALSE for first
+      dup = dup_prev | lead(dup_prev, default = FALSE),
+      near_dup = dup | lag(dup, default = FALSE) | lead(dup, default = FALSE),
+      spike_flag = if_else(near_dup, 2L, spike_flag)
     ) |>
     ungroup()
+
+  n_dup <- sum(dat$dup_prev)
+  if (n_dup > 0) {
+    warning(
+      n_dup,
+      " duplicate timestamp(s) found; these observations and their ",
+      "neighbours get spike_flag = 2.",
+      call. = FALSE
+    )
+  }
+  dat <- select(dat, -c(dup_prev, dup, near_dup))
 
   if (isFALSE(keep_spike_cols)) {
     dat <- select(
