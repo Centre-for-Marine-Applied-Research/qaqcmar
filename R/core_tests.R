@@ -151,7 +151,6 @@ qc_core_spike <- function(dat, keep_spike_cols = FALSE) {
 #'
 #' @importFrom dplyr case_when lag mutate ungroup select
 #' @importFrom stats sd
-#' @importFrom zoo rollapply
 #'
 #' @noRd
 
@@ -162,6 +161,8 @@ qc_core_rolling_sd <- function(
   align_window = "center",
   keep_sd_cols = FALSE
 ) {
+  align_window <- match.arg(align_window, c("center", "left", "right"))
+
   dat <- dat |>
     qc_core_group_series() |>
     mutate(
@@ -171,8 +172,6 @@ qc_core_rolling_sd <- function(
         lag(timestamp_utc),
         units = "mins"
       )),
-      # int_sample = round(as.numeric(int_sample)),
-
       # number of samples in  period_hours
       # 60 mins / hour * 1 sample / int_sample mins * 24 hours / period
       n_sample = round((60 / int_sample) * period_hours),
@@ -186,12 +185,10 @@ qc_core_rolling_sd <- function(
         TRUE ~ n_sample
       ),
       # rolling sd
-      sd_roll = rollapply(
+      sd_roll = qc_window_sd(
         value,
         width = n_sample_effective,
-        align = align_window,
-        FUN = sd,
-        fill = NA
+        align = align_window
       ),
       sd_roll = round(sd_roll, digits = 2),
       rolling_sd_flag = case_when(
@@ -217,6 +214,61 @@ qc_core_rolling_sd <- function(
   }
 
   dat
+}
+
+#' Calculate rolling standard deviation from running sums
+#' @param x Numeric vector, sorted by time.
+#' @param width Integer vector of window widths, the same length as `x` (or
+#'   length 1).
+#' @param align "center", "left" or "right".
+#'
+#' @return Numeric vector the same length as `x`.
+#'
+#' @noRd
+qc_window_sd <- function(x, width, align = c("center", "left", "right")) {
+  align <- match.arg(align)
+  n <- length(x)
+  i <- seq_len(n)
+  width <- rep_len(width, n)
+
+  # window bounds (indices into x)
+  hi <- switch(
+    align,
+    center = i + floor(width / 2),
+    left = i + width - 1,
+    right = i
+  )
+  lo <- hi - width + 1
+
+  out <- rep(NA_real_, n)
+  ok <- width > 1 & lo >= 1 & hi <= n
+  if (!any(ok)) {
+    return(out)
+  }
+
+  # subtract the mean so the sums stay small (floating point accuracy), and
+  # count NAs so that windows that contain one give NA, as sd() does
+  is_na <- is.na(x)
+  x <- x - mean(x, na.rm = TRUE)
+  x[is_na] <- 0
+
+  s1 <- c(0, cumsum(x))
+  s2 <- c(0, cumsum(x^2))
+  s_na <- c(0, cumsum(is_na))
+
+  lo <- lo[ok]
+  hi <- hi[ok]
+  w <- width[ok]
+  sum_x <- s1[hi + 1] - s1[lo]
+  sum_x2 <- s2[hi + 1] - s2[lo]
+  n_na <- s_na[hi + 1] - s_na[lo]
+
+  # pmax(): rounding can make a zero variance very slightly negative
+  sd_x <- sqrt(pmax((sum_x2 - sum_x^2 / w) / (w - 1), 0))
+  sd_x[n_na > 0] <- NA_real_
+
+  out[ok] <- sd_x
+  out
 }
 
 

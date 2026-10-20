@@ -149,6 +149,101 @@ test_that("qc_core_rolling_sd() gives NA when there is no threshold", {
   expect_equal(out$rolling_sd_flag[c(1, 2)], c(2L, NA))
 })
 
+
+test_that("qc_core_rolling_sd() supports left and right windows", {
+  left <- qc_core_rolling_sd(
+    sd_dat,
+    period_hours = 0.5,
+    align_window = "left",
+    keep_sd_cols = TRUE
+  )
+  right <- qc_core_rolling_sd(
+    sd_dat,
+    period_hours = 0.5,
+    align_window = "right",
+    keep_sd_cols = TRUE
+  )
+
+  # left: window is the row and the next 2; right: the row and the previous 2
+  expect_equal(left$sd_roll, c(NA, 0, 2.31, 2.31, 2.31, 0, 0, NA, NA))
+  expect_equal(right$sd_roll, c(NA, NA, 0, 0, 2.31, 2.31, 2.31, NA, 0))
+  expect_equal(left$rolling_sd_flag, c(2L, 1L, 3L, 3L, 3L, 1L, 1L, 2L, 2L))
+  expect_equal(right$rolling_sd_flag, c(2L, 2L, 1L, 1L, 3L, 3L, 3L, 2L, 1L))
+})
+
+test_that("qc_core_rolling_sd() stops for an unknown align_window", {
+  expect_error(
+    qc_core_rolling_sd(sd_dat, align_window = "middle"),
+    "should be one of"
+  )
+})
+
+# qc_window_sd() ------------------------------------------------
+
+# expected values come from sd() on the same windows that
+# zoo::rollapply(x, width, FUN = sd, align = align, fill = NA) uses
+roll_x <- c(1, 2, 4, 7, 11, 16)
+
+test_that("qc_window_sd() matches sd() on centred windows", {
+  # odd width: 1 before and 1 after
+  expect_equal(
+    qc_window_sd(roll_x, 3, "center"),
+    c(
+      NA,
+      sd(roll_x[1:3]),
+      sd(roll_x[2:4]),
+      sd(roll_x[3:5]),
+      sd(roll_x[4:6]),
+      NA
+    )
+  )
+  # even width: 1 before and 2 after (as zoo)
+  expect_equal(
+    qc_window_sd(roll_x, 4, "center"),
+    c(NA, sd(roll_x[1:4]), sd(roll_x[2:5]), sd(roll_x[3:6]), NA, NA)
+  )
+})
+
+test_that("qc_window_sd() matches sd() on left and right windows", {
+  expect_equal(
+    qc_window_sd(roll_x, 4, "left"),
+    c(sd(roll_x[1:4]), sd(roll_x[2:5]), sd(roll_x[3:6]), NA, NA, NA)
+  )
+  expect_equal(
+    qc_window_sd(roll_x, 4, "right"),
+    c(NA, NA, NA, sd(roll_x[1:4]), sd(roll_x[2:5]), sd(roll_x[3:6]))
+  )
+})
+
+test_that("qc_window_sd() uses a different width for each element", {
+  out <- qc_window_sd(roll_x, c(0, 1, 3, 4, 2, 10), "right")
+
+  # widths 0 and 1 give NA, as does a window longer than the data
+  expect_equal(
+    out,
+    c(NA, NA, sd(roll_x[1:3]), sd(roll_x[1:4]), sd(roll_x[4:5]), NA)
+  )
+})
+
+test_that("qc_window_sd() gives NA only for windows that contain an NA", {
+  x <- roll_x
+  x[2] <- NA
+  out <- qc_window_sd(x, 2, "right")
+
+  expect_equal(out, c(NA, NA, NA, sd(x[3:4]), sd(x[4:5]), sd(x[5:6])))
+})
+
+test_that("qc_window_sd() is accurate for large values with small variation", {
+  # e.g. dissolved oxygen around 100 % saturation, or depth in metres
+  set.seed(1)
+  x <- 1000 + round(rnorm(500, sd = 0.05), 2)
+  expected <- vapply(5:500, function(i) sd(x[(i - 4):i]), numeric(1))
+
+  expect_equal(qc_window_sd(x, 5, "right")[5:500], expected, tolerance = 1e-10)
+  # a constant series gives exactly 0, not a tiny positive number
+  expect_identical(qc_window_sd(rep(12.34, 10), 3, "center")[2:9], rep(0, 8))
+})
+
 # depth crosscheck --------------------------------------------------
 
 depth_dat <- data.frame(

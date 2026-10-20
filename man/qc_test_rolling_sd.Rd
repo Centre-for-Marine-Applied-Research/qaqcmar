@@ -42,7 +42,7 @@ every 6 hours, only 4 observations would be used to calculate
 \code{roll_sd}.}
 
 \item{align_window}{Alignment for the window used to calculate the rolling
-standard deviation. Passed to \code{zoo::rollapply()}. Default is
+standard deviation. Default is
 \code{align_window = "center"}. Other options are \code{"right"} (backward
 window) and \code{"left"} (forward window).}
 

@@ -15,7 +15,6 @@
 #' \code{n_sample_effective} and alignment specified by \code{align_window}.
 #' \code{sd_roll} is rounded to 2 decimal places.
 #'
-#'
 #' When int_sample = period_hours, n_sample = 1, so sd_roll = NA.
 #'
 #' @param dat Data frame of sensor string data in wide format.
@@ -45,7 +44,7 @@
 #'   \code{roll_sd}.
 #'
 #' @param align_window Alignment for the window used to calculate the rolling
-#'   standard deviation. Passed to \code{zoo::rollapply()}. Default is
+#'   standard deviation. Default is
 #'   \code{align_window = "center"}. Other options are \code{"right"} (backward
 #'   window) and \code{"left"} (forward window).
 #'
