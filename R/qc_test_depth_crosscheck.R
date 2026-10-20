@@ -22,6 +22,9 @@
 #' anticipated, all sensors will likely be 10 m deeper than recorded in the
 #' \code{sensor_depth_at_low_tide_m} column.
 #'
+#'  If \code{dat} has no measured depth, the test is skipped and \code{dat} is
+#' returned unchanged.
+#'
 #' @param dat Data frame of sensor string data in a wide format.
 #'
 #' @param depth_table Data frame with 1 column: \code{depth_diff_max}.

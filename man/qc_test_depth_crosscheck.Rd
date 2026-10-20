@@ -58,4 +58,7 @@ deployment. If the depth crosscheck test identifies the estimated depth as
 suspect. For example, if the string was moored in an area 10 m deeper than
 anticipated, all sensors will likely be 10 m deeper than recorded in the
 \code{sensor_depth_at_low_tide_m} column.
+
+If \code{dat} has no measured depth, the test is skipped and \code{dat} is
+returned unchanged.
 }

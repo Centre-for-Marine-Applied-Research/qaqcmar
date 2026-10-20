@@ -59,7 +59,11 @@ qc_core_run <- function(
       qc_core_climatology()
   }
 
-  if ("depth_crosscheck" %in% qc_tests) {
+  if (
+    "depth_crosscheck" %in%
+      qc_tests &&
+      "sensor_depth_measured_m" %in% dat$variable
+  ) {
     if (is.null(depth_table)) {
       depth_diff_max <- qaqcmar::thresholds |>
         filter(qc_test == "depth_crosscheck") |>
