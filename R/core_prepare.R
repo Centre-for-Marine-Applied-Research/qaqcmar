@@ -52,9 +52,9 @@
 #    timestamp_utc, then row_id. test functions group and sort the series themselves with qc_core_group_series()
 #
 #
-# 3. Threshold columns (added by qc_core_thresholds()) -------------------------
+# 3. Threshold columns (added by qc_append_thresholds()) -------------------------
 #
-#    Joined on variable, sensor_key and month (plus join_column if given).
+#    Joined on variable, sensor_key and month.
 #    Names are fixed and unique across tests, so all can sit in the data at
 #    once:
 #      grossrange        sensor_min, sensor_max, user_min, user_max

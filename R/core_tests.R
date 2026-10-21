@@ -155,7 +155,7 @@ qc_core_spike <- function(
 #'   \code{roll_sd}.
 #'
 #' @param align_window Alignment for the window used to calculate the rolling
-#'   standard deviation. Passed to \code{zoo::rollapply()}. Default is
+#'   standard deviation. Passed to \code{qc_window_sd()}. Default is
 #'   \code{align_window = "center"}. Other options are \code{"right"} (backward
 #'   window) and \code{"left"} (forward window).
 #'
@@ -192,7 +192,6 @@ qc_core_rolling_sd <- function(
       # 60 mins / hour * 1 sample / int_sample mins * 24 hours / period
       n_sample = round((60 / int_sample) * period_hours),
       n_sample_effective = case_when(
-        # first observation of each group is NA, which will give error in rollapply
         is.na(n_sample) ~ 0,
         int_sample <= 0 ~ 0, # duplicate timestamp
         # if the sample interval is greater than acceptable limit, set n_sample to 0

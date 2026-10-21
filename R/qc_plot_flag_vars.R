@@ -147,7 +147,7 @@ qc_plot_flags <- function(
 #'   Points are coloured by the flag value and panels are faceted by depth and
 #'   sensor.
 #'
-#' @importFrom ggplot2 aes element_rect element_text facet_wrap geom_point ggplot ggtitle guides guide_legend  scale_colour_manual scale_x_datetime scale_y_continuous theme_light theme
+#' @importFrom ggplot2 aes element_rect element_text facet_wrap geom_point ggplot ggtitle guides guide_legend scale_colour_manual scale_x_datetime scale_y_continuous theme_light theme
 #'
 #' @importFrom gtools mixedsort
 
@@ -203,7 +203,7 @@ ggplot_flags <- function(
 #' @return Returns a ggplot object. Points are coloured by the flag value.
 #'
 #' @importFrom dplyr filter group_by summarise ungroup
-#' @importFrom ggplot2 aes element_text element_rect geom_abline geom_hline geom_point geom_vline ggplot ggtitle guides guide_legend position_jitter scale_colour_manual scale_x_datetime scale_y_continuous theme_light theme
+#' @importFrom ggplot2 aes element_text element_rect geom_hline geom_point geom_vline ggplot ggtitle guides guide_legend position_jitter scale_colour_manual scale_x_datetime scale_y_continuous theme_light theme
 #' @importFrom gtools mixedsort
 #' @importFrom stringr str_remove_all
 #'

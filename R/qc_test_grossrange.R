@@ -31,8 +31,8 @@
 #'
 #' @importFrom dplyr case_when contains distinct inner_join left_join mutate select
 #' @importFrom sensorstrings ss_pivot_longer
-#' @importFrom stringr str_detect str_remove str_remove_all
-#' @importFrom tidyr pivot_wider separate
+#' @importFrom stringr str_remove str_remove_all
+#' @importFrom tidyr pivot_wider
 #'
 #' @export
 

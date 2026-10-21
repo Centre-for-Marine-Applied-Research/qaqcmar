@@ -75,7 +75,7 @@ qc_hil_4 <- qc_hil %>%
 qc_hil_1 <- qc_hil %>%
   dplyr::anti_join(
     qc_hil_4,
-    join_by(
+    dplyr::join_by(
       county,
       waterbody,
       station,

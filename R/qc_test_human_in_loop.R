@@ -40,7 +40,8 @@
 #'
 #' @return Returns \code{dat} with a \code{human_in_loop_flag} column for each
 #'   variable and a corresponding \code{hil_comment} column.
-
+#'
+#' @importFrom dplyr between
 #' @export
 
 qc_test_human_in_loop <- function(
@@ -109,7 +110,7 @@ qc_test_human_in_loop <- function(
 #'   variable and a \code{human_in_loop_comment} column.
 #'
 #' @importFrom dplyr contains distinct if_any if_else filter last_col left_join relocate rename select
-#' @importFrom data.table := between
+#' @importFrom rlang :=
 
 qc_apply_human_in_loop <- function(
   dat,
