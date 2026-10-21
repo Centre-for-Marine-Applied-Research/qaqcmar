@@ -4,7 +4,13 @@
 \alias{qc_test_spike}
 \title{Apply the spike test}
 \usage{
-qc_test_spike(dat, county = NULL, spike_table = NULL, keep_spike_cols = FALSE)
+qc_test_spike(
+  dat,
+  county = NULL,
+  max_interval_hours = 2,
+  spike_table = NULL,
+  keep_spike_cols = FALSE
+)
 }
 \arguments{
 \item{dat}{Data frame of sensor string data in wide format.}
@@ -12,6 +18,12 @@ qc_test_spike(dat, county = NULL, spike_table = NULL, keep_spike_cols = FALSE)
 \item{county}{Character string indicating the county from which \code{dat}
 was collected. Used to filter the default \code{spike_table}. Not
 required if there is a \code{county} column in \code{dat}.}
+
+\item{max_interval_hours}{Maximum accepted interval (hours) between two
+observations. The observations just before and after a longer gap get
+flag 2, because the observation across the gap is not a fair reference
+for the spike value. Data sampled less often than this get flag 2
+throughout. Default is \code{max_interval_hours = 2}.}
 
 \item{spike_table}{Data frame with at least 3 columns: \code{variable}:
 should match the names of the variables being tested in \code{dat}.

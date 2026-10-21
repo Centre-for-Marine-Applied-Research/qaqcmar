@@ -96,6 +96,25 @@ test_that("qc_core_spike() warns about duplicate timestamps and gives them and t
   expect_equal(out$spike_flag, c(2L, 1L, 2L, 2L, 2L, 2L, 1L, 2L))
 })
 
+test_that("qc_core_spike() gives 2 on either side of a gap", {
+  dat <- data.frame(
+    row_id = 1:6,
+    station = "A",
+    deployment_range = "2023-Jan-01 to 2023-Dec-31",
+    sensor_serial_number = 1,
+    variable = "temperature_degree_c",
+    # 6-hour gap between rows 3 and 4
+    timestamp_utc = as.POSIXct("2023-06-01", tz = "UTC") +
+      c(0, 1, 2, 38, 39, 40) * 600,
+    value = c(1, 1, 1, 5, 5, 5),
+    spike_low = 1,
+    spike_high = 3
+  )
+  out <- qc_core_spike(dat, max_interval_hours = 2)
+
+  # without the gap rule, rows 3 and 4 would get 3
+  expect_equal(out$spike_flag, c(2L, 1L, 2L, 2L, 1L, 2L))
+})
 
 # rolling sd --------------------------------------------------------------
 
@@ -141,11 +160,11 @@ test_that("qc_core_rolling_sd() warns about duplicate timestamps and gives them 
   expect_equal(out$rolling_sd_flag[out$row_id == 3], 2L)
 })
 
-test_that("qc_core_rolling_sd() gives NA when there is no threshold", {
+test_that("qc_core_rolling_sd() gives flag 2 when there is no threshold", {
   dat <- dplyr::mutate(sd_dat, rolling_sd_max = NA)
   out <- qc_core_rolling_sd(dat, period_hours = 0.5)
 
-  expect_equal(out$rolling_sd_flag[c(1, 2)], c(2L, NA))
+  expect_equal(out$rolling_sd_flag[c(1, 2)], c(2L, 2L))
 })
 
 

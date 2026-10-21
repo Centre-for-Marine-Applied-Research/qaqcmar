@@ -7,7 +7,7 @@ dat <- readRDS(paste0(path, "/test_data_spike.RDS"))
 
 test_that("qc_test_spike() assigns correct flags", {
   dat_qc <- dat %>%
-    qc_test_spike(county = "Halifax") %>%
+    qc_test_spike(county = "Halifax", max_interval_hours = 24) %>%
     mutate(day = lubridate::day(timestamp_utc)) %>%
     qc_pivot_longer(qc_tests = "spike")
 

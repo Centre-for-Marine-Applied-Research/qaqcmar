@@ -63,7 +63,8 @@ qc_core_climatology <- function(dat) {
 #'
 #' @param dat Long data with spike thresholds, from
 #'   `qc_append_thresholds(dat, "spike", county)`.
-#'
+#' @param max_interval_hours Largest accepted interval (hours) between two
+#'   observations. Observations just before and after a longer gap get flag 2.
 #' @param keep_spike_cols  Logical. If `TRUE`, the helper columns `lag_value`,
 #'   `lead_value`, `spike_ref` and `spike_value` are kept.
 #'
@@ -74,7 +75,11 @@ qc_core_climatology <- function(dat) {
 #'
 #' @noRd
 
-qc_core_spike <- function(dat, keep_spike_cols = FALSE) {
+qc_core_spike <- function(
+  dat,
+  max_interval_hours = 2,
+  keep_spike_cols = FALSE
+) {
   dat <- dat |>
     qc_core_group_series() |>
     mutate(
@@ -92,7 +97,18 @@ qc_core_spike <- function(dat, keep_spike_cols = FALSE) {
       dup_prev = coalesce(timestamp_utc == lag(timestamp_utc), FALSE), # FALSE for first
       dup = dup_prev | lead(dup_prev, default = FALSE),
       near_dup = dup | lag(dup, default = FALSE) | lead(dup, default = FALSE),
-      spike_flag = if_else(near_dup, 2L, spike_flag)
+
+      gap_prev = coalesce(
+        as.numeric(difftime(
+          timestamp_utc,
+          lag(timestamp_utc),
+          units = "hours"
+        )) >
+          max_interval_hours,
+        FALSE
+      ), # FALSE for first
+      near_gap = gap_prev | lead(gap_prev, default = FALSE),
+      spike_flag = if_else(near_dup | near_gap, 2L, spike_flag)
     ) |>
     ungroup()
 
@@ -105,7 +121,7 @@ qc_core_spike <- function(dat, keep_spike_cols = FALSE) {
       call. = FALSE
     )
   }
-  dat <- select(dat, -c(dup_prev, dup, near_dup))
+  dat <- select(dat, -c(dup_prev, dup, near_dup, gap_prev, near_gap))
 
   if (isFALSE(keep_spike_cols)) {
     dat <- select(
