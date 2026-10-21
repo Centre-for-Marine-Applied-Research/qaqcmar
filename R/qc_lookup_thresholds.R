@@ -66,6 +66,13 @@ qc_lookup_thresholds <- function(
   threshold_table = NULL
 ) {
   if (is.null(threshold_table)) {
+    # sensor types with thresholds for this test in ANY county, so a known
+    # sensor type with no thresholds in this county (e.g. aquameasure depth
+    # spike in Colchester) gets a warning and flag 2 instead of stopping
+    sensor_thr <- qaqcmar::thresholds |>
+      filter(qc_test == !!qc_test, !is.na(sensor_type)) |>
+      distinct(variable, thr_sensor_type = sensor_type)
+
     thr <- qaqcmar::thresholds |>
       filter(qc_test == !!qc_test, county == !!county | is.na(county)) |>
       pivot_wider(names_from = threshold, values_from = threshold_value)
@@ -89,9 +96,14 @@ qc_lookup_thresholds <- function(
 
   # stop if a variable has sensor-specific thresholds (e.g. gross range, depth
   # spike) but the sensor type in the data matches none of them
-  sensor_thr <- thr |>
-    filter(!is.na(thr_sensor_type)) |>
-    distinct(variable, thr_sensor_type)
+  if (!is.null(threshold_table)) {
+    sensor_thr <- thr |>
+      filter(!is.na(thr_sensor_type)) |>
+      distinct(variable, thr_sensor_type)
+  }
+  # sensor_thr <- thr |>
+  #   filter(!is.na(thr_sensor_type)) |>
+  #   distinct(variable, thr_sensor_type)
 
   unknown <- keys |>
     semi_join(sensor_thr, by = "variable") |>
@@ -101,16 +113,51 @@ qc_lookup_thresholds <- function(
     stop(
       "No ",
       qc_test,
-      " thresholds for sensor_type \"",
+      " thresholds for sensor_type << ",
       paste(unique(unknown$sensor_key), collapse = "\", \""),
-      "\" (",
+      " >> for variable << ",
       paste(unique(unknown$variable), collapse = ", "),
-      ").",
+      " >>.",
       "\nSensor types with ",
       qc_test,
       " thresholds: ",
       paste(sort(unique(sensor_thr$thr_sensor_type)), collapse = ", "),
       ".",
+      call. = FALSE
+    )
+  }
+
+  # a known sensor type with no thresholds in this county (e.g. aquameasure
+  # depth spike in Colchester): warn, and the test gives flag 2
+  county_thr <- thr |>
+    filter(!is.na(thr_sensor_type)) |>
+    distinct(variable, thr_sensor_type)
+  no_county_thr <- keys |>
+    semi_join(sensor_thr, by = "variable") |>
+    anti_join(
+      county_thr,
+      by = c("variable", "sensor_key" = "thr_sensor_type")
+    ) |>
+    distinct(variable, sensor_key)
+
+  if (nrow(no_county_thr) > 0) {
+    warning(
+      "No ",
+      qc_test,
+      " thresholds in ",
+      county,
+      " for ",
+      paste0(
+        "sensor_type << ",
+        no_county_thr$sensor_key,
+        " >> (",
+        no_county_thr$variable,
+        ")",
+        collapse = ", "
+      ),
+      ".\nThese observations get ",
+      qc_test,
+      "_flag = 2.",
       call. = FALSE
     )
   }

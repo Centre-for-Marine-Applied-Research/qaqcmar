@@ -105,7 +105,7 @@ test_that("qc_test_grossrange() stops for a misspelled sensor type", {
 
   expect_error(
     suppressMessages(qc_test_grossrange(dat)),
-    'sensor_type "aquameasur"'
+    'sensor_type << aquameasur >>'
   )
 })
 

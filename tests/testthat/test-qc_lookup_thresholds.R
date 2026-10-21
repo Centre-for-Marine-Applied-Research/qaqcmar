@@ -125,12 +125,61 @@ test_that("an unknown sensor type stops only where thresholds depend on the sens
   # gross range: every variable has sensor limits
   expect_error(
     qc_lookup_thresholds(abc[1, ], "grossrange", "Halifax"),
-    'No grossrange thresholds for sensor_type "abc"'
+    'No grossrange thresholds for sensor_type << abc >>'
   )
   # spike: only depth thresholds depend on the sensor
   expect_error(
     qc_lookup_thresholds(abc[2, ], "spike", "Halifax"),
-    'No spike thresholds for sensor_type "abc"'
+    'No spike thresholds for sensor_type << abc >>'
   )
   expect_equal(nrow(qc_lookup_thresholds(abc[1, ], "spike", "Halifax")), 1)
+})
+
+
+test_that("an unknown sensor type stops only where thresholds depend on the sensor", {
+  abc <- data.frame(
+    variable = c("temperature_degree_c", "sensor_depth_measured_m"),
+    sensor_key = "abc",
+    month = 7L
+  )
+
+  # gross range: every variable has sensor limits
+  expect_error(
+    qc_lookup_thresholds(abc[1, ], "grossrange", "Halifax"),
+    'No grossrange thresholds for sensor_type << abc >>'
+  )
+  # spike: only depth thresholds depend on the sensor
+  expect_error(
+    qc_lookup_thresholds(abc[2, ], "spike", "Halifax"),
+    'No spike thresholds for sensor_type << abc >>'
+  )
+  expect_equal(nrow(qc_lookup_thresholds(abc[1, ], "spike", "Halifax")), 1)
+})
+
+test_that("a known sensor type with no thresholds in the county warns, not stops", {
+  # Colchester has a depth spike row for vr2ar but not for aquameasure
+  aqm <- data.frame(
+    variable = "sensor_depth_measured_m",
+    sensor_key = "aquameasure",
+    month = 7L
+  )
+
+  expect_warning(
+    out <- qc_lookup_thresholds(aqm, "spike", "Colchester"),
+    'No spike thresholds in Colchester for sensor_type << aquameasure >>'
+  )
+  # no thresholds: the key is left out, so the spike test gives flag 2
+  expect_equal(nrow(out), 0)
+  # in a county that has aquameasure rows, the thresholds are found
+  expect_no_warning(halifax <- qc_lookup_thresholds(aqm, "spike", "Halifax"))
+  expect_equal(nrow(halifax), 1)
+  # a sensor type that is in no county still stops
+  expect_error(
+    qc_lookup_thresholds(
+      dplyr::mutate(aqm, sensor_key = "abc"),
+      "spike",
+      "Colchester"
+    ),
+    'No spike thresholds for sensor_type << abc >>'
+  )
 })
