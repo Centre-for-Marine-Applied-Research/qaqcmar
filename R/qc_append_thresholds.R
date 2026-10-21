@@ -12,7 +12,7 @@
 #' @param qc_test Character string. The QC test, as in `thresholds$qc_test`.
 #' @param county Character string. One county, already checked by the
 #'   exported wrapper (`assert_county()`, `assert_county_thresholds()`).
-#' @param table Optional table of thresholds, passed to
+#' @param threshold_table Optional table of thresholds, passed to
 #'   `qc_lookup_thresholds()`. Default `NULL` uses `qaqcmar::thresholds`.
 #' @return `dat` with the same rows in the same order, plus the threshold
 #'   columns of `qc_test` (e.g. `sensor_min`, `sensor_max`, `user_min`,

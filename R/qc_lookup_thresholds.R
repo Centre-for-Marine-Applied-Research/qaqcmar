@@ -39,7 +39,7 @@
 #' @param county Character string. One county, as in `thresholds$county`.
 #'   Rows for other counties are ignored; province-wide rows (`county` `NA`)
 #'   are always used.
-#' @param threhold_table Optional table of thresholds for `qc_test`, in wide
+#' @param threshold_table Optional table of thresholds for `qc_test`, in wide
 #'  format: `variable` plus one column per threshold (e.g. `season_min`,
 #'  `season_max`), and optionally `sensor_type` and `month`. As in
 #'  `thresholds`, `NA` (or a missing column) in `sensor_type` or `month`
