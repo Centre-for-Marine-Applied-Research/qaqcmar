@@ -270,7 +270,7 @@ qc_calculate_depth_crosscheck_thresholds <- function(
     ) |>
     mutate(
       qc_test = "depth_crosscheck",
-      variable = as.character("sensor_depth_at_low_tide_m"),
+      variable = as.character("sensor_depth_measured_m"),
       depth_diff_max = round(depth_diff_max, digits = 2)
     ) |>
     select(qc_test, variable, everything()) |>

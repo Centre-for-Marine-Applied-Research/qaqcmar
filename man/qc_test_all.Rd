@@ -41,10 +41,14 @@ Default values are used if \code{climatology_table = NULL}. To see the
 default \code{climatology_table}, type \code{subset(thresholds,
   qc_test == "climatology")} in the console.}
 
-\item{depth_table}{Data frame with 1 column: \code{depth_diff_max}.
+\item{depth_table}{Data frame with column \code{depth_diff_max}: the
+largest acceptable difference (m) between the estimated and minimum
+measured sensor depth. Optional columns \code{variable} (must be
+\code{"sensor_depth_measured_m"}), \code{sensor_type} and \code{month}
+work as in the other threshold tables.
 
 Default values are used if \code{depth_table = NULL}. To see the
-default \code{depth__table}, type \code{subset(thresholds,
+default \code{depth_table}, type \code{subset(thresholds,
   qc_test == "depth_crosscheck")} in the console.}
 
 \item{grossrange_table}{Data frame with columns \code{variable},

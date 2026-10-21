@@ -281,11 +281,12 @@ depth_dat <- data.frame(
     "temperature_degree_c",
     "temperature_degree_c"
   ),
-  value = c(9, 10, 12, 12, 13, 5, 11, 12, 13)
+  value = c(9, 10, 12, 12, 13, 5, 11, 12, 13),
+  depth_diff_max = c(4, 4, NA, 4, 4, 4, NA, NA, NA)
 )
 
 test_that("qc_core_depth_crosscheck() gives each deployment its worst sensor flag", {
-  out <- qc_core_depth_crosscheck(depth_dat, depth_diff_max = 4)
+  out <- qc_core_depth_crosscheck(depth_dat)
 
   # d1: 1 (a diff equal to depth_diff_max passes)
   # d2: 3 (one failing sensor fails the deployment)
@@ -294,8 +295,15 @@ test_that("qc_core_depth_crosscheck() gives each deployment its worst sensor fla
 })
 
 test_that("qc_core_depth_crosscheck() only adds the flag column", {
-  out <- qc_core_depth_crosscheck(depth_dat, depth_diff_max = 4)
+  out <- qc_core_depth_crosscheck(depth_dat)
 
   expect_equal(out[colnames(depth_dat)], depth_dat)
   expect_equal(colnames(out), c(colnames(depth_dat), "depth_crosscheck_flag"))
+})
+
+test_that("qc_core_depth_crosscheck() gives 2 to sensors with no depth_diff_max", {
+  dat <- dplyr::mutate(depth_dat, depth_diff_max = NA_real_)
+  out <- qc_core_depth_crosscheck(dat)
+
+  expect_equal(unique(out$depth_crosscheck_flag), 2L)
 })

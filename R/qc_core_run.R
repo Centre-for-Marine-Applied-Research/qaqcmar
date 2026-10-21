@@ -64,14 +64,16 @@ qc_core_run <- function(
       qc_tests &&
       "sensor_depth_measured_m" %in% dat$variable
   ) {
-    if (is.null(depth_table)) {
-      depth_diff_max <- qaqcmar::thresholds |>
-        filter(qc_test == "depth_crosscheck") |>
-        pull(threshold_value)
-    } else {
-      depth_diff_max <- depth_table$depth_diff_max
+    if (!is.null(depth_table) && !("variable" %in% colnames(depth_table))) {
+      depth_table$variable <- "sensor_depth_measured_m"
     }
-    dat <- qc_core_depth_crosscheck(dat, depth_diff_max = depth_diff_max)
+    dat <- dat |>
+      qc_append_thresholds(
+        "depth_crosscheck",
+        county,
+        threshold_table = depth_table
+      ) |>
+      qc_core_depth_crosscheck()
   }
 
   if ("grossrange" %in% qc_tests) {

@@ -27,8 +27,6 @@ qc_core_grossrange <- function(dat) {
 
 #' Apply the climatology test to long data
 #'
-#' # Generated with Claude Opus 5.5
-#'
 #' @param dat Long data with gross range thresholds, from
 #'   `qc_append_thresholds(dat, "climatology", county)`.
 #'
@@ -133,8 +131,6 @@ qc_core_spike <- function(
 }
 
 #' Apply the rolling sd test to long data
-#'
-#' # Generated with Claude Opus 5.5
 #'
 #' The rolling standard deviation is calculated over a window of
 #' `period_hours` in each series (see `qc_core_group_series()`). It is `NA`
@@ -296,8 +292,6 @@ qc_window_sd <- function(x, width, align = c("center", "left", "right")) {
 #'
 #' @param dat Long data from `qc_core_prepare()`, with a
 #'   `sensor_depth_at_low_tide_m` column.
-#' @param depth_diff_max Largest acceptable difference (m) between the
-#'   estimated and minimum measured depth.
 #' @param return_sensor_table Logical. If `TRUE`, returns the per-sensor table
 #'   (one row per sensor: `min_measured`, `abs_diff`, `depth_diff_max`,
 #'   `depth_crosscheck_flag`) instead of `dat`. Sensors with no measured
@@ -306,12 +300,11 @@ qc_window_sd <- function(x, width, align = c("center", "left", "right")) {
 #' @return `dat` with the same rows in the same order, plus
 #'   `depth_crosscheck_flag` (integer, 1 to 4).
 #'
-#' @importFrom dplyr across all_of coalesce filter group_by if_else left_join mutate summarise
+#' @importFrom dplyr across all_of coalesce filter first group_by if_else left_join mutate summarise
 #'
 #' @noRd
 qc_core_depth_crosscheck <- function(
   dat,
-  depth_diff_max,
   return_sensor_table = FALSE
 ) {
   deployment_cols <- intersect(
@@ -325,29 +318,39 @@ qc_core_depth_crosscheck <- function(
     group_by(across(all_of(
       c(deployment_cols, "sensor_serial_number", "sensor_depth_at_low_tide_m")
     ))) |>
-    summarise(min_measured = min(value), .groups = "drop") |>
+    # depth_diff_max comes from the thresholds (one value per sensor)
+    summarise(
+      min_measured = min(value),
+      depth_diff_max = first(depth_diff_max),
+      .groups = "drop"
+    ) |>
     mutate(
-      depth_crosscheck_flag = if_else(
-        abs(sensor_depth_at_low_tide_m - min_measured) > depth_diff_max,
-        3L,
-        1L
+      abs_diff = abs(sensor_depth_at_low_tide_m - min_measured),
+      depth_crosscheck_flag = case_when(
+        abs_diff > depth_diff_max ~ 3L,
+        abs_diff <= depth_diff_max ~ 1L,
+        .default = 2L
       )
     )
 
   if (isTRUE(return_sensor_table)) {
-    sensor_cols <- c(
-      deployment_cols,
-      "sensor_serial_number",
-      "sensor_depth_at_low_tide_m"
-    )
-    sensor_table <- dat |>
-      distinct(across(all_of(sensor_cols))) |>
-      left_join(sensor_flags, by = sensor_cols) |>
+    # a depth_table with only depth_diff_max applies to measured depth
+    if (!is.null(depth_table) && !("variable" %in% colnames(depth_table))) {
+      depth_table$variable <- "sensor_depth_measured_m"
+    }
+
+    out <- dat$dat |>
+      qc_core_prepare() |>
+      qc_append_thresholds(
+        "depth_crosscheck",
+        county,
+        threshold_table = depth_table
+      ) |>
+      qc_core_depth_crosscheck(return_sensor_table = TRUE) |>
       mutate(
-        depth_diff_max = depth_diff_max,
-        depth_crosscheck_flag = coalesce(depth_crosscheck_flag, 2L),
-        .before = depth_crosscheck_flag
+        depth_crosscheck_flag = ordered(depth_crosscheck_flag, levels = 1:4)
       )
+
     return(sensor_table)
   }
 

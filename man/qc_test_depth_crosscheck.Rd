@@ -14,16 +14,19 @@ qc_test_depth_crosscheck(
 \arguments{
 \item{dat}{Data frame of sensor string data in a wide format.}
 
-\item{depth_table}{Data frame with 1 column: \code{depth_diff_max}.
+\item{depth_table}{Data frame with column \code{depth_diff_max}: the
+largest acceptable difference (m) between the estimated and minimum
+measured sensor depth. Optional columns \code{variable} (must be
+\code{"sensor_depth_measured_m"}), \code{sensor_type} and \code{month}
+work as in the other threshold tables.
 
 Default values are used if \code{depth_table = NULL}. To see the
-default \code{depth__table}, type \code{subset(thresholds,
+default \code{depth_table}, type \code{subset(thresholds,
   qc_test == "depth_crosscheck")} in the console.}
 
 \item{county}{Character string indicating the county from which \code{dat}
-was collected. Used to filter the default \code{depth_crosscheck_table}.
-Not required if there is a \code{county} column in \code{dat} or if
-\code{depth_table} is provided.}
+was collected. Used to filter the default \code{depth_table}. Not
+required if there is a \code{county} column in \code{dat}.}
 
 \item{return_sensor_table}{Logical value. If \code{TRUE}, the table used to
 evaluate the difference between measured depth and estimated depth
