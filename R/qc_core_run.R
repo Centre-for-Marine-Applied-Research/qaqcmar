@@ -102,7 +102,10 @@ qc_core_run <- function(
   if ("spike" %in% qc_tests) {
     dat <- dat |>
       qc_append_thresholds("spike", county, threshold_table = spike_table) |>
-      qc_core_spike(keep_spike_cols = keep_spike_cols)
+      qc_core_spike(
+        max_interval_hours = max_interval_hours,
+        keep_spike_cols = keep_spike_cols
+      )
   }
 
   if (isTRUE(max_flag)) {

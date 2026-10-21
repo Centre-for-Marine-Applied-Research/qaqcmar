@@ -51,6 +51,8 @@ utils::globalVariables(
     "dup",
     "dup_prev",
     "near_dup",
+    "gap_prev",
+    "near_gap",
 
     # qc_test_rolling_sd
     "county",
