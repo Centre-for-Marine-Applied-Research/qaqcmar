@@ -126,7 +126,8 @@ qc_core_run <- function(
       "user_max",
       "rolling_sd_max",
       "spike_low",
-      "spike_high"
+      "spike_high",
+      "depth_diff_max"
     ))
   )
 }
