@@ -41,12 +41,16 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
   qc_tests <- tolower(qc_tests)
 
   vars <- c(
+    "chlorophyll_blue_ug_per_l",
+    "chlorophyll_red_ug_per_l",
     "dissolved_oxygen_percent_saturation",
     "dissolved_oxygen_uncorrected_mg_per_l",
+    "dissolved_oxygen_mg_per_l",
     "salinity_psu",
     "ph_ph",
     "sensor_depth_measured_m",
-    "temperature_degree_c"
+    "temperature_degree_c",
+    "tilt_degree"
   )
 
   # pivot the variables - this adds flags that shouldn't exist but will get cleaned up below
