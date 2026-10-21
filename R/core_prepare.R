@@ -39,10 +39,7 @@
 #    value        dbl      The measurement. Never NA (values_drop_na = TRUE).
 #    sensor_key   chr      sensor_type used for threshold lookup only.
 #                          "hobo do" for a hobo, otherwise sensor_type.
-#                          Phase A: a row is "hobo do" when the sensor is a
-#                          hobo and dissolved_oxygen_uncorrected_mg_per_l is
-#                          not NA in that wide row (today's rule). [phase B]
-#                          every row of a hobo that ever records
+#                         a row is "hobo do" for every row of a hobo that ever records
 #                          dissolved_oxygen_uncorrected_mg_per_l within the
 #                          deployment. sensor_type itself is never changed.
 #    month        integer  1 to 12, from timestamp_utc, in UTC.
@@ -76,12 +73,10 @@
 #    Type: integer, 1 = Pass, 2 = Not Evaluated, 3 = Suspect/Of Interest,
 #    4 = Fail. Integers (not ordered factors) inside the core so pmax() works;
 #    qc_core_to_wide() converts to ordered(levels = 1:4).
-#    No NA: a row that can't be evaluated gets 2. Phase A exception: where the
-#    current code gives NA (rolling SD computed but no rolling_sd_max), the
-#    core gives NA too, so the references still match. [phase B] 2.
+#    No NA: a row that can't be evaluated gets 2.
 #
 #    depth_crosscheck_flag: one value per deployment, repeated on every row of
-#    that deployment. Integer, like the other flags. Not per variable, and
+#    that deployment. Integer Not per variable, and
 #    not part of qc_flag.
 #
 #    Helper columns, kept only with keep_spike_cols / keep_sd_cols:

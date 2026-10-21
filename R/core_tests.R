@@ -194,7 +194,7 @@ qc_core_rolling_sd <- function(
       rolling_sd_flag = case_when(
         sd_roll > rolling_sd_max ~ 3L,
         sd_roll <= rolling_sd_max ~ 1L,
-        is.na(sd_roll) ~ 2L # change this to .default for Phase B
+        .default = 2L
       )
     ) |>
     ungroup()

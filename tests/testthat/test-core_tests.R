@@ -141,7 +141,6 @@ test_that("qc_core_rolling_sd() warns about duplicate timestamps and gives them 
   expect_equal(out$rolling_sd_flag[out$row_id == 3], 2L)
 })
 
-# phase A: today's qc_test_rolling_sd() gives NA here. [phase B] 2
 test_that("qc_core_rolling_sd() gives NA when there is no threshold", {
   dat <- dplyr::mutate(sd_dat, rolling_sd_max = NA)
   out <- qc_core_rolling_sd(dat, period_hours = 0.5)
