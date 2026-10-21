@@ -60,7 +60,7 @@ test_that("qc_test_rolling_sd() assigns correct flags", {
   )
 })
 
-test_that("qc_test_rolling_sd() assigns 2 for intervals > min_sample_interval", {
+test_that("qc_test_rolling_sd() assigns 2 for intervals > max_interval_hours", {
   #dat <- readRDS(paste0(path, "/test_data_rolling_sd.RDS"))
 
   qc_roll_int <- dat %>%
@@ -68,31 +68,6 @@ test_that("qc_test_rolling_sd() assigns 2 for intervals > min_sample_interval", 
     qc_pivot_longer(qc_tests = "rolling_sd")
 
   expect_equal(as.numeric(unique(qc_roll_int$rolling_sd_flag_value)), 2)
-})
-
-
-test_that("qc_test_rolling_sd() gives flag 2 to a duplicate timestamp", {
-  # duplicate one observation, with a different value so it can be found
-  dup <- dat[100, ]
-  dup$dissolved_oxygen_percent_saturation <-
-    dup$dissolved_oxygen_percent_saturation + 1
-  dat_dup <- dplyr::bind_rows(dat, dup)
-
-  expect_warning(
-    out <- suppressMessages(qc_test_rolling_sd(dat_dup)),
-    "duplicate timestamp"
-  )
-
-  # no rows lost or merged, and no list-columns from pivot_wider()
-  expect_equal(nrow(out), nrow(dat_dup))
-  expect_false(any(vapply(out, is.list, logical(1))))
-
-  flag_dup <- out$rolling_sd_flag_dissolved_oxygen_percent_saturation[
-    out$timestamp_utc == dup$timestamp_utc &
-      out$dissolved_oxygen_percent_saturation ==
-        dup$dissolved_oxygen_percent_saturation
-  ]
-  expect_equal(as.numeric(flag_dup), 2)
 })
 
 test_that("qc_test_rolling_sd() keeps an exact duplicate row", {

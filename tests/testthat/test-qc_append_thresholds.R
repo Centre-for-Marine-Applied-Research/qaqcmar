@@ -33,7 +33,7 @@ test_that("each row gets the thresholds for its own key", {
 test_that("rows with no thresholds are kept with NA", {
   expect_true(all(is.na(c(
     out$sensor_min[4],
-    out$sensor_maxp[4],
+    out$sensor_max[4],
     out$user_min[4],
     out$user_max[4]
   ))))

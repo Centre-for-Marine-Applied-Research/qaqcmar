@@ -69,3 +69,13 @@ test_that("qc_assign_max_flag() stops when there are no flag columns", {
     "no flag columns"
   )
 })
+
+test_that("qc_assign_max_flag() works on wide and long data", {
+  expect_equal(
+    amf_dat |>
+      ss_pivot_longer() |>
+      qc_assign_max_flag() |>
+      as.data.frame(),
+    amf_out
+  )
+})

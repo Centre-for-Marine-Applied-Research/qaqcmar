@@ -18,6 +18,21 @@ test_that("qc_core_grossrange() flags values against sensor and user limits", {
   expect_equal(out[colnames(dat)], dat)
 })
 
+
+test_that("qc_core_grossrange() gives 2, not 1, when a threshold is missing", {
+  dat <- data.frame(
+    value = c(10, 25),
+    sensor_min = -5,
+    sensor_max = NA,
+    user_min = 0,
+    user_max = 20
+  )
+
+  # 10 is within the user limits; 25 is above user_max but sensor_max is
+  # missing, so it cannot be evaluated
+  expect_equal(qc_core_grossrange(dat)$grossrange_flag, c(1L, 2L))
+})
+
 # climatology -------------------------------------------------------------
 
 test_that("qc_core_climatology() flags values outside the season limits", {
