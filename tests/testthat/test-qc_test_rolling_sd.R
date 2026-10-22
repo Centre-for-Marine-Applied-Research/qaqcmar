@@ -12,7 +12,7 @@ test_that("qc_test_rolling_sd() assigns correct flags", {
     as.numeric(
       dat_qc |>
         filter(
-          between(
+          dplyr::between(
             timestamp_utc,
             as_datetime("2023-01-01 23:30:00"),
             as_datetime("2023-01-07 13:30:00")
@@ -28,12 +28,12 @@ test_that("qc_test_rolling_sd() assigns correct flags", {
     as.numeric(
       dat_qc |>
         filter(
-          between(
+          dplyr::between(
             timestamp_utc,
             as_datetime("2023-01-01 12:00:00"),
             as_datetime("2023-01-01 23:00:00")
           ) |
-            between(
+            dplyr::between(
               timestamp_utc,
               as_datetime("2023-01-22 00:30:00"),
               as_datetime("2023-02-15 12:00:00")
@@ -48,11 +48,13 @@ test_that("qc_test_rolling_sd() assigns correct flags", {
   expect_equal(
     as.numeric(
       dat_qc |>
-        filter(between(
-          timestamp_utc,
-          as_datetime("2023-01-07 14:00:00"),
-          as_datetime("2023-01-22 00:00:00")
-        )) |>
+        filter(
+          dplyr::between(
+            timestamp_utc,
+            as_datetime("2023-01-07 14:00:00"),
+            as_datetime("2023-01-22 00:00:00")
+          )
+        ) |>
         distinct(rolling_sd_flag_value) |>
         dplyr::pull(rolling_sd_flag_value)
     ),
