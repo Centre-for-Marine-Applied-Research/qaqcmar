@@ -2,6 +2,11 @@
 #'
 #' Will add columns that do not already exist.
 #'
+#' Only the six variables published in the county datasets are kept
+#' (dissolved oxygen percent saturation and uncorrected mg/L, pH, salinity,
+#' measured depth and temperature). Any other variable in the files (e.g.,
+#' chlorophyll), and its flag columns, is dropped with a warning that names it.
+#'
 #' @param prov Character string indicating which province the data to be
 #'   assembled is from. Options are "ns" (the default) and "nb". This dictates
 #'   the default file path.
@@ -115,6 +120,21 @@ qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
   dat <- depls |>
     map(readRDS) |>
     list_rbind()
+
+  # variables with flag columns (e.g. qc_flag_chlorophyll_blue_ug_per_l) that
+  # are not in var_cols are dropped by select() below
+  dropped_vars <- grep("_flag_", colnames(dat), value = TRUE) |>
+    sub(pattern = "^.*?_flag_", replacement = "") |>
+    unique() |>
+    setdiff(var_cols)
+
+  if (length(dropped_vars) > 0) {
+    warning(
+      "Variables not included in the county dataset were dropped: ",
+      paste(dropped_vars, collapse = ", "),
+      call. = FALSE
+    )
+  }
 
   # if any needed columns are NOT in dat, add them as na
   dat |>

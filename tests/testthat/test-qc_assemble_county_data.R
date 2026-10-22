@@ -113,3 +113,35 @@ test_that("qc_assemble_county_data() errors when no .rds files are found", {
 test_that("qc_assemble_county_data() errors for an unknown province", {
   expect_error(qc_assemble_county_data(prov = "pei", folder = "Halifax"))
 })
+
+test_that("qc_assemble_county_data() warns when it drops a variable", {
+  path <- make_test_path()
+  on.exit(unlink(path, recursive = TRUE), add = TRUE)
+  dir <- file.path(path, "Halifax")
+
+  # a deployment with chlorophyll and its flag
+  write_test_deployment(dir, "station_a.rds", "Station A")
+  dat_chl <- readRDS(file.path(dir, "station_a.rds"))
+  dat_chl$chlorophyll_blue_ug_per_l <- 1
+  dat_chl$qc_flag_chlorophyll_blue_ug_per_l <- 2
+  saveRDS(dat_chl, file.path(dir, "station_a.rds"))
+
+  expect_warning(
+    dat <- qc_assemble_county_data(path = path, folder = "Halifax"),
+    "dropped: chlorophyll_blue_ug_per_l"
+  )
+  expect_false(any(grepl("chlorophyll", colnames(dat))))
+  expect_equal(dat$temperature_degree_c, c(11, 12, 13))
+})
+
+test_that("qc_assemble_county_data() does not warn when every variable is kept", {
+  path <- make_test_path()
+  on.exit(unlink(path, recursive = TRUE), add = TRUE)
+  write_test_deployment(
+    file.path(path, "Halifax"),
+    "station_a.rds",
+    "Station A"
+  )
+
+  expect_no_warning(qc_assemble_county_data(path = path, folder = "Halifax"))
+})
