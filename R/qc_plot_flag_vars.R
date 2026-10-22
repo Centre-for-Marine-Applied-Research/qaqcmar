@@ -207,7 +207,7 @@ ggplot_flags <- function(
 #' @importFrom gtools mixedsort
 #' @importFrom stringr str_remove_all
 #'
-#' @export
+#' @noRd
 
 ggplot_depth_crosscheck <- function(
   dat,
@@ -218,7 +218,7 @@ ggplot_depth_crosscheck <- function(
 ) {
   flag_colours <- c("chartreuse4", "grey24", "#EDA247", "#DB4325")
 
-  labels <- labels
+  #labels <- labels
 
   if (("variable" %in% colnames(dat))) {
     dat <- dat |> rename(timestamp_utc = tstamp) |> ss_pivot_wider()
@@ -294,7 +294,7 @@ ggplot_depth_crosscheck <- function(
     )
 
   if (isTRUE(flag_title)) {
-    p + ggtitle("depth_crosscheck test")
+    p <- p + ggtitle("depth_crosscheck test")
   }
 
   p
