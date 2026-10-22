@@ -52,7 +52,7 @@ and \code{sd_roll}) are returned in \code{dat}. Default is \code{FALSE}.}
 }
 \value{
 Returns \code{dat} in a wide format, with rolling standard deviation
-flag columns for each variable in the form "rolling_sd_flag_variable".
+flag columns for each variable in the form "rolling_sd_flag_variable". Variables with no observations in \code{dat} are dropped.
 }
 \description{
 The rolling standard deviation is calculated using the following algorithm:

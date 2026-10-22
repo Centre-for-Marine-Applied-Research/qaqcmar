@@ -42,7 +42,7 @@ produce the spike value are returned in \code{dat}. Default is
 }
 \value{
 Returns \code{dat} in a wide format, with spike flag columns for each
-variable in the form "spike_flag_variable".
+variable in the form "spike_flag_variable". Variables with no observations in \code{dat} are dropped.
 }
 \description{
 Apply the spike test

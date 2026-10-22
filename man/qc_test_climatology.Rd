@@ -25,7 +25,7 @@ required if there is a \code{county} column in \code{dat}.}
 }
 \value{
 Returns \code{dat} in a wide format, with climatology flag columns
-for each variable in the form "climatology_flag_variable".
+for each variable in the form "climatology_flag_variable". Variables with no observations in \code{dat} are dropped.
 }
 \description{
 Apply the climatology test

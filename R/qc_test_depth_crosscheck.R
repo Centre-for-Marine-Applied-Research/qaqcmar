@@ -49,7 +49,6 @@
 #'
 #' @return Returns \code{dat} in a wide format, with depth crosscheck flag
 #'   column named "depth_crosscheck_flag".
-#'
 #' @importFrom dplyr mutate
 #'
 #' @export
