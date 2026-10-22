@@ -334,22 +334,16 @@ qc_core_depth_crosscheck <- function(
     )
 
   if (isTRUE(return_sensor_table)) {
-    # a depth_table with only depth_diff_max applies to measured depth
-    if (!is.null(depth_table) && !("variable" %in% colnames(depth_table))) {
-      depth_table$variable <- "sensor_depth_measured_m"
-    }
-
-    out <- dat$dat |>
-      qc_core_prepare() |>
-      qc_append_thresholds(
-        "depth_crosscheck",
-        county,
-        threshold_table = depth_table
-      ) |>
-      qc_core_depth_crosscheck(return_sensor_table = TRUE) |>
-      mutate(
-        depth_crosscheck_flag = ordered(depth_crosscheck_flag, levels = 1:4)
-      )
+    # one row per sensor, including sensors that did not measure depth (flag 2)
+    sensor_cols <- c(
+      deployment_cols,
+      "sensor_serial_number",
+      "sensor_depth_at_low_tide_m"
+    )
+    sensor_table <- dat |>
+      distinct(across(all_of(sensor_cols))) |>
+      left_join(sensor_flags, by = sensor_cols) |>
+      mutate(depth_crosscheck_flag = coalesce(depth_crosscheck_flag, 2L))
 
     return(sensor_table)
   }

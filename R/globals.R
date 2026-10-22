@@ -68,6 +68,7 @@ utils::globalVariables(
 
     # qc_test_depth_crosscheck
     "depth_crosscheck_flag",
+    "sensor_table",
 
     # qc_summarise_flags
     "flag_value",
