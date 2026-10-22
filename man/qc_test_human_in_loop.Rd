@@ -4,48 +4,50 @@
 \alias{qc_test_human_in_loop}
 \title{Apply human in the loop flags and comments}
 \usage{
-qc_test_human_in_loop(
-  dat,
-  human_in_loop_table = NULL,
-  qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")
-)
+qc_test_human_in_loop(dat, human_in_loop_table = NULL)
 }
 \arguments{
-\item{dat}{Data frame of flagged sensor string data in wide format.}
+\item{dat}{Data frame of flagged sensor string data in wide format, for one
+deployment.}
 
-\item{human_in_loop_table}{Data table with information required to assign the
-human in the loop flags. Must include the following columns: station,
-depl_range, variable, sensor_serial number (if \code{NA}, all sensors that
-recorded variable will be flagged), timestamp_prompt (indicates whether
-flags should be applied "between" the timestamp_utc_min
-and    timestamp_utc_max or "outside" these timestamps),
-timestamp_utc_min,    timestamp_utc_max, qc_test_column (qc flag column that
-is being upgraded), qc_flag_value (existing flag value for qc_test_column),
-human_in_loop_flag_value, and human_in_loop_comment (will be included in
-the dataset).}
-
-\item{qc_tests}{Character vector of quality control tests that have been
-applied to \code{dat}. Passed to \code{qc_pivot_longer()}. Default is:
-\code{qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")}.}
+\item{human_in_loop_table}{Data frame with one row for each set of
+observations to flag. Rows for other stations and deployments are ignored,
+so the whole table can be passed for every deployment. Columns:
+\itemize{
+\item \code{station}, \code{deployment_range}: the deployment.
+\item \code{variable}: the variable to flag. \code{NA} flags every variable.
+\item \code{sensor_serial_number}: the sensor to flag. \code{NA} flags every
+sensor.
+\item \code{timestamp_utc_min}, \code{timestamp_utc_max}: observations from
+\code{timestamp_utc_min} to \code{timestamp_utc_max} (inclusive) are
+flagged. \code{NA} means the start or end of the deployment. To flag the
+observations outside a window, use two rows: one with
+\code{timestamp_utc_min = NA}, and one with \code{timestamp_utc_max = NA}.
+\item \code{qc_test}, \code{qc_flag_value} (optional): only flag observations
+where \code{qc_test} (e.g., "rolling_sd") gave flag \code{qc_flag_value}.
+\code{NA} in either column, or no columns, means any flag.
+\item \code{human_in_loop_flag_value}: the flag to assign (1 to 4).
+\item \code{hil_comment}: the comment to include in the data.
+}}
 }
 \value{
-Returns \code{dat} with a \code{human_in_loop_flag} column for each
-variable and a corresponding \code{hil_comment} column.
+Returns \code{dat} with a \code{human_in_loop_flag_<variable>} column
+for each variable and a \code{hil_comment} column. Observations not
+flagged by \code{human_in_loop_table} get flag 1 and comment \code{NA}.
+If no rows of \code{human_in_loop_table} are for the deployment in
+\code{dat}, \code{dat} is returned unchanged.
 }
 \description{
-Only deployments that require additional human-in-loop QC will have non-NA
-values in the human-in-loop columns. Observations in these deployments that
-do not need additional QC will be assigned a \code{human_in_loop_flag_value}
-of 1.
+Applies flags and comments that a person assigned after reviewing the
+automated quality control results.
 }
 \details{
-Flags are assigned to each observation. For example, if a sensor measures
-dissolved oxygen and temperature at the same time, and only the dissolved
-oxygen observation is poor quality, then only the dissolved oxygen
-observation will be flagged. The column
-\code{human_in_loop_flag_value_dissolved_oxygen} will have a value of 3 or 4
-(as specified in human_in_loop_table), while
-\code{human_in_loop_flag_value_tempearture} will be 1.
+Flags are assigned to each observation of each variable. For example, if a
+sensor measures dissolved oxygen and temperature at the same time, and only
+the dissolved oxygen observation is poor quality, then only
+\code{human_in_loop_flag_dissolved_oxygen_percent_saturation} will have a
+value of 3 or 4 (as specified in \code{human_in_loop_table}), while
+\code{human_in_loop_flag_temperature_degree_c} will be 1.
 
 However, there is only one column for comments, \code{hil_comment}. This is
 to reduce the total number of columns in the wide data set. The trade off is
@@ -54,4 +56,8 @@ in this situation, comments should be pre-pended with the variable they refer
 to, e.g., "dissolved oxygen: suspected biofouling not flagged by other
 tests". This is not necessary for comments that apply to all variables (e.g.,
 only one variable is measured).
+
+When more than one row of \code{human_in_loop_table} applies to an
+observation, the observation gets the highest flag, and the comments are
+pasted together, separated by "; ".
 }

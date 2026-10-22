@@ -78,6 +78,11 @@ utils::globalVariables(
     # qc_test_human_in_loop
     "human_in_loop_flag_value",
     "human_in_loop_reference_flag_col",
+    "hil_row",
+    "hil_serial",
+    "hil_variable",
+    "human_in_loop_flag",
+    "ref_flag",
 
     # qc_vr2_for_hil
     "depl_range",
