@@ -22,7 +22,7 @@ qc_vr2_for_hil <- function(dat) {
     distinct(
       county,
       station,
-      depl_range = deployment_range,
+      deployment_range,
       sensor_type,
       sensor_serial_number,
       sensor_depth_at_low_tide_m
@@ -37,26 +37,24 @@ qc_vr2_for_hil <- function(dat) {
     #pull(sensor_serial_number)
     mutate(
       variable = "temperature_degree_c",
-      timestamp_prompt = "between",
       timestamp_utc_min = as_datetime(NA),
       timestamp_utc_max = as_datetime(NA),
-      qc_test_column = "grossrange_flag_value",
+      qc_test = "grossrange_flag_value",
       qc_flag_value = NA,
       human_in_loop_flag_value = 4,
-      human_in_loop_comment = "vr2ar unit paired with hobo sensor for more accurate temperature data"
+      hil_comment = "vr2ar unit paired with hobo sensor for more accurate temperature data"
     ) |>
     select(
       county,
       station,
-      depl_range,
+      deployment_range,
       variable,
       sensor_serial_number,
-      timestamp_prompt,
       timestamp_utc_min,
       timestamp_utc_max,
-      qc_test_column,
+      qc_test,
       qc_flag_value,
       human_in_loop_flag_value,
-      human_in_loop_comment
+      hil_comment
     )
 }

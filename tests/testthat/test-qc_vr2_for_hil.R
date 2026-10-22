@@ -20,10 +20,9 @@ test_that("qc_vr2_for_hil() gives a row for a vr2ar paired with a hobo", {
   expect_true(all(
     c(
       "station",
-      "depl_range",
-      "timestamp_prompt",
-      "qc_test_column",
-      "human_in_loop_comment"
+      "deployment_range",
+      "qc_test",
+      "hil_comment"
     ) %in%
       colnames(out)
   ))
