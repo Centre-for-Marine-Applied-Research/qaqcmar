@@ -14,6 +14,7 @@
 #'
 #' @importFrom dplyr distinct filter mutate n select
 #' @importFrom lubridate as_datetime
+#' @importFrom stringr str_detect
 #'
 #' @export
 
@@ -27,19 +28,24 @@ qc_vr2_for_hil <- function(dat) {
       sensor_serial_number,
       sensor_depth_at_low_tide_m
     ) |>
+    mutate(
+      sensor_key = if_else(
+        str_detect(sensor_type, "^vr2ar"),
+        "vr2ar",
+        sensor_type
+      )
+    ) |>
     filter(
-      sensor_type == "vr2ar" | sensor_type == "hobo",
+      sensor_key == "vr2ar" | sensor_key == "hobo",
       sensor_depth_at_low_tide_m == max(sensor_depth_at_low_tide_m)
     ) |>
     mutate(n = n()) |>
-    ungroup() |>
-    filter(n >= 2, sensor_type == "vr2ar") |>
-    #pull(sensor_serial_number)
+    filter(n >= 2, sensor_key == "vr2ar") |>
     mutate(
       variable = "temperature_degree_c",
       timestamp_utc_min = as_datetime(NA),
       timestamp_utc_max = as_datetime(NA),
-      qc_test = "grossrange_flag_value",
+      qc_test = "grossrange",
       qc_flag_value = NA,
       human_in_loop_flag_value = 4,
       hil_comment = "vr2ar unit paired with hobo sensor for more accurate temperature data"

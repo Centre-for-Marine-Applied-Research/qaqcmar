@@ -88,6 +88,8 @@ qc_plot_flags <- function(
 
   if (vars == "all") {
     vars <- unique(dat$variable)
+  } else {
+    vars <- vars
   }
 
   if (isTRUE(labels)) {

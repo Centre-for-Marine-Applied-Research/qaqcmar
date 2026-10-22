@@ -9,7 +9,7 @@ hil_1 <- data.frame(
   sensor_serial_number = 123,
   timestamp_utc_min = as_datetime("2023-01-15 12:30:00"),
   timestamp_utc_max = as_datetime("2023-01-22 00:00:00"),
-  qc_test_column = "rolling_sd_flag_value",
+  qc_test = "rolling_sd",
   qc_flag = 3,
   human_in_loop_flag_value = 4,
   hil_comment = "dissolved_oxygen_percent_saturation: test comment 1"
@@ -22,7 +22,7 @@ hil_2 <- data.frame(
   sensor_serial_number = 123,
   timestamp_utc_min = as_datetime("2023-01-22 00:00:00"),
   timestamp_utc_max = NA,
-  qc_test_column = "rolling_sd_flag_value",
+  qc_test = "rolling_sd_flag_value",
   qc_flag = 2,
   human_in_loop_flag_value = 4,
   hil_comment = "dissolved_oxygen_percent_saturation: test comment 2"
