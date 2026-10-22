@@ -162,3 +162,37 @@ test_that("a known sensor type with no thresholds in the county warns, not stops
     'No spike thresholds for sensor_type << abc >>'
   )
 })
+
+test_that("a user table's any-sensor row covers sensor types without their own row", {
+  do <- data.frame(
+    variable = "dissolved_oxygen_percent_saturation",
+    sensor_key = c("aquameasure", "hobo"),
+    month = 7L
+  )
+  user_table <- data.frame(
+    variable = "dissolved_oxygen_percent_saturation",
+    sensor_type = c(NA, "hobo"),
+    sensor_min = 0,
+    sensor_max = 150,
+    user_min = c(0, 50),
+    user_max = c(140, 60)
+  )
+
+  out <- qc_lookup_thresholds(do, "grossrange", "Halifax", user_table)
+
+  # aquameasure has no row of its own, so it gets the any-sensor row
+  expect_equal(out$user_max[out$sensor_key == "aquameasure"], 140)
+  # hobo has its own row, which wins
+  expect_equal(out$user_max[out$sensor_key == "hobo"], 60)
+
+  # an any-sensor row that is missing a threshold does not cover other sensors
+  expect_error(
+    qc_lookup_thresholds(
+      do,
+      "grossrange",
+      "Halifax",
+      dplyr::mutate(user_table, sensor_min = c(NA, 0))
+    ),
+    "No grossrange thresholds for sensor_type << aquameasure >>"
+  )
+})

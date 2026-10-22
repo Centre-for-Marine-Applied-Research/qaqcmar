@@ -100,6 +100,7 @@ utils::globalVariables(
     "thr_county",
     "thr_month",
     "thr_sensor_type",
+    "thr_col",
     "spec"
   )
 )
