@@ -35,6 +35,7 @@ The `human_in_loop_table` for `qc_test_human_in_loop()` has new columns:
 * The `qc_test_*()` functions now stop if `dat` already has flag columns for the test being applied.
 * An unknown sensor type now stops with an error that lists the valid sensor types, for variables where the thresholds depend on the sensor type (e.g., gross range and depth spike). This catches misspelled sensor types. Previously, those observations got flag 2. A sensor type that has thresholds in other counties, but not in `county`, gives a warning and flag 2 instead.
 * A county with no default thresholds now stops with an error, with a hint when only the capitalisation is wrong (e.g., "Did you mean "Halifax"?"). Previously, every observation got flag 2.
+* With `keep_sd_cols = TRUE` (`qc_test_rolling_sd()`) or `keep_spike_cols = TRUE` (`qc_test_spike()`), the helper columns are now returned for each variable, e.g., `sd_roll_temperature_degree_c` and `spike_value_temperature_degree_c`. Previously, there was one column of each (e.g., `sd_roll`) for all variables. `keep_spike_cols = TRUE` no longer returns the `spike_low` and `spike_high` threshold columns.
 
 ## Changes to flags
 
@@ -59,6 +60,7 @@ The `human_in_loop_table` for `qc_test_human_in_loop()` has new columns:
   * Warns about table rows that match no observations.
   * Checks the table columns and values.
 * `qc_assemble_county_data()` warns, naming each variable, when a file has variables that are not in the county datasets (e.g., chlorophyll). These variables are dropped, as before.
+* `qc_calculate_rolling_sd_thresholds()` uses the `sd_roll_<variable>` column returned by `qc_test_rolling_sd(keep_sd_cols = TRUE)` when `dat` has no `sd_roll` column, and stops with a clear message when it has neither.
 
 ## Bug fixes
 
@@ -81,4 +83,6 @@ The `human_in_loop_table` for `qc_test_human_in_loop()` has new columns:
 * The `Remotes` field and the GitHub links now point to Centre-for-Marine-Applied-Research.
 * File-listing patterns are anchored and case-insensitive (e.g., `"\\.rds$"`).
 * Help pages were updated for the new threshold tables, the human in the loop table and the dropped empty variable columns.
+* Every exported function now has examples, using the data in `inst/testdata`.
+* The `thresholds` help page now describes each column, which row is used when several match, and the thresholds for each test.
 * Test coverage increased, with tests for the core, user threshold tables, human in the loop, plots, `qc_summarise_flags()`, `qc_calculate_spike_thresholds()` and `qc_vr2_for_hil()`.
