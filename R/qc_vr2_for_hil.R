@@ -45,7 +45,7 @@ qc_vr2_for_hil <- function(dat) {
       variable = "temperature_degree_c",
       timestamp_utc_min = as_datetime(NA),
       timestamp_utc_max = as_datetime(NA),
-      qc_test = "grossrange",
+      qc_test = NA_character_,
       qc_flag_value = NA,
       human_in_loop_flag_value = 4,
       hil_comment = "vr2ar unit paired with hobo sensor for more accurate temperature data"
