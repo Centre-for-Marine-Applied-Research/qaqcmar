@@ -8,3 +8,5 @@
 /data-raw/*html
 /dev
 inst/doc
+/.quarto/
+**/*.quarto_ipynb
