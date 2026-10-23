@@ -3,57 +3,57 @@
 #' The rolling standard deviation is calculated using the following algorithm:
 #'
 #' 1. Calculate the interval between the current and previous observation
-#' (\code{int_sample}; in minutes).
+#' (`int_sample``; in minutes).
 #'
-#' 2. Determine the number of samples in the specified time frame
-#' (\code{n_sample = round((60 / int_sample) * period_hours)})
+#' 2. Determine the number of samples in the specified time frame (`n_sample =
+#' round((60 / int_sample) * period_hours)`)
 #'
-#' 3. If \code{int_sample} is really large (> \code{max_interval_hours}), then
-#' set the effective sample number (\code{n_sample_effective}) to 0.
+#' 3. If `int_sample` is really large (> `max_interval_hours`), or there are
+#' duplicate timestamps (`int_sample = 0`), then set the effective sample number
+#' (`n_sample_effective`) to 0. Assign any observation with `n_sample_effective
+#' = 0` a flag of 2.
 #'
 #' 4. Calculate the rolling standard deviation, with the width =
-#' \code{n_sample_effective} and alignment specified by \code{align_window}.
-#' \code{sd_roll} is rounded to 2 decimal places.
-#'
-#' When int_sample = period_hours, n_sample = 1, so sd_roll = NA.
+#' `n_sample_effective` and alignment specified by `align_window`. `sd_roll` is
+#' rounded to 2 decimal places. Rolling standard deviation is calculated from a
+#' running-sum calculation in `qc_window_sd()`
 #'
 #' @param dat Data frame of sensor string data in wide format.
 #'
-#' @param rolling_sd_table Data frame with at least two columns:
-#'   \code{variable}: must match the names of the variables being tested in
-#'   \code{dat}. \code{rolling_sd_max}: maximum accepted value for the rolling
-#'   standard deviation.
+#' @param rolling_sd_table Data frame with at least two columns: `variable`:
+#'   must match the names of the variables being tested in `dat`.
+#'   `rolling_sd_max`: maximum accepted value for the rolling standard
+#'   deviation.
 #'
-#'   Default values are used if \code{rolling_sd_table = NULL}. To see the
-#'   default \code{rolling_sd_table}, type \code{subset(thresholds,
-#'   qc_test == "rolling_sd")} in the console.
+#'   Default values are used if `rolling_sd_table = NULL`. To see the default
+#'   `rolling_sd_table`, type `subset(thresholds, qc_test == "rolling_sd")` in
+#'   the console.
 #'
-#' @param county Character string indicating the county from which \code{dat}
-#'   was collected. Used to filter the default \code{rolling_sd_table}. Not
-#'   required if there is a \code{county} column in \code{dat}.
+#' @param county Character string indicating the county from which `dat` was
+#'   collected. Used to filter the default `rolling_sd_table`. Not required if
+#'   there is a `county` column in `dat`.
 #'
 #' @param period_hours Length of a full cycle in hours. Default assumes a daily
-#'   cycle of \code{period_hours = 24}.
+#'   cycle of `period_hours = 24`.
 #'
 #' @param max_interval_hours Maximum accepted interval between two observations.
 #'   If the interval between two observations is greater than this value, the
-#'   rolling standard deviation will be set to \code{NA}. This is important
-#'   because for large intervals, the number of observations in
-#'   \code{period_hours} will be small. For example, if samples are collected
-#'   every 6 hours, only 4 observations would be used to calculate
-#'   \code{roll_sd}.
+#'   rolling standard deviation will be set to `NA`. This is important because
+#'   for large intervals, the number of observations in `period_hours` will be
+#'   small. For example, if samples are collected every 6 hours, only 4
+#'   observations would be used to calculate `roll_sd`.
 #'
 #' @param align_window Alignment for the window used to calculate the rolling
-#'   standard deviation. Default is
-#'   \code{align_window = "center"}. Other options are \code{"right"} (backward
-#'   window) and \code{"left"} (forward window).
+#'   standard deviation. Default is `align_window = "center"`. Other options are
+#'   `"right"` (backward window) and `"left"` (forward window).
 #'
-#' @param keep_sd_cols Logical value. If \code{TRUE}, the columns used to
-#'   produce the rolling standard deviation (\code{int_sample}, \code{n_sample},
-#'   and \code{sd_roll}) are returned in \code{dat}. Default is \code{FALSE}.
+#' @param keep_sd_cols Logical value. If `TRUE`, the columns used to produce the
+#'   rolling standard deviation (`int_sample`, `n_sample`, and `sd_roll`) are
+#'   returned in `dat`. Default is `FALSE`.
 #'
-#' @return Returns \code{dat} in a wide format, with rolling standard deviation
-#'   flag columns for each variable in the form "rolling_sd_flag_variable". Variables with no observations in `dat` are dropped.
+#' @return Returns `dat` in a wide format, with rolling standard deviation flag
+#'   columns for each variable in the form "rolling_sd_flag_variable". Variables
+#'   with no observations in `dat` are dropped.
 #'
 #' @export
 

@@ -4,22 +4,23 @@
 #'
 #' The spike value of an observation is its distance from the mean of the
 #' observations before and after it in the same series (see
-#' `qc_core_group_series()`). The first and last observation of each series
-#' get flag 2.
+#' `qc_core_group_series()`). The first and last observation of each series get
+#' flag 2.
 #'
-#'  Observations at a duplicate timestamp, and the observations just before and
+#' Observations at a duplicate timestamp, and the observations just before and
 #' after them, also get flag 2. This is because which duplicate counts as the
-#' neighbour depends only on row order, so their spike value is arbitrary. A warning will be printed if this occurs.
+#' neighbour depends only on row order, so their spike value is arbitrary. A
+#' warning will be printed if this occurs.
 #'
-#' @param dat Long data with spike thresholds, from
-#'   `qc_append_thresholds(dat, "spike", county)`.
+#' @param dat Long data with spike thresholds, from `qc_append_thresholds(dat,
+#'   "spike", county)`.
 #' @param max_interval_hours Largest accepted interval (hours) between two
 #'   observations. Observations just before and after a longer gap get flag 2.
 #' @param keep_spike_cols  Logical. If `TRUE`, the helper columns `lag_value`,
 #'   `lead_value`, `spike_ref` and `spike_value` are kept.
 #'
-#' @return `dat` sorted by series and time, plus `spike_flag` (integer, 1 to
-#'   4). `qc_core_to_wide()` restores the original order by `row_id`.
+#' @return `dat` sorted by series and time, plus `spike_flag` (integer, 1 to 4).
+#'   `qc_core_to_wide()` restores the original order by `row_id`.
 #'
 #' @importFrom dplyr case_when coalesce if_else lag lead mutate ungroup select
 #'

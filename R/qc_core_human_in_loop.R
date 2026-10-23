@@ -10,18 +10,17 @@
 #'
 #' @param dat Long data, one row per observation and variable, with `row_id`,
 #'   `station`, `deployment_range`, `variable`, `sensor_serial_number`,
-#'   `timestamp_utc`, and a `<qc_test>_flag` column for each `qc_test` named
-#'   in the table.
+#'   `timestamp_utc`, and a `<qc_test>_flag` column for each `qc_test` named in
+#'   the table.
 #' @param human_in_loop_table The rows of the human in the loop table for the
 #'   deployment in `dat`, already checked by `qc_test_human_in_loop()`, with
 #'   `qc_test` and `qc_flag_value` columns.
 #'
-#' @return `dat` with the same rows in the same order, plus
-#'   `human_in_loop_flag` (integer, 1 to 4; 1 when no table row applies) and
-#'   `hil_comment`. Comments belong to the observation (`row_id`), not the
-#'   variable: every variable of a `row_id` gets all comments that apply to
-#'   any of its variables, pasted with "; " in table order. Warns for each table
-#'   row that matches no observations.
+#' @return `dat` with the same rows in the same order, plus `human_in_loop_flag`
+#'   (integer, 1 to 4; 1 when no table row applies) and `hil_comment`. Comments
+#'   belong to the observation (`row_id`), not the variable: every variable of a
+#'   `row_id` gets all comments that apply to any of its variables, pasted with
+#'   "; " in table order. Warns for each table row that matches no observations.
 #'
 #' @importFrom dplyr arrange coalesce cross_join distinct filter group_by left_join matches mutate row_number select summarise
 #' @importFrom tidyr pivot_longer

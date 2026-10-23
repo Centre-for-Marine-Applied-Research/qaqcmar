@@ -2,16 +2,16 @@
 
 #' Add the thresholds for one QC test to long data
 #'
-#' Looks up the thresholds for each combination of `variable`, `sensor_key`
-#' and `month` in `dat` with `qc_lookup_thresholds()`, and joins them.
+#' Looks up the thresholds for each combination of `variable`, `sensor_key` and
+#' `month` in `dat` with `qc_lookup_thresholds()`, and joins them.
 #'
 #' Rows whose key has no thresholds are kept, with `NA` in the threshold
 #' columns. They will be assigned a QC flag 2 (Not Evaluated).
 #'
 #' @param dat Long data from `qc_core_prepare()`.
 #' @param qc_test Character string. The QC test, as in `thresholds$qc_test`.
-#' @param county Character string. One county, already checked by the
-#'   exported wrapper (`assert_county()`, `assert_county_thresholds()`).
+#' @param county Character string. One county, already checked by the exported
+#'   wrapper (`assert_county()`, `assert_county_thresholds()`).
 #' @param threshold_table Optional table of thresholds, passed to
 #'   `qc_lookup_thresholds()`. Default `NULL` uses `qaqcmar::thresholds`.
 #' @return `dat` with the same rows in the same order, plus the threshold

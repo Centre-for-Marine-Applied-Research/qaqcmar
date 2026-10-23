@@ -41,34 +41,34 @@ Default values are used if \code{climatology_table = NULL}. To see the
 default \code{climatology_table}, type \code{subset(thresholds,
   qc_test == "climatology")} in the console.}
 
-\item{depth_table}{Data frame with column \code{depth_diff_max}: the
-largest acceptable difference (m) between the estimated and minimum
-measured sensor depth. Optional columns \code{variable} (must be
-\code{"sensor_depth_measured_m"}), \code{sensor_type} and \code{month}
-work as in the other threshold tables.
+\item{depth_table}{Data frame with column \code{depth_diff_max}: the largest
+acceptable difference (m) between the estimated and minimum measured sensor
+depth. Optional columns \code{variable} (must be
+\code{"sensor_depth_measured_m"}), \code{sensor_type} and \code{month} work
+as in the other threshold tables.
 
 Default values are used if \code{depth_table = NULL}. To see the
 default \code{depth_table}, type \code{subset(thresholds,
   qc_test == "depth_crosscheck")} in the console.}
 
 \item{grossrange_table}{Data frame with columns \code{variable},
-\code{sensor_type}, \code{sensor_min}, \code{sensor_max},
-\code{user_min} and \code{user_max}. An \code{NA} in \code{sensor_type}
-means the row applies to any sensor. Use \code{sensor_type = "hobo do"}
-for hobo sensors that record dissolved oxygen.
+\code{sensor_type}, \code{sensor_min}, \code{sensor_max}, \code{user_min}
+and \code{user_max}. An \code{NA} in \code{sensor_type} means the row
+applies to any sensor. Use \code{sensor_type = "hobo do"} for hobo sensors
+that record dissolved oxygen.
 
 Default values are used if \code{grossrange_table = NULL}. To see the
 default \code{grossrange_table}, type \code{subset(thresholds,
   qc_test == "grossrange")} in the console.}
 
-\item{rolling_sd_table}{Data frame with at least two columns:
-\code{variable}: must match the names of the variables being tested in
-\code{dat}. \code{rolling_sd_max}: maximum accepted value for the rolling
-standard deviation.
+\item{rolling_sd_table}{Data frame with at least two columns: \code{variable}:
+must match the names of the variables being tested in \code{dat}.
+\code{rolling_sd_max}: maximum accepted value for the rolling standard
+deviation.
 
-Default values are used if \code{rolling_sd_table = NULL}. To see the
-default \code{rolling_sd_table}, type \code{subset(thresholds,
-  qc_test == "rolling_sd")} in the console.}
+Default values are used if \code{rolling_sd_table = NULL}. To see the default
+\code{rolling_sd_table}, type \code{subset(thresholds, qc_test == "rolling_sd")} in
+the console.}
 
 \item{spike_table}{Data frame with at least 3 columns: \code{variable}:
 should match the names of the variables being tested in \code{dat}.
@@ -86,20 +86,18 @@ cycle of \code{period_hours = 24}.}
 
 \item{max_interval_hours}{Maximum accepted interval between two observations.
 If the interval between two observations is greater than this value, the
-rolling standard deviation will be set to \code{NA}. This is important
-because for large intervals, the number of observations in
-\code{period_hours} will be small. For example, if samples are collected
-every 6 hours, only 4 observations would be used to calculate
-\code{roll_sd}.}
+rolling standard deviation will be set to \code{NA}. This is important because
+for large intervals, the number of observations in \code{period_hours} will be
+small. For example, if samples are collected every 6 hours, only 4
+observations would be used to calculate \code{roll_sd}.}
 
 \item{align_window}{Alignment for the window used to calculate the rolling
-standard deviation. Default is
-\code{align_window = "center"}. Other options are \code{"right"} (backward
-window) and \code{"left"} (forward window).}
+standard deviation. Default is \code{align_window = "center"}. Other options are
+\code{"right"} (backward window) and \code{"left"} (forward window).}
 
-\item{keep_sd_cols}{Logical value. If \code{TRUE}, the columns used to
-produce the rolling standard deviation (\code{int_sample}, \code{n_sample},
-and \code{sd_roll}) are returned in \code{dat}. Default is \code{FALSE}.}
+\item{keep_sd_cols}{Logical value. If \code{TRUE}, the columns used to produce the
+rolling standard deviation (\code{int_sample}, \code{n_sample}, and \code{sd_roll}) are
+returned in \code{dat}. Default is \code{FALSE}.}
 
 \item{keep_spike_cols}{Logical value. If \code{TRUE}, the columns used to
 produce the spike value are returned in \code{dat}. Default is

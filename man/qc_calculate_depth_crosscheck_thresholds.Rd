@@ -9,7 +9,6 @@ qc_calculate_depth_crosscheck_thresholds(dat, prob = 0.95)
 \arguments{
 \item{dat}{Data frame.
 
-Revise this:
 Must include columns
 \code{sensor_depth_at_low_tide_m}, \code{sensor_depth_measured_m},
 \code{county}, \code{station}, \code{deployment_range}, and

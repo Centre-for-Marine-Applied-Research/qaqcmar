@@ -17,7 +17,8 @@
 #'   required if there is a \code{county} column in \code{dat}.
 #'
 #' @return Returns \code{dat} in a wide format, with climatology flag columns
-#'   for each variable in the form "climatology_flag_variable". Variables with no observations in `dat` are dropped.
+#'   for each variable in the form "climatology_flag_variable". Variables with
+#'   no observations in `dat` are dropped.
 #'
 #' @export
 

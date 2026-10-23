@@ -2,16 +2,16 @@
 
 #' Run QC tests on wide data and return long data
 #'
-#' Converts `dat` to long format once, then for each test
-#' in `qc_tests` adds its thresholds and its flag column to the same long
-#' table. There are no joins between tests.
+#' Converts `dat` to long format once, then for each test in `qc_tests` adds its
+#' thresholds and its flag column to the same long table. There are no joins
+#' between tests.
 #'
 #' @param dat Wide data without flag columns (e.g. `dat` from
 #'   `qc_core_set_aside_flags()`).
 #' @param qc_tests Character vector of tests to apply: any of "climatology",
 #'   "depth_crosscheck", "grossrange", "rolling_sd" and "spike".
-#' @param county Character string. One county, already checked by the
-#'   exported wrapper.
+#' @param county Character string. One county, already checked by the exported
+#'   wrapper.
 #' @param period_hours,max_interval_hours,align_window,keep_sd_cols Passed to
 #'   `qc_core_rolling_sd()`.
 #' @param keep_spike_cols Passed to `qc_core_spike()`.
@@ -19,8 +19,8 @@
 #'   `qc_core_max_flags()`.
 #'
 #' @return Long data: `dat` from `qc_core_prepare()`, plus one `<test>_flag`
-#'   column per test (and `qc_flag` if `max_flag = TRUE`). Threshold columns
-#'   are removed.
+#'   column per test (and `qc_flag` if `max_flag = TRUE`). Threshold columns are
+#'   removed.
 #'
 #' @importFrom dplyr any_of filter pull select
 #'

@@ -10,10 +10,10 @@ qc_test_grossrange(dat, grossrange_table = NULL, county = NULL)
 \item{dat}{Data frame of sensor string data in wide format.}
 
 \item{grossrange_table}{Data frame with columns \code{variable},
-\code{sensor_type}, \code{sensor_min}, \code{sensor_max},
-\code{user_min} and \code{user_max}. An \code{NA} in \code{sensor_type}
-means the row applies to any sensor. Use \code{sensor_type = "hobo do"}
-for hobo sensors that record dissolved oxygen.
+\code{sensor_type}, \code{sensor_min}, \code{sensor_max}, \code{user_min}
+and \code{user_max}. An \code{NA} in \code{sensor_type} means the row
+applies to any sensor. Use \code{sensor_type = "hobo do"} for hobo sensors
+that record dissolved oxygen.
 
 Default values are used if \code{grossrange_table = NULL}. To see the
 default \code{grossrange_table}, type \code{subset(thresholds,

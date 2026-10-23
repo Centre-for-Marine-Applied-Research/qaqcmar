@@ -7,10 +7,10 @@
 #'
 #' @param dat Long data from `qc_core_prepare()`.
 #'
-#' @return `dat` grouped by the series columns that are present
-#'   (`county`, `region`, `station`, `deployment_range`,
-#'   `sensor_serial_number`) plus `variable`, and sorted by `timestamp_utc`,
-#'   then `row_id`, within each series.
+#' @return `dat` grouped by the series columns that are present (`county`,
+#'   `region`, `station`, `deployment_range`, `sensor_serial_number`) plus
+#'   `variable`, and sorted by `timestamp_utc`, then `row_id`, within each
+#'   series.
 #'
 #' @importFrom dplyr across any_of arrange group_by
 #'

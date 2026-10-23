@@ -2,10 +2,10 @@
 
 #' Convert long core output back to wide format
 #'
-#' The one pivot back, on `row_id`. Values go to one column per variable,
-#' flags to `<test>_flag_<variable>`, and helper columns (from
-#' `keep_spike_cols` / `keep_sd_cols`) to `<helper>_<variable>`. Flags become
-#' ordered factors with levels 1 to 4.
+#' The one pivot back, on `row_id`. Values go to one column per variable, flags
+#' to `<test>_flag_<variable>`, and helper columns (from `keep_spike_cols` /
+#' `keep_sd_cols`) to `<helper>_<variable>`. Flags become ordered factors with
+#' levels 1 to 4.
 #'
 #' @param dat Long data from `qc_core_run()`.
 #' @param flags Optional. The `flags` table from `qc_core_set_aside_flags()`

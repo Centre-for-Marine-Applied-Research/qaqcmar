@@ -6,8 +6,8 @@
 #' month in the data, for one test and one county, from the long-format
 #' `thresholds` table.
 #'
-#' @details In `thresholds`, an `NA` in `county`, `sensor_type` or `month`
-#'   means "applies to any". A threshold row is a candidate for a key when its
+#' @details In `thresholds`, an `NA` in `county`, `sensor_type` or `month` means
+#'   "applies to any". A threshold row is a candidate for a key when its
 #'   `county` is `NA` or matches `county`, its `sensor_type` is `NA` or matches
 #'   the key's `sensor_key`, and its `month` is `NA` or matches the key's
 #'   `month`.
@@ -24,42 +24,42 @@
 #'
 #'   The choice is made separately for each threshold column. If the most
 #'   specific row has no value for a column (e.g. gross range stores
-#'   `sensor_min`/`sensor_max` and `user_min`/`user_max` on different rows),
-#'   the value comes from the next most specific row that has one. That is
-#'   what combines sensor limits and user limits into one row per key.
+#'   `sensor_min`/`sensor_max` and `user_min`/`user_max` on different rows), the
+#'   value comes from the next most specific row that has one. That is what
+#'   combines sensor limits and user limits into one row per key.
 #'
 #'   If a variable has sensor-specific rows, a sensor type with no row of its
-#'   own stops with an error (this catches misspelled sensor types), unless
-#'   the any-sensor rows for that variable give every threshold that the
+#'   own stops with an error (this catches misspelled sensor types), unless the
+#'   any-sensor rows for that variable give every threshold that the
 #'   sensor-specific rows give.
 #'
 #'   Keys with no candidate rows at all are left out of the result, so after a
 #'   `left_join()` their threshold columns are `NA` and the test gives flag 2
 #'   (Not Evaluated).
 #'
-#' @param keys Data frame of the distinct combinations to look up, with
-#'   columns `variable`, `sensor_key` and `month`, e.g.
-#'   `dplyr::distinct(dat, variable, sensor_key, month)`.
+#' @param keys Data frame of the distinct combinations to look up, with columns
+#'   `variable`, `sensor_key` and `month`, e.g. `dplyr::distinct(dat, variable,
+#'   sensor_key, month)`.
 #' @param qc_test Character string. The QC test, as in `thresholds$qc_test`.
-#' @param county Character string. One county, as in `thresholds$county`.
-#'   Rows for other counties are ignored; province-wide rows (`county` `NA`)
-#'   are always used.
+#' @param county Character string. One county, as in `thresholds$county`. Rows
+#'   for other counties are ignored; province-wide rows (`county` `NA`) are
+#'   always used.
 #' @param threshold_table Optional table of thresholds for `qc_test`, in wide
-#'  format: `variable` plus one column per threshold (e.g. `season_min`,
-#'  `season_max`), and optionally `sensor_type` and `month`. As in
-#'  `thresholds`, `NA` (or a missing column) in `sensor_type` or `month`
-#'  means "applies to any". Used instead of `thresholds`, as is: a
-#'  `county` column is ignored. Default `NULL` uses `qaqcmar::thresholds`.
-#'  A row with `sensor_type` `NA` can be combined with sensor-specific rows:
-#'  sensor types without their own row use it.
+#'   format: `variable` plus one column per threshold (e.g. `season_min`,
+#'   `season_max`), and optionally `sensor_type` and `month`. As in
+#'   `thresholds`, `NA` (or a missing column) in `sensor_type` or `month` means
+#'   "applies to any". Used instead of `thresholds`, as is: a `county` column is
+#'   ignored. Default `NULL` uses `qaqcmar::thresholds`. A row with
+#'   `sensor_type` `NA` can be combined with sensor-specific rows: sensor types
+#'   without their own row use it.
 #'
 #' @return A tibble with one row per key that has at least one candidate
 #'   threshold row: `variable`, `sensor_key`, `month`, plus one column per
 #'   threshold of `test` (e.g. `sensor_min`, `sensor_max`, `user_min`,
 #'   `user_max` for gross range; `season_min`, `season_max` for climatology;
-#'   `spike_low`, `spike_high` for spike; `rolling_sd_max` for rolling SD).
-#'   Join it to the long data with
-#'   `left_join(long, thr, by = c("variable", "sensor_key", "month"))`.
+#'   `spike_low`, `spike_high` for spike; `rolling_sd_max` for rolling SD). Join
+#'   it to the long data with `left_join(long, thr, by = c("variable",
+#'   "sensor_key", "month"))`.
 #'
 #' @importFrom dplyr across all_of anti_join arrange bind_rows distinct filter group_by last rename select semi_join summarise tibble ungroup where
 #' @importFrom tidyr pivot_longer pivot_wider

@@ -2,15 +2,15 @@
 
 #' Add the maximum flag to long data
 #'
-#' For each observation, `qc_flag` is the worst (highest) flag across the
-#' test flag columns in `dat`. `depth_crosscheck_flag` is not included. `NA`
-#' flags are ignored; an observation with only `NA` flags gets `NA`.
+#' For each observation, `qc_flag` is the worst (highest) flag across the test
+#' flag columns in `dat`. `depth_crosscheck_flag` is not included. `NA` flags
+#' are ignored; an observation with only `NA` flags gets `NA`.
 #'
 #' @param dat Long data with at least one `<test>_flag` column, e.g. from
 #'   `qc_core_grossrange()`.
 #'
-#' @return `dat` with the same rows in the same order, plus `qc_flag`
-#'   (integer, 1 to 4).
+#' @return `dat` with the same rows in the same order, plus `qc_flag` (integer,
+#'   1 to 4).
 #'
 #' @importFrom dplyr mutate
 #'

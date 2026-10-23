@@ -32,10 +32,10 @@ where \code{qc_test} (e.g., "rolling_sd") gave flag \code{qc_flag_value}.
 }
 \value{
 Returns \code{dat} with a \code{human_in_loop_flag_<variable>} column
-for each variable and a \code{hil_comment} column. Observations not
-flagged by \code{human_in_loop_table} get flag 1 and comment \code{NA}.
-If no rows of \code{human_in_loop_table} are for the deployment in
-\code{dat}, \code{dat} is returned unchanged.
+for each variable and a \code{hil_comment} column. Observations not flagged
+by \code{human_in_loop_table} get flag 1 and comment \code{NA}. If no rows
+of \code{human_in_loop_table} are for the deployment in \code{dat},
+\code{dat} is returned unchanged.
 }
 \description{
 Applies flags and comments that a person assigned after reviewing the

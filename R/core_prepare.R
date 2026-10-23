@@ -1,115 +1,103 @@
-# Generated with Claude Opus 5.5
-# Long-format core: data contract ---------------------------------------------
+# Generated with Claude Opus 5.5 Long-format core: data contract
+# ---------------------------------------------
 #
 # 1. Wide input (what qc_core_prepare() accepts) -------------------------------
 #
-#    Compiled sensor string data, as returned by
-#    sensorstrings::ss_compile_deployment_data(): one row per sensor per
-#    timestamp, one column per variable.
+# Compiled sensor string data, as returned by
+# sensorstrings::ss_compile_deployment_data(): one row per sensor per timestamp,
+# one column per variable.
 #
-#    Required columns:
-#      station, deployment_range, sensor_type, sensor_serial_number,
-#      timestamp_utc (POSIXct, UTC), and at least one variable column.
+# Required columns: station, deployment_range, sensor_type,
+# sensor_serial_number, timestamp_utc (POSIXct, UTC), and at least one variable
+# column.
 #
-#    Variable columns are any of sensorstrings' ss_vars$variable.
+# Variable columns are any of sensorstrings' ss_vars$variable.
 #
-#    Needed only by some steps:
-#      county                      default thresholds (or the county argument)
-#      sensor_depth_at_low_tide_m  depth crosscheck
+# Needed only by some steps: county                      default thresholds (or
+# the county argument) sensor_depth_at_low_tide_m  depth crosscheck
 #
-#    Every other column (region, waterbody, lease, latitude, longitude,
-#    string_configuration, ...) is passed through untouched.
+# Every other column (region, waterbody, lease, latitude, longitude,
+# string_configuration, ...) is passed through untouched.
 #
-#    Flag columns already in the input are
-#    set aside by row_id in qc_core_prepare() and joined back on row_id in
-#    qc_core_to_wide(). They never enter the long data. If the input already
-#    has flag columns for a test that is about to run, stop with a message. Human-in-the-loop works on the
-#    wide output and stays outside the core.
+# Flag columns already in the input are set aside by row_id in qc_core_prepare()
+# and joined back on row_id in qc_core_to_wide(). They never enter the long
+# data. If the input already has flag columns for a test that is about to run,
+# stop with a message. Human-in-the-loop works on the wide output and stays
+# outside the core.
 #
 # 2. Long data (what qc_core_prepare() returns; what every core function ------
-#    receives and returns)
+# receives and returns)
 #
-#    One row per non-NA observation. (row_id, variable) is unique.
+# One row per non-NA observation. (row_id, variable) is unique.
 #
-#    row_id       integer  Row number of the wide input. The only key used to
-#                          pivot back.
-#    <pass-through columns>  Exactly as in the wide input, same type, and
-#                          constant within a row_id.
-#    variable     chr      One of ss_vars$variable.
-#    value        dbl      The measurement. Never NA (values_drop_na = TRUE).
-#    sensor_key   chr      sensor_type used for threshold lookup only.
-#                          "hobo do" for a hobo, otherwise sensor_type.
-#                         a row is "hobo do" for every row of a hobo that ever records
-#                          dissolved_oxygen_uncorrected_mg_per_l within the
-#                          deployment. sensor_type itself is never changed.
-#    month        integer  1 to 12, from timestamp_utc, in UTC.
+# row_id       integer  Row number of the wide input. The only key used to pivot
+# back. <pass-through columns>  Exactly as in the wide input, same type, and
+# constant within a row_id. variable     chr      One of ss_vars$variable. value
+# dbl      The measurement. Never NA (values_drop_na = TRUE). sensor_key   chr
+# sensor_type used for threshold lookup only. "hobo do" for a hobo, otherwise
+# sensor_type. a row is "hobo do" for every row of a hobo that ever records
+# dissolved_oxygen_uncorrected_mg_per_l within the deployment. sensor_type
+# itself is never changed. month        integer  1 to 12, from timestamp_utc, in
+# UTC.
 #
-#    Series: the time-series tests (spike, rolling SD) work on one series at a
-#    time. A series is one sensor and variable within one deployment:
-#      the columns of c("county", "region", "station", "deployment_range",
-#      "sensor_serial_number") present in the data, plus variable.
-#    Within a series, rows are ordered by
-#    timestamp_utc, then row_id. test functions group and sort the series themselves with qc_core_group_series()
+# Series: the time-series tests (spike, rolling SD) work on one series at a
+# time. A series is one sensor and variable within one deployment: the columns
+# of c("county", "region", "station", "deployment_range",
+# "sensor_serial_number") present in the data, plus variable. Within a series,
+# rows are ordered by timestamp_utc, then row_id. test functions group and sort
+# the series themselves with qc_core_group_series()
 #
 #
-# 3. Threshold columns (added by qc_append_thresholds()) -------------------------
+# 3. Threshold columns (added by qc_append_thresholds())
+# -------------------------
 #
-#    Joined on variable, sensor_key and month.
-#    Names are fixed and unique across tests, so all can sit in the data at
-#    once:
-#      grossrange        sensor_min, sensor_max, user_min, user_max
-#      climatology       season_min, season_max
-#      spike             spike_low, spike_high
-#      rolling_sd        rolling_sd_max
-#      depth_crosscheck  depth_diff_max
-#    NA means no threshold for that row. Threshold columns are removed before
-#    the result leaves qc_core_run(), unless a keep_* argument asks for them.
+# Joined on variable, sensor_key and month. Names are fixed and unique across
+# tests, so all can sit in the data at once: grossrange        sensor_min,
+# sensor_max, user_min, user_max climatology       season_min, season_max spike
+# spike_low, spike_high rolling_sd        rolling_sd_max depth_crosscheck
+# depth_diff_max NA means no threshold for that row. Threshold columns are
+# removed before the result leaves qc_core_run(), unless a keep_* argument asks
+# for them.
 #
 #
-# 4. Flag columns (one per test) ------------------------------------------------
+# 4. Flag columns (one per test)
+# ------------------------------------------------
 #
-#    Each qc_core_<test>() adds exactly one column and changes nothing else:
-#      grossrange_flag, climatology_flag, spike_flag, rolling_sd_flag
-#    Type: integer, 1 = Pass, 2 = Not Evaluated, 3 = Suspect/Of Interest,
-#    4 = Fail. Integers (not ordered factors) inside the core so pmax() works;
-#    qc_core_to_wide() converts to ordered(levels = 1:4).
-#    No NA: a row that can't be evaluated gets 2.
+# Each qc_core_<test>() adds exactly one column and changes nothing else:
+# grossrange_flag, climatology_flag, spike_flag, rolling_sd_flag Type: integer,
+# 1 = Pass, 2 = Not Evaluated, 3 = Suspect/Of Interest, 4 = Fail. Integers (not
+# ordered factors) inside the core so pmax() works; qc_core_to_wide() converts
+# to ordered(levels = 1:4). No NA: a row that can't be evaluated gets 2.
 #
-#    depth_crosscheck_flag: one value per deployment, repeated on every row of
-#    that deployment. Integer Not per variable, and
-#    not part of qc_flag.
+# depth_crosscheck_flag: one value per deployment, repeated on every row of that
+# deployment. Integer Not per variable, and not part of qc_flag.
 #
-#    Helper columns, kept only with keep_spike_cols / keep_sd_cols:
-#      spike:      spike_value
-#      rolling_sd: int_sample, n_sample, n_sample_effective, sd_roll
+# Helper columns, kept only with keep_spike_cols / keep_sd_cols: spike:
+# spike_value rolling_sd: int_sample, n_sample, n_sample_effective, sd_roll
 #
 #
 # 5. Max flag (qc_core_max_flag()) ---------------------------------------------
 #
-#    qc_flag = pmax() over the <test>_flag columns present, among
-#    climatology, grossrange, rolling_sd, spike and human_in_loop, na.rm = TRUE.
-#    depth_crosscheck_flag is never included (today's behaviour).
-#    Only runs when qc_core_run(max_flag = TRUE). The exported qc_test_*()
-#    functions, including qc_test_all(), use max_flag = FALSE so their output
-#    has no qc_flag columns, as today; qc_assign_max_flag() adds them.
+# qc_flag = pmax() over the <test>_flag columns present, among climatology,
+# grossrange, rolling_sd, spike and human_in_loop, na.rm = TRUE.
+# depth_crosscheck_flag is never included (today's behaviour). Only runs when
+# qc_core_run(max_flag = TRUE). The exported qc_test_*() functions, including
+# qc_test_all(), use max_flag = FALSE so their output has no qc_flag columns, as
+# today; qc_assign_max_flag() adds them.
 #
 #
 # 6. Wide output (qc_core_to_wide()) -------------------------------------------
 #
-#    One pivot on row_id. One row per row_id, in row_id order, so the output
-#    has the input's rows in the input's order, minus rows with no values at
-#    all (they have no long rows; today's code drops them too).
-#    Columns, in this order:
-#      deployment columns (county, region, waterbody, station, lease, latitude,
-#        longitude, deployment_range, string_configuration, sensor_type,
-#        sensor_serial_number, timestamp_utc, sensor_depth_at_low_tide_m,
-#        depth_crosscheck_flag), those present
-#      variables, sorted
-#      <test>_flag_<variable>, sorted
-#      qc_flag_<variable>, sorted
-#      keep_* helper columns as <helper>_<variable> (names_glue, QC-5)
-#      anything else
-#    Flags are ordered factors, levels 1:4.
+# One pivot on row_id. One row per row_id, in row_id order, so the output has
+# the input's rows in the input's order, minus rows with no values at all (they
+# have no long rows; today's code drops them too). Columns, in this order:
+# deployment columns (county, region, waterbody, station, lease, latitude,
+# longitude, deployment_range, string_configuration, sensor_type,
+# sensor_serial_number, timestamp_utc, sensor_depth_at_low_tide_m,
+# depth_crosscheck_flag), those present variables, sorted
+# <test>_flag_<variable>, sorted qc_flag_<variable>, sorted keep_* helper
+# columns as <helper>_<variable> (names_glue, QC-5) anything else Flags are
+# ordered factors, levels 1:4.
 #
 
 #' Set aside flag columns already in the wide input

@@ -11,7 +11,7 @@ qc_assemble_county_data(prov = "ns", path = NULL, folder)
 assembled is from. Options are "ns" (the default) and "nb". This dictates
 the default file path.}
 
-\item{path}{File path the the folder with the rds files to be assembled.}
+\item{path}{File path to the folder with the rds files to be assembled.}
 
 \item{folder}{Name of the folder where the rds files are saved.}
 }
@@ -22,8 +22,8 @@ Returns a data.frame with data from all deployments in folder.
 Will add columns that do not already exist.
 }
 \details{
-Only the six variables published in the county datasets are kept
-(dissolved oxygen percent saturation and uncorrected mg/L, pH, salinity,
-measured depth and temperature). Any other variable in the files (e.g.,
-chlorophyll), and its flag columns, is dropped with a warning that names it.
+Only the six variables published in the county datasets are kept (dissolved
+oxygen percent saturation and uncorrected mg/L, pH, salinity, measured depth
+and temperature). Any other variable in the files (e.g., chlorophyll), and
+its flag columns, is dropped with a warning that names it.
 }

@@ -2,17 +2,17 @@
 
 #' Apply the depth crosscheck test to long data
 #'
-#' For each sensor with measured depth, compares the minimum measured depth
-#' with `sensor_depth_at_low_tide_m`. Each deployment gets the worst of its
-#' sensors' flags, repeated on every row of that deployment. Deployments with
-#' no measured depth get 2. Not part of `qc_flag`.
+#' For each sensor with measured depth, compares the minimum measured depth with
+#' `sensor_depth_at_low_tide_m`. Each deployment gets the worst of its sensors'
+#' flags, repeated on every row of that deployment. Deployments with no measured
+#' depth get 2. Not part of `qc_flag`.
 #'
 #' @param dat Long data from `qc_core_prepare()`, with a
 #'   `sensor_depth_at_low_tide_m` column.
 #' @param return_sensor_table Logical. If `TRUE`, returns the per-sensor table
 #'   (one row per sensor: `min_measured`, `abs_diff`, `depth_diff_max`,
-#'   `depth_crosscheck_flag`) instead of `dat`. Sensors with no measured
-#'   depth get 2.
+#'   `depth_crosscheck_flag`) instead of `dat`. Sensors with no measured depth
+#'   get 2.
 #'
 #' @return `dat` with the same rows in the same order, plus
 #'   `depth_crosscheck_flag` (integer, 1 to 4).

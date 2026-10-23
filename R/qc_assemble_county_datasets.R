@@ -2,16 +2,16 @@
 #'
 #' Will add columns that do not already exist.
 #'
-#' Only the six variables published in the county datasets are kept
-#' (dissolved oxygen percent saturation and uncorrected mg/L, pH, salinity,
-#' measured depth and temperature). Any other variable in the files (e.g.,
-#' chlorophyll), and its flag columns, is dropped with a warning that names it.
+#' Only the six variables published in the county datasets are kept (dissolved
+#' oxygen percent saturation and uncorrected mg/L, pH, salinity, measured depth
+#' and temperature). Any other variable in the files (e.g., chlorophyll), and
+#' its flag columns, is dropped with a warning that names it.
 #'
 #' @param prov Character string indicating which province the data to be
 #'   assembled is from. Options are "ns" (the default) and "nb". This dictates
 #'   the default file path.
 #'
-#' @param path File path the the folder with the rds files to be assembled.
+#' @param path File path to the folder with the rds files to be assembled.
 #'
 #' @param folder Name of the folder where the rds files are saved.
 #'

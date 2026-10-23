@@ -47,10 +47,10 @@
 #'   * \code{hil_comment}: the comment to include in the data.
 #'
 #' @return Returns \code{dat} with a \code{human_in_loop_flag_<variable>} column
-#'   for each variable and a \code{hil_comment} column. Observations not
-#'   flagged by \code{human_in_loop_table} get flag 1 and comment \code{NA}.
-#'   If no rows of \code{human_in_loop_table} are for the deployment in
-#'   \code{dat}, \code{dat} is returned unchanged.
+#'   for each variable and a \code{hil_comment} column. Observations not flagged
+#'   by \code{human_in_loop_table} get flag 1 and comment \code{NA}. If no rows
+#'   of \code{human_in_loop_table} are for the deployment in \code{dat},
+#'   \code{dat} is returned unchanged.
 #'
 #' @importFrom dplyr across all_of any_of contains distinct filter left_join mutate rename_with row_number select
 #' @importFrom tidyr pivot_wider

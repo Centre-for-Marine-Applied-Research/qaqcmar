@@ -5,8 +5,8 @@
 #' @param dat Long data with gross range thresholds, from
 #'   `qc_append_thresholds(dat, "climatology", county)`.
 #'
-#' @return `dat` with the same rows in the same order, plus
-#'   `climatology_flag` (integer, 1 to 4). Rows with no thresholds get 2.
+#' @return `dat` with the same rows in the same order, plus `climatology_flag`
+#'   (integer, 1 to 4). Rows with no thresholds get 2.
 #'
 #' @importFrom dplyr case_when mutate
 #'

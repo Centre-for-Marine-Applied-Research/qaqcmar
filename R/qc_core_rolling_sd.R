@@ -2,12 +2,13 @@
 
 #' Apply the rolling sd test to long data
 #'
-#' The rolling standard deviation is calculated over a window of
-#' `period_hours` in each series (see `qc_core_group_series()`). It is `NA`
-#' (flag 2) for the first observation of a series, at duplicate timestamps,
-#' and after a gap longer than `max_interval_hours`.
+#' The rolling standard deviation is calculated over a window of `period_hours`
+#' in each series (see `qc_core_group_series()`). It is `NA` (flag 2) for the
+#' first observation of a series, at duplicate timestamps, and after a gap
+#' longer than `max_interval_hours`.
 #'
-#' @param dat Long data with rolling_sd thresholds, from `qc_append_thresholds(dat, "rolling_sd", county)`.
+#' @param dat Long data with rolling_sd thresholds, from
+#'   `qc_append_thresholds(dat, "rolling_sd", county)`.
 #'
 #' @param period_hours Length of a full cycle in hours. Default assumes a daily
 #'   cycle of \code{period_hours = 24}.
