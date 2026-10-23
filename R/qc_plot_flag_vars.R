@@ -86,10 +86,8 @@ qc_plot_flags <- function(
     p_out <- Filter(Negate(is.null), p_out)
   }
 
-  if (vars == "all") {
+  if (identical(vars, "all")) {
     vars <- unique(dat$variable)
-  } else {
-    vars <- vars
   }
 
   if (isTRUE(labels)) {
