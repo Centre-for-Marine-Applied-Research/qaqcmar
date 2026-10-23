@@ -49,3 +49,12 @@ the climatology thresholds by group (e.g., county) use
 \code{dplyr::group_by(group_variable)}, and send the results to
 \code{qc_calculate_climatology_thresholds()}.
 }
+\examples{
+path <- system.file("testdata", package = "qaqcmar")
+dat <- readRDS(file.path(path, "test_data_climatology.RDS"))
+
+qc_calculate_climatology_thresholds(dat, var = temperature_degree_c)
+
+# for each county and month
+qc_calculate_climatology_thresholds(dat, var = temperature_degree_c, county)
+}

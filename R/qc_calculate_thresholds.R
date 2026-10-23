@@ -38,6 +38,17 @@
 #' @importFrom tidyr pivot_longer
 #'
 #' @export
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#' dat <- readRDS(file.path(path, "test_data_climatology.RDS"))
+#'
+#' qc_calculate_user_thresholds(dat, var = temperature_degree_c)
+#'
+#' # for each county, with the mean and standard deviation
+#' dat |>
+#'   dplyr::group_by(county) |>
+#'   qc_calculate_user_thresholds(var = temperature_degree_c, keep_stats = TRUE)
 
 qc_calculate_user_thresholds <- function(
   dat,
@@ -106,6 +117,16 @@ qc_calculate_user_thresholds <- function(
 #' @importFrom lubridate month
 #'
 #' @export
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#' dat <- readRDS(file.path(path, "test_data_climatology.RDS"))
+#'
+#' qc_calculate_climatology_thresholds(dat, var = temperature_degree_c)
+#'
+#' # for each county and month
+#' qc_calculate_climatology_thresholds(dat, var = temperature_degree_c, county)
+
 
 qc_calculate_climatology_thresholds <- function(
   dat,
@@ -149,7 +170,8 @@ qc_calculate_climatology_thresholds <- function(
 #' \code{dplyr::group_by(group_variable)}, and send the results to
 #' \code{qc_calculate_rolling_sd_thresholds()}.
 #'
-#' @param dat data frame. Must include column sd_roll.
+#' @param dat Data frame. Must include column \code{sd_roll} or
+#'   \code{sd_roll_<var>}.
 #'
 #' @param var variable to calculate thresholds for.
 #'
@@ -171,9 +193,31 @@ qc_calculate_climatology_thresholds <- function(
 #' @return Tibble with columns \code{qc_test}, \code{variable},
 #'   \code{threshold}, and \code{threshold_value}.
 #'
+#' @importFrom dplyr all_of rename
 #' @importFrom stats quantile
 #'
 #' @export
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#' dat <- readRDS(file.path(path, "test_data_rolling_sd.RDS"))
+#'
+#' # keep_sd_cols = TRUE returns a sd_roll_<variable> column for each variable
+#' dat_sd <- qc_test_rolling_sd(dat, keep_sd_cols = TRUE)
+#'
+#' qc_calculate_rolling_sd_thresholds(
+#'   dat_sd,
+#'   var = dissolved_oxygen_percent_saturation,
+#'   stat = "quartile",
+#'   prob = 0.95
+#' )
+#'
+#' qc_calculate_rolling_sd_thresholds(
+#'   dat_sd,
+#'   var = dissolved_oxygen_percent_saturation,
+#'   stat = "mean_sd"
+#' )
+
 
 qc_calculate_rolling_sd_thresholds <- function(
   dat,
@@ -182,8 +226,17 @@ qc_calculate_rolling_sd_thresholds <- function(
   prob = 0.95,
   n_sd = 3
 ) {
-  # turn this into proper error message
-  # assert_that(length(prob) == 2)
+
+  sd_col <- paste0("sd_roll_", as.character(ensym(var)))
+  if (!("sd_roll" %in% colnames(dat))) {
+    if (!(sd_col %in% colnames(dat))) {
+      stop(
+        "<< dat >> must have a column named sd_roll or ", sd_col, ".",
+        call. = FALSE
+      )
+    }
+    dat <- rename(dat, sd_roll = all_of(sd_col))
+  }
 
   if (is.null(stat)) {
     stop("Argument stat must be 'quartile' or 'mean_sd', not  NULL")
@@ -244,6 +297,13 @@ qc_calculate_rolling_sd_thresholds <- function(
 #' @importFrom sensorstrings ss_pivot_wider
 #'
 #' @export
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#' dat <- readRDS(file.path(path, "test_data_rolling_sd.RDS"))
+#'
+#' qc_calculate_depth_crosscheck_thresholds(dat)
+
 
 qc_calculate_depth_crosscheck_thresholds <- function(
   dat,
@@ -317,6 +377,21 @@ qc_calculate_depth_crosscheck_thresholds <- function(
 #' @importFrom sensorstrings ss_pivot_wider
 #'
 #' @export
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#' dat <- readRDS(file.path(path, "test_data_spike.RDS"))
+#'
+#' qc_calculate_spike_thresholds(dat, var = temperature_degree_c, stat = "quartile")
+#'
+#' # for each county, with spike_high = 2 * spike_low
+#' qc_calculate_spike_thresholds(
+#'   dat,
+#'   var = temperature_degree_c,
+#'   county,
+#'   stat = "mean_sd",
+#'   fail_factor = 2
+#' )
 
 qc_calculate_spike_thresholds <- function(
   dat,

@@ -23,6 +23,21 @@
 #' @importFrom tidyr pivot_wider
 #'
 #' @export
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#' dat <- readRDS(file.path(path, "test_data_grossrange.RDS"))
+#'
+#' dat_qc <- dat |>
+#'   qc_test_all(qc_tests = c("climatology", "grossrange")) |>
+#'   qc_assign_max_flag()
+#' colnames(dat_qc)
+#'
+#' # only the max flag columns
+#' dat_qc <- dat |>
+#'   qc_test_all(qc_tests = c("climatology", "grossrange")) |>
+#'   qc_assign_max_flag(return_all = FALSE)
+#' colnames(dat_qc)
 
 qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
   if ("variable" %in% colnames(dat)) {

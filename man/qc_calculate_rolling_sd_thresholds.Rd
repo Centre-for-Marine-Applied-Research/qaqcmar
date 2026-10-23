@@ -13,7 +13,8 @@ qc_calculate_rolling_sd_thresholds(
 )
 }
 \arguments{
-\item{dat}{data frame. Must include column sd_roll.}
+\item{dat}{Data frame. Must include column \code{sd_roll} or
+\code{sd_roll_<var>}.}
 
 \item{var}{variable to calculate thresholds for.}
 
@@ -49,4 +50,24 @@ This function does not automatically group by any variables. To calculate the
 thresholds by group (e.g., county) use
 \code{dplyr::group_by(group_variable)}, and send the results to
 \code{qc_calculate_rolling_sd_thresholds()}.
+}
+\examples{
+path <- system.file("testdata", package = "qaqcmar")
+dat <- readRDS(file.path(path, "test_data_rolling_sd.RDS"))
+
+# keep_sd_cols = TRUE returns a sd_roll_<variable> column for each variable
+dat_sd <- qc_test_rolling_sd(dat, keep_sd_cols = TRUE)
+
+qc_calculate_rolling_sd_thresholds(
+  dat_sd,
+  var = dissolved_oxygen_percent_saturation,
+  stat = "quartile",
+  prob = 0.95
+)
+
+qc_calculate_rolling_sd_thresholds(
+  dat_sd,
+  var = dissolved_oxygen_percent_saturation,
+  stat = "mean_sd"
+)
 }

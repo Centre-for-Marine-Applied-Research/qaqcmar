@@ -41,6 +41,30 @@ test_that("qc_calculate_rolling_sd_thresholds() returns correct errors", {
   )
 })
 
+test_that("qc_calculate_rolling_sd_thresholds() uses the sd_roll_<var> column from qc_test_rolling_sd()", {
+  dat_sd <- readRDS(paste0(path, "/test_data_rolling_sd.RDS")) |>
+    qc_test_rolling_sd(keep_sd_cols = TRUE)
+
+  expected <- dat_sd |>
+    rename(sd_roll = sd_roll_dissolved_oxygen_percent_saturation) |>
+    qc_calculate_rolling_sd_thresholds(
+      var = dissolved_oxygen_percent_saturation,
+      stat = "quartile"
+    )
+
+  dat_sd |>
+    qc_calculate_rolling_sd_thresholds(
+      var = dissolved_oxygen_percent_saturation,
+      stat = "quartile"
+    ) |>
+    expect_equal(expected)
+})
+
+test_that("qc_calculate_rolling_sd_thresholds() stops when dat has no sd_roll column", {
+  data.frame(sd_roll_salinity_psu = 1:5) |>
+    qc_calculate_rolling_sd_thresholds(var = temperature_degree_c, stat = "quartile") |>
+    expect_error("sd_roll_temperature_degree_c")
+})
 
 # qc_calculate_depth_crosscheck_thresholds --------------------------------
 # the "expected" value is hard coded. Update if test_data_estimated_depth.RDS is updated

@@ -23,3 +23,9 @@ Tibble with columns \code{qc_test}, \code{variable},
 \description{
 Calculate depth cross check thresholds
 }
+\examples{
+path <- system.file("testdata", package = "qaqcmar")
+dat <- readRDS(file.path(path, "test_data_rolling_sd.RDS"))
+
+qc_calculate_depth_crosscheck_thresholds(dat)
+}

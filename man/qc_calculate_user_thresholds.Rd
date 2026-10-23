@@ -41,3 +41,14 @@ user thresholds by group (e.g., county) use
 NA values are silently dropped before mean and standard deviation are
 calculated.
 }
+\examples{
+path <- system.file("testdata", package = "qaqcmar")
+dat <- readRDS(file.path(path, "test_data_climatology.RDS"))
+
+qc_calculate_user_thresholds(dat, var = temperature_degree_c)
+
+# for each county, with the mean and standard deviation
+dat |>
+  dplyr::group_by(county) |>
+  qc_calculate_user_thresholds(var = temperature_degree_c, keep_stats = TRUE)
+}

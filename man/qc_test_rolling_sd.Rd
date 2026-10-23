@@ -70,3 +70,14 @@ rounded to 2 decimal places. Rolling standard deviation is calculated from a
 running-sum calculation in \code{qc_window_sd()}
 }
 }
+\examples{
+path <- system.file("testdata", package = "qaqcmar")
+dat <- readRDS(file.path(path, "test_data_rolling_sd.RDS"))
+
+dat_sd <- qc_test_rolling_sd(dat)
+table(dat_sd$rolling_sd_flag_dissolved_oxygen_percent_saturation)
+
+# keep the columns used to calculate the rolling standard deviation
+dat_sd <- qc_test_rolling_sd(dat, keep_sd_cols = TRUE)
+colnames(dat_sd)
+}

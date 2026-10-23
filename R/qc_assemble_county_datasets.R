@@ -22,6 +22,23 @@
 #'
 #' @export
 #'
+#' @examples
+#' # save a flagged deployment in a temporary folder
+#' path <- system.file("testdata", package = "qaqcmar")
+#' folder <- file.path(tempdir(), "lunenburg")
+#' dir.create(folder)
+#'
+#' readRDS(file.path(path, "test_data_grossrange.RDS")) |>
+#'   qc_test_all(qc_tests = c("climatology", "grossrange")) |>
+#'   qc_assign_max_flag() |>
+#'   saveRDS(file.path(folder, "white_tower.rds"))
+#'
+#' # columns that were not in the file are added with NA values
+#' dat <- qc_assemble_county_data(path = tempdir(), folder = "lunenburg")
+#' colnames(dat)
+#'
+#' unlink(folder, recursive = TRUE)
+
 
 qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
   prov <- match.arg(prov, c("ns", "nb"))

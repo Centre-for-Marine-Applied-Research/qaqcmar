@@ -32,6 +32,19 @@
 #'   in `dat` are dropped.
 #'
 #' @export
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#' dat <- readRDS(file.path(path, "test_data_spike.RDS"))
+#'
+#' # these data were recorded once a day, so max_interval_hours must be at
+#' # least 24 (with the default of 2 hours, every observation gets flag 2)
+#' dat_spike <- qc_test_spike(dat, max_interval_hours = 24)
+#' colnames(dat_spike)
+#'
+#' # keep the columns used to calculate the spike value
+#' dat_spike <- qc_test_spike(dat, max_interval_hours = 24, keep_spike_cols = TRUE)
+#' colnames(dat_spike)
 
 qc_test_spike <- function(
   dat,

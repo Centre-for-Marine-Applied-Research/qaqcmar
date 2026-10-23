@@ -27,3 +27,20 @@ oxygen percent saturation and uncorrected mg/L, pH, salinity, measured depth
 and temperature). Any other variable in the files (e.g., chlorophyll), and
 its flag columns, is dropped with a warning that names it.
 }
+\examples{
+# save a flagged deployment in a temporary folder
+path <- system.file("testdata", package = "qaqcmar")
+folder <- file.path(tempdir(), "lunenburg")
+dir.create(folder)
+
+readRDS(file.path(path, "test_data_grossrange.RDS")) |>
+  qc_test_all(qc_tests = c("climatology", "grossrange")) |>
+  qc_assign_max_flag() |>
+  saveRDS(file.path(folder, "white_tower.rds"))
+
+# columns that were not in the file are added with NA values
+dat <- qc_assemble_county_data(path = tempdir(), folder = "lunenburg")
+colnames(dat)
+
+unlink(folder, recursive = TRUE)
+}

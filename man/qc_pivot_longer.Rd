@@ -19,3 +19,19 @@ format.
 \description{
 Pivot flagged sensor string data longer by variable
 }
+\examples{
+path <- system.file("testdata", package = "qaqcmar")
+dat <- readRDS(file.path(path, "test_data_grossrange.RDS"))
+
+dat_qc <- qc_test_all(dat, qc_tests = c("climatology", "grossrange"))
+
+# one row for each observation of each variable
+dat_long <- qc_pivot_longer(dat_qc, qc_tests = c("climatology", "grossrange"))
+head(dat_long)
+
+# max flag only
+dat_long <- dat_qc |>
+  qc_assign_max_flag(return_all = FALSE) |>
+  qc_pivot_longer(qc_tests = "qc")
+head(dat_long)
+}

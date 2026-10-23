@@ -12,25 +12,28 @@
 #' @importFrom tidyr pivot_longer
 #'
 #' @export
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#' dat <- readRDS(file.path(path, "test_data_grossrange.RDS"))
+#'
+#' dat_qc <- qc_test_all(dat, qc_tests = c("climatology", "grossrange"))
+#'
+#' # one row for each observation of each variable
+#' dat_long <- qc_pivot_longer(dat_qc, qc_tests = c("climatology", "grossrange"))
+#' head(dat_long)
+#'
+#' # max flag only
+#' dat_long <- dat_qc |>
+#'   qc_assign_max_flag(return_all = FALSE) |>
+#'   qc_pivot_longer(qc_tests = "qc")
+#' head(dat_long)
 
-# # turn this into example
-# path <- system.file("testdata", package = "qaqcmar")
-# dat <- read.csv(paste0(path, "/example_data.csv"))
-
-# dat_long <- dat |>
-#   qc_test_all() |>
-#   qc_pivot_longer()
-#
-# dat_long <- dat |>
-#   qc_test_all() |>
-#   qc_assign_max_flag() |>
-#   qc_pivot_longer(qc_tests = "qc")
 
 qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
   if (is.null(qc_tests)) {
     qc_tests <- c(
       "climatology",
-      #"depth_crosscheck",
       "grossrange",
       "rolling_sd",
       "spike",
@@ -107,7 +110,8 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
 #' @importFrom rlang sym
 #' @importFrom tidyr pivot_longer
 #'
-#' @export
+#' @noRd
+
 
 pivot_flags_longer <- function(dat_wide, qc_test) {
   col_name <- paste0(qc_test, "_flag_variable")

@@ -61,3 +61,26 @@ When more than one row of \code{human_in_loop_table} applies to an
 observation, the observation gets the highest flag, and the comments are
 pasted together, separated by "; ".
 }
+\examples{
+path <- system.file("testdata", package = "qaqcmar")
+dat <- readRDS(file.path(path, "test_data_rolling_sd.RDS"))
+
+# flag dissolved oxygen as Fail from 12:30 on January 15 to the end of the
+# deployment, but only where the rolling standard deviation test gave flag 3
+hil_table <- data.frame(
+  station = "lighthouse",
+  deployment_range = "2023-Jan-01 to 2023-Jan-15",
+  variable = "dissolved_oxygen_percent_saturation",
+  sensor_serial_number = NA,
+  timestamp_utc_min = as.POSIXct("2023-01-15 12:30", tz = "UTC"),
+  timestamp_utc_max = NA,
+  qc_test = "rolling_sd",
+  qc_flag_value = 3,
+  human_in_loop_flag_value = 4,
+  hil_comment = "dissolved oxygen: biofouling"
+)
+
+dat_hil <- dat |>
+  qc_test_rolling_sd() |>
+  qc_test_human_in_loop(hil_table)
+}

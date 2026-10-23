@@ -55,3 +55,18 @@ historical data and the selected statistics. Values greater than
 \code{spike_high} is a user-specified multiple of \code{spike_low}. Values
 greater than \code{spike_high} will be flagged Fail.
 }
+\examples{
+path <- system.file("testdata", package = "qaqcmar")
+dat <- readRDS(file.path(path, "test_data_spike.RDS"))
+
+qc_calculate_spike_thresholds(dat, var = temperature_degree_c, stat = "quartile")
+
+# for each county, with spike_high = 2 * spike_low
+qc_calculate_spike_thresholds(
+  dat,
+  var = temperature_degree_c,
+  county,
+  stat = "mean_sd",
+  fail_factor = 2
+)
+}

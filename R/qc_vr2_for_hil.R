@@ -17,6 +17,16 @@
 #' @importFrom stringr str_detect
 #'
 #' @export
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#' dat <- readRDS(file.path(path, "test_data_grossrange.RDS"))
+#'
+#' # for this example, move the hobo sensor to the same depth as the vr2ar
+#' dat$sensor_depth_at_low_tide_m[dat$sensor_type == "hobo"] <- 25
+#'
+#' hil_rows <- qc_vr2_for_hil(dat)
+#' hil_rows
 
 qc_vr2_for_hil <- function(dat) {
   dat |>

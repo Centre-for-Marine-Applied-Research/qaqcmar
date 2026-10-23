@@ -11,11 +11,20 @@
 #' @importFrom stringr str_remove_all
 #'
 #' @export
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#' dat <- readRDS(file.path(path, "test_data_grossrange.RDS"))
+#'
+#' dat_long <- dat |>
+#'   qc_test_grossrange() |>
+#'   qc_pivot_longer(qc_tests = "grossrange")
+#'
+#' dat_wide <- qc_pivot_wider(dat_long)
+#' colnames(dat_wide)
 
 qc_pivot_wider <- function(dat_long) {
-  #check if depth_crosscheck will ever get caught in this
-
-  dat <- dat_long |>
+   dat <- dat_long |>
     pivot_wider(
       names_from = variable,
       values_from = c(value, contains("flag_value"))

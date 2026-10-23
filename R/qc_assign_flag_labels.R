@@ -14,14 +14,15 @@
 #' @importFrom dplyr across case_when contains mutate
 #'
 #' @export
-
-# @examples
-# path <- system.file("testdata", package = "qaqcmar")
-# dat <- readRDS(paste0(path, "/test_data.RDS"))
-#
-# dat_qc <- dat |>
-#  qc_test_grossrange() |>
-#  qc_assign_flag_labels()
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#' dat <- readRDS(file.path(path, "test_data_grossrange.RDS"))
+#'
+#' dat_gr <- dat |>
+#'   qc_test_grossrange() |>
+#'   qc_assign_flag_labels()
+#' unique(dat_gr$grossrange_flag_temperature_degree_c)
 
 qc_assign_flag_labels <- function(dat) {
   dat |>

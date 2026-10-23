@@ -27,3 +27,18 @@ each variable column.
 flag value.  \code{depth_crosscheck_flag} remains its own column with a
 single value for the whole deployment.
 }
+\examples{
+path <- system.file("testdata", package = "qaqcmar")
+dat <- readRDS(file.path(path, "test_data_grossrange.RDS"))
+
+dat_qc <- dat |>
+  qc_test_all(qc_tests = c("climatology", "grossrange")) |>
+  qc_assign_max_flag()
+colnames(dat_qc)
+
+# only the max flag columns
+dat_qc <- dat |>
+  qc_test_all(qc_tests = c("climatology", "grossrange")) |>
+  qc_assign_max_flag(return_all = FALSE)
+colnames(dat_qc)
+}

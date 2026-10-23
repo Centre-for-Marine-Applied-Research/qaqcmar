@@ -37,4 +37,27 @@ The sensor_type is reassigned as "hobo do" if sensor_type = hobo and
 do_concentration is not \code{NA} so that the data can be joined with the
 \code{grossrange_table} by \code{sensor_type} and \code{variable}.
 }
+\examples{
+path <- system.file("testdata", package = "qaqcmar")
+dat <- readRDS(file.path(path, "test_data_grossrange.RDS"))
+
+# default thresholds for the county in dat
+dat_gr <- qc_test_grossrange(dat)
+head(dat_gr)
+
+# user thresholds: one row for any sensor type and one for vr2ar sensors.
+# Variables that are not in the table (here, dissolved oxygen) get flag 2.
+my_table <- data.frame(
+  variable = "temperature_degree_c",
+  sensor_type = c(NA, "vr2ar"),
+  sensor_min = c(-5, -5),
+  sensor_max = c(35, 40),
+  user_min = c(-1, 0),
+  user_max = c(25, 20)
+)
+
+dat_user <- qc_test_grossrange(dat, grossrange_table = my_table)
+head(dat_user)
+
+}
 \concept{tests}

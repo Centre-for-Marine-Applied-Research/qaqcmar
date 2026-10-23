@@ -52,3 +52,29 @@ sensor.
 \description{
 Plot sensor data coloured by flag value
 }
+\examples{
+path <- system.file("testdata", package = "qaqcmar")
+dat <- readRDS(file.path(path, "test_data_grossrange.RDS"))
+
+dat_gr <- qc_test_grossrange(dat)
+
+# one figure for each variable and test
+p <- qc_plot_flags(dat_gr, qc_tests = "grossrange", ncol = 2)
+p$temperature_degree_c$grossrange
+
+# one variable
+p <- qc_plot_flags(
+  dat_gr,
+  qc_tests = "grossrange",
+  vars = "dissolved_oxygen_percent_saturation"
+)
+p$dissolved_oxygen_percent_saturation$grossrange
+
+# depth crosscheck: one figure for all sensors
+dat <- readRDS(file.path(path, "test_data_rolling_sd.RDS"))
+p <- qc_plot_flags(
+  qc_test_depth_crosscheck(dat),
+  qc_tests = "depth_crosscheck"
+)
+p$depth_crosscheck
+}
