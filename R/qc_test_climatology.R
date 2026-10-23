@@ -21,6 +21,26 @@
 #'   no observations in `dat` are dropped.
 #'
 #' @export
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#' dat <- readRDS(file.path(path, "test_data_climatology.RDS"))
+#'
+#' # default thresholds for the county in dat
+#' dat_clim <- qc_test_climatology(dat)
+#' table(dat_clim$climatology_flag_temperature_degree_c)
+#'
+#' # user thresholds: one row for each month
+#' my_table <- data.frame(
+#'   variable = "temperature_degree_c",
+#'   month = 1:12,
+#'   season_min = c(-1, -1, 0, 2, 5, 8, 12, 14, 12, 8, 4, 1),
+#'   season_max = c(5, 5, 6, 10, 14, 18, 22, 24, 22, 18, 12, 8)
+#' )
+#'
+#' dat_user <- qc_test_climatology(dat, climatology_table = my_table)
+#' colnames(dat_user)
+
 
 qc_test_climatology <- function(
   dat,

@@ -65,3 +65,20 @@ anticipated, all sensors will likely be 10 m deeper than recorded in the
 If \code{dat} has no measured depth, the test is skipped and \code{dat} is
 returned unchanged.
 }
+\examples{
+path <- system.file("testdata", package = "qaqcmar")
+dat <- readRDS(file.path(path, "test_data_rolling_sd.RDS"))
+
+dat_depth <- qc_test_depth_crosscheck(dat)
+unique(dat_depth$depth_crosscheck_flag)
+
+# one row per sensor, with the estimated and minimum measured depth
+qc_test_depth_crosscheck(dat, return_sensor_table = TRUE)
+
+# user threshold
+qc_test_depth_crosscheck(
+  dat,
+  depth_table = data.frame(depth_diff_max = 1),
+  return_sensor_table = TRUE
+)
+}

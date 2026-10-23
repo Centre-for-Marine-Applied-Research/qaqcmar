@@ -12,8 +12,18 @@
 #' @importFrom dplyr arrange group_by mutate n ungroup rename select
 #' @importFrom tidyr pivot_longer
 #'
-#'
 #' @export
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#'  dat <- readRDS(file.path(path, "test_data_grossrange.RDS"))
+#'
+#'  dat_gr <- qc_test_grossrange(dat)
+#'
+#'  qc_summarise_flags(dat_gr, qc_tests = "grossrange")
+#'
+#'  # for each sensor type
+#'  qc_summarise_flags(dat_gr, qc_tests = "grossrange", sensor_type)
 
 qc_summarise_flags <- function(dat, qc_tests = NULL, ...) {
   if (!("variable" %in% colnames(dat))) {

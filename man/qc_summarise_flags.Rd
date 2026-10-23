@@ -25,3 +25,14 @@ assigned each flag value for each variable, qc_test, and groups in
 \description{
 Generate summary table of flags
 }
+\examples{
+path <- system.file("testdata", package = "qaqcmar")
+ dat <- readRDS(file.path(path, "test_data_grossrange.RDS"))
+
+ dat_gr <- qc_test_grossrange(dat)
+
+ qc_summarise_flags(dat_gr, qc_tests = "grossrange")
+
+ # for each sensor type
+ qc_summarise_flags(dat_gr, qc_tests = "grossrange", sensor_type)
+}

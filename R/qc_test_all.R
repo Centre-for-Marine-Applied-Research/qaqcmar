@@ -17,6 +17,19 @@
 #' @return Returns \code{dat} with additional quality control flag columns.
 #'
 #' @export
+#'
+#' @examples
+#' path <- system.file("testdata", package = "qaqcmar")
+#' dat <- readRDS(file.path(path, "test_data_rolling_sd.RDS"))
+#'
+#' # all tests
+#' dat_qc <- qc_test_all(dat)
+#' colnames(dat_qc)
+#'
+#' # some tests
+#' dat_qc <- qc_test_all(dat, qc_tests = c("grossrange", "spike"))
+#' colnames(dat_qc)
+
 qc_test_all <- function(
   dat,
   qc_tests = NULL,

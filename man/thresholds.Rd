@@ -3,17 +3,94 @@
 \docType{data}
 \name{thresholds}
 \alias{thresholds}
-\title{Threshold tables}
+\title{Default thresholds for the quality control tests}
 \format{
-Default thresholds for adding flags to water quality data.
+A data frame with one row for each threshold, and 7 columns:
+\describe{
+\item{qc_test}{The test: "climatology", "depth_crosscheck",
+"grossrange", "rolling_sd" or "spike".}
+\item{variable}{The variable the threshold applies to, e.g.,
+"temperature_degree_c".}
+\item{county}{The county the threshold applies to. \code{NA} means all
+counties.}
+\item{month}{The month (1 to 12) the threshold applies to. Only used for
+the climatology test. \code{NA} means all months.}
+\item{sensor_type}{The sensor type the threshold applies to, e.g.,
+"aquameasure", "hobo", "hobo do" (a hobo sensor that records dissolved
+oxygen), "tidbit" or "vr2ar". \code{NA} means all sensor types.}
+\item{threshold}{The name of the threshold (see below).}
+\item{threshold_value}{The value of the threshold, in the units of
+\code{variable}.}
+}
+
+The thresholds for each test are:
+\describe{
+\item{grossrange}{\code{sensor_min} and \code{sensor_max}: the range
+the sensor can measure (flag 4 outside it), for each sensor type.
+\code{user_min} and \code{user_max}: the mean +/- 3 standard
+deviations of historical data (flag 3 outside it). See
+\code{\link{qc_calculate_user_thresholds}}.}
+\item{climatology}{\code{season_min} and \code{season_max}: the
+monthly mean +/- 3 standard deviations of historical data. See
+\code{\link{qc_calculate_climatology_thresholds}}.}
+\item{spike}{\code{spike_low} (flag 3 above it) and \code{spike_high}
+(flag 4 above it). See \code{\link{qc_calculate_spike_thresholds}}.}
+\item{rolling_sd}{\code{rolling_sd_max}: the largest accepted rolling
+standard deviation (flag 3 above it). See
+\code{\link{qc_calculate_rolling_sd_thresholds}}.}
+\item{depth_crosscheck}{\code{depth_diff_max}: the largest accepted
+difference (m) between the estimated and minimum measured sensor depth
+(flag 3 above it). See
+\code{\link{qc_calculate_depth_crosscheck_thresholds}}.}
+}
 }
 \source{
-Add references here
+Calculated from historical Coastal Monitoring Program data in
+CMAR's thresholds_analysis project (script \code{x_calculate_thresholds.R}),
+using the \code{qc_calculate_*_thresholds()} functions. The methods are
+described on the CMAR Data Governance website:
+\url{https://centre-for-marine-applied-research.github.io/cmp-data-governance/pages/cmp_about.html}.
 }
 \usage{
 thresholds
 }
 \description{
-Threshold tables
+The thresholds used by the \code{qc_test_*()} functions when no user
+threshold table is given. Each row is one threshold for one test and
+variable. A threshold can apply to one county, month and sensor type, or to
+all of them.
+}
+\details{
+An \code{NA} in \code{county}, \code{month} or \code{sensor_type} means the
+row applies to every county, month or sensor type. When several rows match
+an observation, the most specific row is used: a county row before a row for
+all counties, then a sensor type row before a row for all sensor types, then
+a month row before a row for all months. For example, Inverness has its own
+salinity thresholds, which are used instead of the thresholds for all
+counties.
+
+The tests stop with an error for a county with no rows in this table.
+
+To see the thresholds for one test, filter the table by \code{qc_test}.
+The examples show the thresholds for each test.
+}
+\examples{
+# the tests and their thresholds
+unique(thresholds[, c("qc_test", "threshold")])
+
+# thresholds for temperature in Lunenburg County, for each test
+lunenburg <- subset(
+  thresholds,
+  variable == "temperature_degree_c" &
+    (is.na(county) | county == "Lunenburg")
+)
+
+subset(lunenburg, qc_test == "grossrange")
+subset(lunenburg, qc_test == "climatology")
+subset(lunenburg, qc_test == "spike")
+subset(lunenburg, qc_test == "rolling_sd")
+
+# depth crosscheck: one threshold for all counties and sensors
+subset(thresholds, qc_test == "depth_crosscheck")
 }
 \keyword{datasets}
